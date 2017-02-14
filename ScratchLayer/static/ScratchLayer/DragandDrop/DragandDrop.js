@@ -1,4 +1,4 @@
-var destinations = {panelPrincipal:new Array(1,"")}; //Respetar primera componente para llevar el contador de elementos
+var parentinations = {panelPrincipal:new Array(1,"")}; //Respetar primera componente para llevar el contador de elementos
 
 $(document).ready(function() {
 	var elements = document.getElementById("elements1").childNodes;
@@ -8,15 +8,15 @@ $(document).ready(function() {
 
 	});
 
-    /*var destination1 = document.getElementById("elements1");
+    /*var parentination1 = document.getElementById("elements1");
 
-	destination1.addEventListener('dragover', allowDrop, false);
-	destination1.addEventListener('drop', drop, false);*/
+	parentination1.addEventListener('dragover', allowDrop, false);
+	parentination1.addEventListener('drop', drop, false);*/
 
-	var destination2 = document.getElementById("panelPrincipal");
+	var parentination2 = document.getElementById("panelPrincipal");
 
-	destination2.addEventListener('dragover', allowDrop, false);
-	destination2.addEventListener('drop', drop, false);
+	parentination2.addEventListener('dragover', allowDrop, false);
+	parentination2.addEventListener('drop',function(e){drop(e)}, false);
 
 });
 
@@ -32,77 +32,143 @@ function allowDrop(e) {
 function drag(e) {
 	e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData("text", e.target.id);
-	e.dataTransfer.setDragImage(this, 0, 0);
+	e.dataTransfer.setDragImage(e.target, 0, 0);
 }
 
-function drop(e){
+function drop(e,move=true){
 
  	e.stopPropagation(); // Stops some browsers from redirecting.
   	e.preventDefault();
 
-    var elementoArrastrado; // Elemento arrastrado
-	var str = e.dataTransfer.getData("text");
+    var element; // Elemento arrastrado
+	var src = e.dataTransfer.getData("text");
     var patt = new RegExp("new");
+    var destId = e.target.id;
     
-    console.log(str);
+    console.log("SRC DROP: "+src);
 
-    if (!patt.test(str)){
-
-    	elementoArrastrado = createPacket(str);
-    	elementoArrastrado.newPV();
-		e.target.appendChild(elementoArrastrado.getPV());
-		addElement(this.id, elementoArrastrado);
-		elementoArrastrado.viewType();
-		elementoArrastrado.viewId();
+    if (!patt.test(src)){
+ 	
+    	element = createElement(src);
+    	element.newPV();
+		e.target.appendChild(element.getPV());
+		addElement(destId, element);
+		console.log(parentinations[destId]);
 
     } else{
-    	elementoArrastrado = findObj(this.id, str);
+    	var elementHTML = document.getElementById(src);
+    	console.log("ElementHTML "+elementHTML.id);
+    	console.log("Padre del elemento: "+elementHTML.parentNode.id);
+    	console.log("DEST: "+destId);
+    	if(destId!=elementHTML.parentNode.id && destId!=src){
+			console.log("TransferElement");
+    		element = TransferElement(destId,elementHTML);
+    		console.log("Return "+ element);
+    	}
+    	else{
+    		destId = elementHTML.parentNode.id; //Para evitar los casos en los que los elementos se menten dentro de si mismos.
+    		console.log("NO TransferElement");
+    		element = findObj(destId,src);
+    		console.log("Return "+ element);
+    	}
+
     }
 
-    tamContX = $('#'+e.target.id).width();
-    tamContY = $('#'+e.target.id).height();
+    if(move){
 
-    tamElemX = $('#'+elementoArrastrado.id).width();
-    tamElemY = $('#'+elementoArrastrado.id).height();
+    	tamContX = $('#'+destId).width();
+	    tamContY = $('#'+destId).height();
 
-    posXCont = $('#'+e.target.id).position().left;
-    posYCont = $('#'+e.target.id).position().top;
+	    tamElemX = $('#'+element.id).width();
+	    tamElemY = $('#'+element.id).height();
 
-    // Posicion absoluta del raton
-    x = e.layerX;
-    y = e.layerY;
+	    posXCont = $('#'+destId).position().left;
+	    posYCont = $('#'+destId).position().top;
 
-    // Si parte del elemento que se quiere mover se queda fuera se cambia las coordenadas para que no sea asi
-    if (posXCont + tamContX <= x + tamElemX){
-        x = posXCont + tamContX - tamElemX;
-    }
+	    // Posicion absoluta del raton
+	    x = e.layerX;
+	    y = e.layerY;
 
-    if (posYCont + tamContY <= y + tamElemY){
-        y = posYCont + tamContY - tamElemY;
-    }
+	    // Si parte del elemento que se quiere mover se queda fuera se cambia las coordenadas para que no sea asi
+	    if (posXCont + tamContX <= x + tamElemX){
+	        x = posXCont + tamContX - tamElemX;
+	    }
 
-    elementoArrastrado.getPV().style.position = "absolute";
-    elementoArrastrado.getPV().style.left = x + "px";
-    elementoArrastrado.getPV().style.top = y + "px";
+	    if (posYCont + tamContY <= y + tamElemY){
+	        y = posYCont + tamContY - tamElemY;
+	    }
+
+	    element.getPV().style.position = "absolute";
+	    element.getPV().style.left = x + "px";
+	    element.getPV().style.top = y + "px";
+	}
+	else{
+
+		x = posXCont + tamContX - tamElemX;
+	    y = posYCont + tamContY - tamElemY;
+
+		element.getPV().style.position = "absolute";
+	    element.getPV().style.left = x + "px";
+	    element.getPV().style.top = y + "px";
+
+	}
 
     return false;
 }
 
-function addElement(dest,obj) {
-	var cont = destinations[dest][0];
-	destinations[dest][cont]=obj;
-	destinations[dest][0]=cont+1;
+function TransferElement(dest, src) {
+
+	var parent = src.parentNode;
+	console.log("ParentTransfer "+src.parentNode.id);
+	console.log("DestTransfer "+dest);
+	var child = findObj(parent.id,src.id);
+	var index = parentinations[parent.id].indexOf(child);
+
+	if (index > -1) {
+
+		var cont = parentinations[parent.id][0];
+
+    	parentinations[parent.id].splice(index, 1);
+		parentinations[parent.id][0]=cont-1;
+
+		addElement(dest,child);
+		
+		return child;
+	}
+
+	return false;
+
+}
+
+function addElement(parent,obj) {
+
+	console.log(parent);
+	var cont = parentinations[parent][0];
+	parentinations[parent][cont]=obj;
+	parentinations[parent][0]=cont+1;
+
 }
 
 function removeElement(elem) {
-	
-	var elementoBorrar = elem.parentNode.parentNode;
-	var dest = elementoBorrar.parentNode.id;
-	elementoBorrar.parentNode.removeChild(elementoBorrar);
+
+	var parent = elem.parentNode.parentNode.parentNode;
+	console.log(parent.id);
+	var child = findObj(parent.id,elem.parentNode.parentNode.id);
+	var index = parentinations[parent.id].indexOf(child);
+
+	if (index > -1) {
+		var cont = parentinations[parent.id][0];
+		parent.removeChild(child.getPV());
+    	parentinations[parent.id].splice(index, 1);
+		parentinations[parent.id][0]=cont-1;
+	}
+
+	console.log(parentinations[parent.id]);
 }
 
-function findObj(dest,idObj) {
-	return destinations[dest].find(function(Protocol) {
+function findObj(parent,idObj) {
+	//console.log("parent "+parent);
+	return parentinations[parent].find(function(Protocol) {
 		return Protocol.id === idObj;
-	});
+	}); 
 }

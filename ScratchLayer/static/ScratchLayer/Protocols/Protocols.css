@@ -1,4 +1,12 @@
 
+.Packet {
+	height: 30px;
+    width: 70px;
+    cursor: move;
+    border: 1px;
+    border: red 1px solid;
+}
+
 .Ethernet {
     height: 30px;
     width: 70px;
