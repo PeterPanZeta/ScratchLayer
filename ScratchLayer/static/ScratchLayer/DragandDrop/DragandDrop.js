@@ -43,47 +43,49 @@ function drop(e,move=true){
     var element; // Elemento arrastrado
 	var src = e.dataTransfer.getData("text");
     var patt = new RegExp("new");
-    var destId = e.target.id;
+    var dest = e.target;
     
-    console.log("SRC DROP: "+src);
+    //console.log("SRC DROP: "+src);
 
     if (!patt.test(src)){
  	
     	element = createElement(src);
     	element.newPV();
-		e.target.appendChild(element.getPV());
-		addElement(destId, element);
-		console.log(parentinations[destId]);
+		addElement(dest, element);
+		//console.log(parentinations[destId]);
 
     } else{
     	var elementHTML = document.getElementById(src);
-    	console.log("ElementHTML "+elementHTML.id);
-    	console.log("Padre del elemento: "+elementHTML.parentNode.id);
-    	console.log("DEST: "+destId);
-    	if(destId!=elementHTML.parentNode.id && destId!=src){
-			console.log("TransferElement");
-    		element = TransferElement(destId,elementHTML);
-    		console.log("Return "+ element);
+    	//console.log("ElementHTML "+elementHTML.id);
+    	//console.log("Padre del elemento: "+elementHTML.parentNode.id);
+    	//console.log("DEST: "+destId);
+    	if(dest.id!=elementHTML.parentNode.id && dest.id!=src){
+			//console.log("TransferElement");
+    		element = TransferElement(dest,elementHTML.parentNode.id,elementHTML);
+    		//console.log("Return "+ element);
     	}
     	else{
-    		destId = elementHTML.parentNode.id; //Para evitar los casos en los que los elementos se menten dentro de si mismos.
-    		console.log("NO TransferElement");
-    		element = findObj(destId,src);
-    		console.log("Return "+ element);
+
+    		dest = elementHTML.parentNode; //Para evitar los casos en los que los elementos se menten dentro de si mismos.
+    		//console.log(dest);
+    		//console.log("Nuevo DEST: "+destId);
+    		//console.log("NO TransferElement");
+    		element = findObj(dest.id,src);
+    		//console.log("Return "+ element);
     	}
 
     }
 
     if(move){
 
-    	tamContX = $('#'+destId).width();
-	    tamContY = $('#'+destId).height();
+    	tamContX = $('#'+dest.id).width();
+	    tamContY = $('#'+dest.id).height();
 
 	    tamElemX = $('#'+element.id).width();
 	    tamElemY = $('#'+element.id).height();
 
-	    posXCont = $('#'+destId).position().left;
-	    posYCont = $('#'+destId).position().top;
+	    posXCont = $('#'+dest.id).position().left;
+	    posYCont = $('#'+dest.id).position().top;
 
 	    // Posicion absoluta del raton
 	    x = e.layerX;
@@ -103,36 +105,47 @@ function drop(e,move=true){
 	    element.getPV().style.top = y + "px";
 	}
 	else{
-
-		x = posXCont + tamContX - tamElemX;
-	    y = posYCont + tamContY - tamElemY;
-
-		element.getPV().style.position = "absolute";
-	    element.getPV().style.left = x + "px";
-	    element.getPV().style.top = y + "px";
-
+		element.getPV().style.position = "relative";
 	}
 
     return false;
 }
 
-function TransferElement(dest, src) {
+function TransferElement(dest,orig,src) {
 
-	var parent = src.parentNode;
-	console.log("ParentTransfer "+src.parentNode.id);
-	console.log("DestTransfer "+dest);
-	var child = findObj(parent.id,src.id);
-	var index = parentinations[parent.id].indexOf(child);
+	//console.log("ParentTransfer "+orig);
+	//console.log("DestTransfer "+dest);
+	var child;
+
+	if(dest.id!="panelPrincipal"){
+
+		child = findObj("Drop"+orig,src.id);
+
+		var dimChildX = child.getPV().offsetWidth + 20;
+		var dimChildy = child.getPV().offsetHeight + 20;
+
+		console.log("y "+dimChildy+" x "+dimChildX);
+
+		dest.style.width=dimChildX+"px";
+
+		console.log(child.getPV().offsetWidth);
+
+	}else{
+		child = findObj(orig,src.id);
+	}
+
+	var index = parentinations[orig].indexOf(child);
 
 	if (index > -1) {
 
-		var cont = parentinations[parent.id][0];
-
-    	parentinations[parent.id].splice(index, 1);
-		parentinations[parent.id][0]=cont-1;
-
 		addElement(dest,child);
+
+		var cont = parentinations[orig][0];
 		
+    	parentinations[orig].splice(index, 1);
+		parentinations[orig][0]=cont-1;
+
+	
 		return child;
 	}
 
@@ -142,17 +155,26 @@ function TransferElement(dest, src) {
 
 function addElement(parent,obj) {
 
-	console.log(parent);
-	var cont = parentinations[parent][0];
-	parentinations[parent][cont]=obj;
-	parentinations[parent][0]=cont+1;
+	//console.log(parent);
+	var cont = parentinations[parent.id][0];
+	parentinations[parent.id][cont]=obj;
+
+	if(parent.id!="panelPrincipal"){
+		var element = findDrop(parent);
+		console.log("Return " + element);
+		element.appendChild(obj.getPV());
+	}else{
+		parent.appendChild(obj.getPV());
+	}
+	parentinations[parent.id][0]=cont+1;
+	//console.log(parentinations[parent]);
 
 }
 
 function removeElement(elem) {
 
 	var parent = elem.parentNode.parentNode.parentNode;
-	console.log(parent.id);
+	//console.log(parent.id);
 	var child = findObj(parent.id,elem.parentNode.parentNode.id);
 	var index = parentinations[parent.id].indexOf(child);
 
@@ -163,12 +185,34 @@ function removeElement(elem) {
 		parentinations[parent.id][0]=cont-1;
 	}
 
-	console.log(parentinations[parent.id]);
+	//console.log(parentinations[parent.id]);
 }
 
 function findObj(parent,idObj) {
-	//console.log("parent "+parent);
+	console.log("parent "+parent);
 	return parentinations[parent].find(function(Protocol) {
 		return Protocol.id === idObj;
 	}); 
+}
+
+function findDrop(parent) {
+	var result;
+	console.log(parent.childNodes);
+	parent.childNodes.forEach(function(element){
+
+		console.log(element.id);
+
+		if(element.id == "Drop"+parent.id){
+			result=element;
+		}
+
+		if(element.id == "FormPacket"){
+			element.childNodes.forEach(function(element){
+				if(element.id == "Drop"+parent.id){
+					result=element;
+				}
+			});
+		}
+	});
+	return result;
 }

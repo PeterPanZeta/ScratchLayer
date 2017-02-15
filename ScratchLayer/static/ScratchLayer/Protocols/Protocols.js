@@ -26,23 +26,31 @@ function Packet() {
 
 	Packet.prototype.newPV=function() {
 		var divDrop = document.createElement("div");
+		var form = document.createElement("form");
 
 		this.PacketPV = document.createElement("div");
 		this.PacketPV.id = "Packetnew"+contElement;
 		contElement=contElement+1;
 		this.id=this.PacketPV.id;
 
-		parentinations[this.id] = new Array(1,"");
-
 		this.PacketPV.classList.add("column");
 		this.PacketPV.setAttribute("draggable","true");
 		this.PacketPV.addEventListener('dragstart', drag, false);
 		this.PacketPV.innerHTML="<header>Packet <button id='remove' class='remove' onclick='removeElement(this)'></button></header>"
-	
+		
+		divDrop.id="Drop"+this.id;
+
+		parentinations[divDrop.id] = new Array(1,"");
+
+		divDrop.setAttribute("draggable","true");
 		divDrop.addEventListener('dragover', allowDrop, false);
 		divDrop.addEventListener('drop',function(e){drop(e,false)}, false);
 
-		this.PacketPV.appendChild(divDrop);
+		form.id="FormPacket";
+		form.innerHTML="<input type='text'></input><input type='submit'></input>"
+		form.appendChild(divDrop);
+
+		this.PacketPV.appendChild(form);
 	};
 
 	Packet.prototype.getPV=function() {
@@ -92,13 +100,16 @@ function Ethernet() {
 		contElement=contElement+1;
 		this.id=this.EthernetPV.id;
 
-		parentinations[this.id] = new Array(1,"");
-
 		this.EthernetPV.classList.add("column");
 		this.EthernetPV.setAttribute("draggable","true");
 		this.EthernetPV.addEventListener('dragstart', drag, false);
 		this.EthernetPV.innerHTML="<header>Ethernet <button id='remove' class='remove' onclick='removeElement(this)'></button></header>"
 
+		divDrop.id="Drop"+this.id;
+		
+		parentinations[divDrop.id] = new Array(1,"");
+
+		divDrop.setAttribute("draggable","true");
 		divDrop.addEventListener('dragover', allowDrop, false);
 		divDrop.addEventListener('drop',function(e){drop(e,false)}, false);
 
