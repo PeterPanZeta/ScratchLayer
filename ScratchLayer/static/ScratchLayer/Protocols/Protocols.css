@@ -19,3 +19,11 @@
   width: 20px;
   height: 20px;
 }
+
+.drop{
+	height: 30px;
+    width: 70px;
+    cursor: move;
+    border: 1px;
+    border: red 1px solid;
+}

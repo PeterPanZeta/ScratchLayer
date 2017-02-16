@@ -42,72 +42,84 @@ function drop(e,move=true){
 
     var element; // Elemento arrastrado
 	var src = e.dataTransfer.getData("text");
-    var patt = new RegExp("new");
+    var patt = new RegExp(src);
+    var patt2 = new RegExp("Drop"); 
     var dest = e.target;
     
     //console.log("SRC DROP: "+src);
+    if(!patt.test(dest.id) && (patt2.test(dest.id) || dest.id == "panelPrincipal" ) && dest.id!=src){ //1ºy 3º no permite meterse sobre si mismo, 2º solo se permite en los drop
 
-    if (!patt.test(src)){
- 	
-    	element = createElement(src);
-    	element.newPV();
-		addElement(dest, element);
-		//console.log(parentinations[destId]);
+	    patt = new RegExp("new");
 
-    } else{
-    	var elementHTML = document.getElementById(src);
-    	//console.log("ElementHTML "+elementHTML.id);
-    	//console.log("Padre del elemento: "+elementHTML.parentNode.id);
-    	//console.log("DEST: "+destId);
-    	if(dest.id!=elementHTML.parentNode.id && dest.id!=src){
-			//console.log("TransferElement");
-    		element = TransferElement(dest,elementHTML.parentNode.id,elementHTML);
-    		//console.log("Return "+ element);
-    	}
-    	else{
+	    if (!patt.test(src)){
+	 	
+	    	element = createElement(src);
+	    	element.newPV();
+			addElement(dest, element);
+			//console.log(parentinations[destId]);
 
-    		dest = elementHTML.parentNode; //Para evitar los casos en los que los elementos se menten dentro de si mismos.
-    		//console.log(dest);
-    		//console.log("Nuevo DEST: "+destId);
-    		//console.log("NO TransferElement");
-    		element = findObj(dest.id,src);
-    		//console.log("Return "+ element);
-    	}
+	    } else{
+	    	var elementHTML = document.getElementById(src);
+	    	console.log("ElementHTML "+elementHTML.id);
+	    	console.log("Padre del elemento: "+elementHTML.parentNode.id);
+	    	console.log("DEST: "+dest.id);
+	    	
 
-    }
+	    	if(dest.id!=elementHTML.parentNode.id){
+				console.log("TransferElement");
+	    		element = TransferElement(dest,elementHTML.parentNode.id,elementHTML);
+	    		console.log("Return "+ element);
+	    	}
+	    	else{
 
-    if(move){
+	    		dest = elementHTML.parentNode; //Para evitar los casos en los que los elementos se menten dentro de si mismos.
+	    		console.log(dest);
+	    		console.log("Nuevo DEST: "+dest.id);
+	    		console.log("NO TransferElement");
+	    		element = findObj(dest.id,src);
+	    		console.log("Return "+ element);
+	    	}
 
-    	tamContX = $('#'+dest.id).width();
-	    tamContY = $('#'+dest.id).height();
-
-	    tamElemX = $('#'+element.id).width();
-	    tamElemY = $('#'+element.id).height();
-
-	    posXCont = $('#'+dest.id).position().left;
-	    posYCont = $('#'+dest.id).position().top;
-
-	    // Posicion absoluta del raton
-	    x = e.layerX;
-	    y = e.layerY;
-
-	    // Si parte del elemento que se quiere mover se queda fuera se cambia las coordenadas para que no sea asi
-	    if (posXCont + tamContX <= x + tamElemX){
-	        x = posXCont + tamContX - tamElemX;
 	    }
 
-	    if (posYCont + tamContY <= y + tamElemY){
-	        y = posYCont + tamContY - tamElemY;
-	    }
+	    if(dest.id=="panelPrincipal"){
 
-	    element.getPV().style.position = "absolute";
-	    element.getPV().style.left = x + "px";
-	    element.getPV().style.top = y + "px";
-	}
-	else{
-		element.getPV().style.position = "relative";
-	}
+	    	//console.log("libre movimiento");
 
+	    	tamContX = $('#'+dest.id).width();
+		    tamContY = $('#'+dest.id).height();
+
+		    tamElemX = $('#'+element.id).width();
+		    tamElemY = $('#'+element.id).height();
+
+		    posXCont = $('#'+dest.id).position().left;
+		    posYCont = $('#'+dest.id).position().top;
+
+		    // Posicion absoluta del raton
+		    x = e.layerX;
+		    y = e.layerY;
+
+		    // Si parte del elemento que se quiere mover se queda fuera se cambia las coordenadas para que no sea asi
+		    if (posXCont + tamContX <= x + tamElemX){
+		        x = posXCont + tamContX - tamElemX;
+		    }
+
+		    if (posYCont + tamContY <= y + tamElemY){
+		        y = posYCont + tamContY - tamElemY;
+		    }
+
+		    element.getPV().style.position = "absolute";
+		    element.getPV().style.left = x + "px";
+		    element.getPV().style.top = y + "px";
+		}
+		else{
+
+			element.getPV().style.position = "relative";
+			element.getPV().style.left = 0 + "px";
+		    element.getPV().style.top = 0 + "px";
+
+		}
+	}
     return false;
 }
 
@@ -115,23 +127,19 @@ function TransferElement(dest,orig,src) {
 
 	//console.log("ParentTransfer "+orig);
 	//console.log("DestTransfer "+dest);
-	var child;
+	var child = findObj(orig,src.id);
 
 	if(dest.id!="panelPrincipal"){
 
-		child = findObj("Drop"+orig,src.id);
-
-		var dimChildX = child.getPV().offsetWidth + 20;
-		var dimChildy = child.getPV().offsetHeight + 20;
+		var dimChildX = child.getPV().offsetWidth + 5;
+		var dimChildy = child.getPV().offsetHeight + 5;
 
 		console.log("y "+dimChildy+" x "+dimChildX);
 
 		dest.style.width=dimChildX+"px";
-
+		dest.style.height=dimChildy+"px";
 		console.log(child.getPV().offsetWidth);
 
-	}else{
-		child = findObj(orig,src.id);
 	}
 
 	var index = parentinations[orig].indexOf(child);
@@ -155,18 +163,12 @@ function TransferElement(dest,orig,src) {
 
 function addElement(parent,obj) {
 
-	//console.log(parent);
-	var cont = parentinations[parent.id][0];
+	//console.log(parent.id);
+	var cont= parentinations[parent.id][0];
+	
 	parentinations[parent.id][cont]=obj;
-
-	if(parent.id!="panelPrincipal"){
-		var element = findDrop(parent);
-		console.log("Return " + element);
-		element.appendChild(obj.getPV());
-	}else{
-		parent.appendChild(obj.getPV());
-	}
 	parentinations[parent.id][0]=cont+1;
+	parent.appendChild(obj.getPV());
 	//console.log(parentinations[parent]);
 
 }
