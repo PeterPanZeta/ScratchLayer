@@ -1,9 +1,33 @@
 var contElement=1;
 
+function PanelPrincipal() {
+
+	this.id="panelPrincipal";
+	this.Children={};
+
+	PanelPrincipal.prototype.getId = function(){
+		return this.id;
+	};
+
+	PanelPrincipal.prototype.addChild = function(Child){
+		this.Children[Child.getId()]=Child;
+	};
+
+	PanelPrincipal.prototype.removeChild = function(Child){
+		delete this.Children[Child.getId()];
+	};
+
+}
+
+
 function Packet() {
 
 	this.id="";
 	this.drop=true;
+	this.Parent;
+	this.Children={};
+	this.width="";
+	this.height="";
 
 	Packet.prototype.viewId = function(){
 		console.log("Packet");
@@ -20,9 +44,28 @@ function Packet() {
 	Packet.prototype.setId = function(id){
 		this.id = id;
 	};
+	
 	Packet.prototype.getDrop =function() {
 		return this.drop;
 	};
+
+	Packet.prototype.getParent = function(){
+		return this.Parent;
+	};
+
+	Packet.prototype.setParent = function(Parent){
+		console.log(Parent);
+		Parent.addChild(this);
+		this.parent=Parent;
+	}
+
+	Packet.prototype.addChild = function(Child){
+		this.Children[Child.getId()]=Child;
+	};
+
+	Packet.prototype.removeChild = function(Child){
+		delete this.Children[Child.getId()];
+	}
 
 	Packet.prototype.newPV=function() {
 		var divDrop = document.createElement("div");
@@ -32,6 +75,7 @@ function Packet() {
 		this.PacketPV.id = "Packetnew"+contElement;
 		contElement=contElement+1;
 		this.id=this.PacketPV.id;
+		console.log("PUSS "+this.id);
 
 		this.PacketPV.classList.add("column");
 		this.PacketPV.setAttribute("draggable","true");
@@ -40,8 +84,6 @@ function Packet() {
 		
 		divDrop.id="Drop"+this.id;
 		divDrop.classList.add("column");
-
-		parentinations[divDrop.id] = new Array(1,"");
 
 		//divDrop.setAttribute("draggable","true");
 		divDrop.addEventListener('dragover', allowDrop, false);
@@ -60,11 +102,14 @@ function Packet() {
 
 }
 
-function Protocol(type,drop=false) {
+function Protocol(type) {
 
 	this.type=type;
 	this.id="";
-	this.drop=drop;
+	this.drop=false;
+	this.Parent;
+	this.width="";
+	this.height="";
 
 	Protocol.prototype.viewId = function(){
 		console.log(this.id);
@@ -86,11 +131,35 @@ function Protocol(type,drop=false) {
 		return this.drop;
 	};
 
+	Protocol.prototype.getParent = function(){
+		return this.Parent;
+	};
+
+	Protocol.prototype.setParent = function(Parent){
+		Parent.addChild(this);
+		this.parent=Parent;
+	}
+
+}
+
+function ProtocolDrop(type) {
+
+	Protocol.call(this,type,true);
+
+	this.drop=true;
+
+	ProtocolDrop.prototype.addChild = function(Child){
+		this.Children[Child.getId()]=Child;
+	};
+
+	ProtocolDrop.prototype.removeChild = function(Child){
+		delete this.Children[Child.getId()];
+	}
 }
 
 function Ethernet() {
 
-	Protocol.call(this,"Ethernet",true);
+	ProtocolDrop.call(this,"Ethernet",true);
 
 	Ethernet.prototype.newPV=function() {
 
@@ -109,8 +178,6 @@ function Ethernet() {
 		divDrop.id="Drop"+this.id;
 		divDrop.classList.add("column");
 
-		parentinations[divDrop.id] = new Array(1,"");
-
 		//divDrop.setAttribute("draggable","true");
 		divDrop.addEventListener('dragover', allowDrop, false);
 		divDrop.addEventListener('drop',function(e){drop(e,false)}, false);
@@ -124,15 +191,26 @@ function Ethernet() {
 
 }
 
-function createElement(idSrt) {
+function createElement(idSrt,parent) {
+	var newElement;
 	switch(idSrt) {
 		case "Packet":
-			return new Packet();
+			newElement = new Packet();
+			newElement.newPV();
+			newElement.setParent(parent);
+			parentinations[newElement.getId()]=newElement;
+			return newElement;
     	case "Ethernet":
-    		return new Ethernet();
+    		newElement = new Ethernet();
+    		newElement.newPV();
+    		newElement.setParent(parent);
+    		parentinations[newElement.getId()]=newElement;
+    		return newElement;
     }
 }
 
-Ethernet.prototype= new Protocol();
+ProtocolDrop.prototype = new Protocol();
+
+Ethernet.prototype = new ProtocolDrop();
 
 

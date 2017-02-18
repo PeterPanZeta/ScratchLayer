@@ -1,5 +1,6 @@
-var parentinations = {panelPrincipal:new Array(1,"")}; //Respetar primera componente para llevar el contador de elementos
-
+var panelPrincipal = new PanelPrincipal();
+var parentinations = {"panelPrincipal":panelPrincipal};
+console.log(parentinations["panelPrincipal"]);
 $(document).ready(function() {
 	var elements = document.getElementById("elements1").childNodes;
 
@@ -53,31 +54,30 @@ function drop(e,move=true){
 
 	    if (!patt.test(src)){
 	 	
-	    	element = createElement(src);
-	    	element.newPV();
+	    	element = createElement(src,findObj(dest.id));
 			addElement(dest, element);
 			//console.log(parentinations[destId]);
 
 	    } else{
 	    	var elementHTML = document.getElementById(src);
-	    	console.log("ElementHTML "+elementHTML.id);
-	    	console.log("Padre del elemento: "+elementHTML.parentNode.id);
-	    	console.log("DEST: "+dest.id);
+	    	//console.log("ElementHTML "+elementHTML.id);
+	    	//console.log("Padre del elemento: "+elementHTML.parentNode.id);
+	    	//console.log("DEST: "+dest.id);
 	    	
 
 	    	if(dest.id!=elementHTML.parentNode.id){
-				console.log("TransferElement");
-	    		element = TransferElement(dest,elementHTML.parentNode.id,elementHTML);
-	    		console.log("Return "+ element);
+				//console.log("TransferElement");
+	    		element = TransferElement(dest,elementHTML.parentNode,elementHTML);
+	    		//console.log("Return "+ element);
 	    	}
 	    	else{
 
-	    		dest = elementHTML.parentNode; //Para evitar los casos en los que los elementos se menten dentro de si mismos.
-	    		console.log(dest);
-	    		console.log("Nuevo DEST: "+dest.id);
-	    		console.log("NO TransferElement");
-	    		element = findObj(dest.id,src);
-	    		console.log("Return "+ element);
+	    		//dest = elementHTML.parentNode; //Para evitar los casos en los que los elementos se menten dentro de si mismos.
+	    		//console.log(dest);
+	    		//console.log("Nuevo DEST: "+dest.id);
+	    		//console.log("NO TransferElement");
+	    		element = findObj(src);
+	    		//console.log("Return "+ element);
 	    	}
 
 	    }
@@ -123,98 +123,56 @@ function drop(e,move=true){
     return false;
 }
 
-function TransferElement(dest,orig,src) {
+function TransferElement(destHTML,origHTML,srcHTML) {
 
 	//console.log("ParentTransfer "+orig);
 	//console.log("DestTransfer "+dest);
-	var child = findObj(orig,src.id);
-
-	if(dest.id!="panelPrincipal"){
+	var child = findObj(srcHTML.id);
+	
+	if(destHTML.id!="panelPrincipal"){
 
 		var dimChildX = child.getPV().offsetWidth + 5;
 		var dimChildy = child.getPV().offsetHeight + 5;
 
 		console.log("y "+dimChildy+" x "+dimChildX);
 
-		dest.style.width=dimChildX+"px";
-		dest.style.height=dimChildy+"px";
+		destHTML.style.width=dimChildX+"px";
+		destHTML.style.height=dimChildy+"px";
 		console.log(child.getPV().offsetWidth);
 
 	}
 
-	var index = parentinations[orig].indexOf(child);
+	addElement(destHTML,child);
+	//origHTML.removeChild(child.getPV());
 
-	if (index > -1) {
-
-		addElement(dest,child);
-
-		var cont = parentinations[orig][0];
-		
-    	parentinations[orig].splice(index, 1);
-		parentinations[orig][0]=cont-1;
-
-	
-		return child;
-	}
-
-	return false;
+	return child;
 
 }
 
-function addElement(parent,obj) {
+function addElement(parentHTML,obj) {
 
-	//console.log(parent.id);
-	var cont= parentinations[parent.id][0];
-	
-	parentinations[parent.id][cont]=obj;
-	parentinations[parent.id][0]=cont+1;
-	parent.appendChild(obj.getPV());
+	//console.log("EST "+obj.getId());
+	//console.log(parentinations);
+
+	parentinations[obj.getId()].setParent(findObj(parentHTML.id));
+	parentHTML.appendChild(obj.getPV());
 	//console.log(parentinations[parent]);
 
 }
 
-function removeElement(elem) {
+function removeElement(elemHTML) {
+	//console.log(parentinations);
+	var parent = elemHTML.parentNode.parentNode.parentNode;
+	var child = findObj(elemHTML.parentNode.parentNode.id);
 
-	var parent = elem.parentNode.parentNode.parentNode;
-	//console.log(parent.id);
-	var child = findObj(parent.id,elem.parentNode.parentNode.id);
-	var index = parentinations[parent.id].indexOf(child);
-
-	if (index > -1) {
-		var cont = parentinations[parent.id][0];
-		parent.removeChild(child.getPV());
-    	parentinations[parent.id].splice(index, 1);
-		parentinations[parent.id][0]=cont-1;
-	}
+	parent.removeChild(child.getPV());
+    delete parentinations[child.getId()];
+	//console.log(parentinations);
 
 	//console.log(parentinations[parent.id]);
 }
 
-function findObj(parent,idObj) {
-	console.log("parent "+parent);
-	return parentinations[parent].find(function(Protocol) {
-		return Protocol.id === idObj;
-	}); 
-}
-
-function findDrop(parent) {
-	var result;
-	console.log(parent.childNodes);
-	parent.childNodes.forEach(function(element){
-
-		console.log(element.id);
-
-		if(element.id == "Drop"+parent.id){
-			result=element;
-		}
-
-		if(element.id == "FormPacket"){
-			element.childNodes.forEach(function(element){
-				if(element.id == "Drop"+parent.id){
-					result=element;
-				}
-			});
-		}
-	});
-	return result;
+function findObj(ObjHTMLId) {
+	//console.log(parentinations[ObjHTMLId]);
+	return parentinations[ObjHTMLId];
 }
