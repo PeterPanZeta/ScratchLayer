@@ -1,6 +1,7 @@
-var panelPrincipal = new PanelPrincipal();
+var panelPrincipal = new PanelPrincipal(document.getElementById("panelPrincipal"));
 var parentinations = {"panelPrincipal":panelPrincipal};
-console.log(parentinations["panelPrincipal"]);
+//console.log(parentinations["panelPrincipal"]);
+
 $(document).ready(function() {
 	var elements = document.getElementById("elements1").childNodes;
 
@@ -49,13 +50,13 @@ function drop(e,move=true){
     
     //console.log("SRC DROP: "+src);
     if(!patt.test(dest.id) && (patt2.test(dest.id) || dest.id == "panelPrincipal" ) && dest.id!=src){ //1ºy 3º no permite meterse sobre si mismo, 2º solo se permite en los drop
-
+	    
 	    patt = new RegExp("new");
 
 	    if (!patt.test(src)){
-	 	
+	    	//console.log("DestTunig "+dest.id.split("Drop")[1]);
+	 		//console.log(findObj(dest.id));
 	    	element = createElement(src,findObj(dest.id));
-			addElement(dest, element);
 			//console.log(parentinations[destId]);
 
 	    } else{
@@ -142,37 +143,39 @@ function TransferElement(destHTML,origHTML,srcHTML) {
 
 	}
 
-	addElement(destHTML,child);
+	parentinations[child.getId()].setParent(findObj(destHTML.id));
+	destHTML.appendChild(child.getPV());
 	//origHTML.removeChild(child.getPV());
 
 	return child;
 
 }
 
-function addElement(parentHTML,obj) {
 
-	//console.log("EST "+obj.getId());
-	//console.log(parentinations);
+function removeElement(elemHTML,e) {
 
-	parentinations[obj.getId()].setParent(findObj(parentHTML.id));
-	parentHTML.appendChild(obj.getPV());
-	//console.log(parentinations[parent]);
-
-}
-
-function removeElement(elemHTML) {
-	//console.log(parentinations);
-	var parent = elemHTML.parentNode.parentNode.parentNode;
+	var parent = findObj(elemHTML.parentNode.parentNode.parentNode.id);
 	var child = findObj(elemHTML.parentNode.parentNode.id);
+	//console.log(parent);
+	parent.removeChild(child);
+	//elemHTML.parentNode.parentNode.parentNode.removeChild(child.getPV());
+	return false;
 
-	parent.removeChild(child.getPV());
-    delete parentinations[child.getId()];
-	//console.log(parentinations);
-
-	//console.log(parentinations[parent.id]);
 }
 
 function findObj(ObjHTMLId) {
-	//console.log(parentinations[ObjHTMLId]);
-	return parentinations[ObjHTMLId];
+
+    var patt = new RegExp("Drop");
+
+	if(patt.test(ObjHTMLId)){
+
+		return parentinations[ObjHTMLId.split("Drop")[1]];
+
+	}
+	else{
+
+		return parentinations[ObjHTMLId];
+
+	}
+	//console.log(parentinations[ObjHTMLId]);	
 }
