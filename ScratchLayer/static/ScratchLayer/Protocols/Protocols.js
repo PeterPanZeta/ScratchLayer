@@ -3,9 +3,10 @@ var contElement=1;
 function PanelPrincipal(PanelPrincipalHTML) {
 
 	this.id="panelPrincipal";
+	this.idDrop="panelPrincipal";
 	this.Children={};
 	this.drop=true;
-	this.PanelPrincipalHTML=PanelPrincipalHTML;
+	this.PV=PanelPrincipalHTML;
 
 	PanelPrincipal.prototype.getId = function(){
 		return this.id;
@@ -20,11 +21,12 @@ function PanelPrincipal(PanelPrincipalHTML) {
 	};
 
 	PanelPrincipal.prototype.getPV = function() {
-		return this.PanelPrincipalHTML;
+		return this.PV;
 	};
 
 	PanelPrincipal.prototype.addChild = function(Child){
-
+		
+		this.PV.appendChild(Child.getPV());
 		this.Children[Child.getId()]=Child;
 	
 	};
@@ -33,7 +35,7 @@ function PanelPrincipal(PanelPrincipalHTML) {
 
 		if(Child.removeParent(this)){
 
-			this.PanelPrincipalHTML.removeChild(Child.getPV());
+			//this.PV.removeChild(Child.getPV());
 			delete this.Children[Child.getId()];
     		delete parentinations[Child.getId()];
 		}
@@ -54,7 +56,7 @@ function Packet() {
 	this.Children={};
 	this.width="";
 	this.height="";
-	this.PacketPV;
+	this.PV;
 
 	Packet.prototype.viewId = function(){
 		console.log("Packet");
@@ -85,9 +87,25 @@ function Packet() {
 	};
 
 	Packet.prototype.setParent = function(Parent){
-		console.log(Parent);
+		//console.log(Parent);
 		Parent.addChild(this);
 		this.parent=Parent;
+	};
+
+	Packet.prototype.setwidth = function(width){
+		this.width=width;
+	};
+
+	Packet.prototype.getwidth = function(){
+		return this.width;
+	};
+
+	Packet.prototype.setheight = function(height){
+		this.height=height;
+	};
+
+	Packet.prototype.getheight = function(){
+		return this.height;
 	};
 
 	Packet.prototype.removeParent = function(Parent){
@@ -102,6 +120,7 @@ function Packet() {
 	};
 
 	Packet.prototype.addChild = function(Child){
+		this.PV.lastChild.lastChild.appendChild(Child.getPV());
 		this.Children[Child.getId()]=Child;
 	};
 
@@ -109,13 +128,13 @@ function Packet() {
 
 		if(Child.removeParent(this)){
 
-			this.PacketPV.removeChild(Child.getPV());
+			//this.PV.removeChild(Child.getPV());
 			delete this.Children[Child.getId()];
     		delete parentinations[Child.getId()];
-    		console.log("Borro");
+    		//console.log("Borro");
 		}
 		else{
-			console.log("No eres hijo mio "+Child);
+			//console.log("No eres hijo mio "+Child);
 		}
 
 	};
@@ -124,33 +143,35 @@ function Packet() {
 		var divDrop = document.createElement("div");
 		var form = document.createElement("form");
 
-		this.PacketPV = document.createElement("div");
-		this.PacketPV.id = "Packetnew"+contElement;
+		this.PV = document.createElement("div");
+		this.PV.id = "Packetnew"+contElement;
 		contElement=contElement+1;
-		this.id=this.PacketPV.id;
+		this.id=this.PV.id;
 		//console.log("PUSS "+this.id);
 
-		this.PacketPV.classList.add("column");
-		this.PacketPV.setAttribute("draggable","true");
-		this.PacketPV.addEventListener('dragstart', drag, false);
-		this.PacketPV.innerHTML="<header id= 'header"+this.id+"'>Packet <button id='remove"+this.id+"' class='remove' onclick='removeElement(this,event)'></button></header>"
+		this.PV.classList.add("column");
+		this.PV.setAttribute("draggable","true");
+		this.PV.addEventListener('dragstart', drag, false);
+		this.PV.innerHTML="<header id= 'header"+this.id+"'>Packet <button id='remove"+this.id+"' class='remove' onclick='removeElement(this,event)'></button></header>"
 		
 		divDrop.id="Drop"+this.id;
-		divDrop.classList.add("column");
+		divDrop.classList.add("drop");
 
 		//divDrop.setAttribute("draggable","true");
 		divDrop.addEventListener('dragover', allowDrop, false);
 		divDrop.addEventListener('drop',function(e){drop(e,false)}, false);
 
 		form.id="Form"+this.id;
+		form.style.height="50%";
+		form.style.width="auto";
 		form.innerHTML="<input type='text'></input><input type='submit'></input>"
 		form.appendChild(divDrop);
 
-		this.PacketPV.appendChild(form);
+		this.PV.appendChild(form);
 	};
 
 	Packet.prototype.getPV=function() {
-		return this.PacketPV;
+		return this.PV;
 	};
 
 }
@@ -207,14 +228,28 @@ function Protocol(type) {
 
 		if(this.parent.getId() == Parent.getId()){
 			this.parent = undefined;
-			console.log("Quito padre");
+			//console.log("Quito padre");
 			return true;
 		}
 		else{
-			console.log("NO Quito padre");
-
+			//console.log("NO Quito padre");
 			return false;
 		}
+	};
+	Protocol.prototype.setwidth = function(width){
+		this.width=width;
+	};
+
+	Protocol.prototype.getwidth = function(){
+		return this.width;
+	};
+
+	Protocol.prototype.setheight = function(height){
+		this.height=height;
+	};
+
+	Protocol.prototype.getheight = function(){
+		return this.height;
 	};
 
 }
@@ -225,23 +260,25 @@ function ProtocolDrop(type) {
 
 	this.drop=true;
 	this.Children={};
+	this.idDrop="";
 
 	ProtocolDrop.prototype.addChild = function(Child){
-		this.Children[Child.getId()]=Child;
+		this.Children[Child.getId()] = Child;
+		//console.log(this.PV.lastChild);
+		this.PV.lastChild.appendChild(Child.getPV());
 	};
 
 	ProtocolDrop.prototype.removeChild = function(Child){
 
 		if(Child.removeParent(this)){
-			//console.log(Child.getPV());
-			this.PV.removeChild(Child.getPV());
+			var Childh = Child.getPV();
+			//this.PV.removeChild(Childh);
 			delete this.Children[Child.getId()];
     		delete parentinations[Child.getId()];
 		}
-		else{
-			console.log("No eres hijo mio "+Child);
-		}
-
+		//else{
+			//console.log("No eres hijo mio "+Child);
+		//}
 	};
 }
 
@@ -264,7 +301,9 @@ function Ethernet() {
 		this.PV.innerHTML="<header>Ethernet <button id='remove' class='remove' onclick='removeElement(this)'></button></header>"
 
 		divDrop.id="Drop"+this.id;
-		divDrop.classList.add("column");
+		this.idDrop=divDrop.id;
+
+		divDrop.classList.add("drop");
 
 		//divDrop.setAttribute("draggable","true");
 		divDrop.addEventListener('dragover', allowDrop, false);
@@ -287,7 +326,7 @@ function createElement(idSrt,parent) {
 			newElement = new Packet();
 			newElement.newPV();
 			newElement.setParent(parent);
-			parent.getPV().appendChild(newElement.getPV());
+			//parent.getPV().appendChild(newElement.getPV());
 			parentinations[newElement.getId()]=newElement;
 			return newElement;
 
@@ -295,7 +334,7 @@ function createElement(idSrt,parent) {
     		newElement = new Ethernet();
     		newElement.newPV();
     		newElement.setParent(parent);
-    		parent.getPV().appendChild(newElement.getPV());
+    		//parent.getPV().appendChild(newElement.getPV());
     		parentinations[newElement.getId()]=newElement;
     		return newElement;
     }

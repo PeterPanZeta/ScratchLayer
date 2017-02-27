@@ -1,5 +1,6 @@
 /* Prevent the text contents of draggable elements from being selectable. */  
 .column {
+  /*overflow: hidden;*/
   height: 150px;
   width: 150px;
   float: left;

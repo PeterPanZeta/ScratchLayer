@@ -129,22 +129,30 @@ function TransferElement(destHTML,origHTML,srcHTML) {
 	//console.log("ParentTransfer "+orig);
 	//console.log("DestTransfer "+dest);
 	var child = findObj(srcHTML.id);
-	
-	if(destHTML.id!="panelPrincipal"){
+	var	dest = findObj(destHTML.id);
+	var orig = findObj(origHTML.id);
 
-		var dimChildX = child.getPV().offsetWidth + 5;
-		var dimChildy = child.getPV().offsetHeight + 5;
+	if(orig.getId()!="panelPrincipal"){
+		orig.getPV().style.width=orig.getwidth();
+		orig.getPV().style.height=orig.getheight();
+	}
 
-		console.log("y "+dimChildy+" x "+dimChildX);
+	if(dest.getId()!="panelPrincipal"){
 
-		destHTML.style.width=dimChildX+"px";
-		destHTML.style.height=dimChildy+"px";
-		console.log(child.getPV().offsetWidth);
+		var dimChildX = child.getPV().offsetWidth + 20;
+		var dimChildy = child.getPV().offsetHeight + 20;
+
+		//console.log("y "+dimChildy+" x "+dimChildX);
+		dest.setheight(dest.getPV().style.height);
+		dest.setwidth(dest.getPV().style.width);
+		dest.getPV().style.width=dimChildX+"px";
+		dest.getPV().style.height=dimChildy+"px";
+		//console.log(child.getPV().offsetWidth);
 
 	}
 
 	parentinations[child.getId()].setParent(findObj(destHTML.id));
-	destHTML.appendChild(child.getPV());
+	//dest.getPV().appendChild(child.getPV());
 	//origHTML.removeChild(child.getPV());
 
 	return child;
@@ -152,12 +160,13 @@ function TransferElement(destHTML,origHTML,srcHTML) {
 }
 
 
-function removeElement(elemHTML,e) {
+function removeElement(elemHTML) {
 
 	var parent = findObj(elemHTML.parentNode.parentNode.parentNode.id);
 	var child = findObj(elemHTML.parentNode.parentNode.id);
 	//console.log(parent);
 	parent.removeChild(child);
+	elemHTML.parentNode.parentNode.parentNode.removeChild(elemHTML.parentNode.parentNode);
 	//elemHTML.parentNode.parentNode.parentNode.removeChild(child.getPV());
 	return false;
 

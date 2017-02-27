@@ -21,9 +21,20 @@
 }
 
 .drop{
-	height: 30px;
-    width: 70px;
-    cursor: move;
-    border: 1px;
-    border: red 1px solid;
+  height: 100%;
+  width: 100%;
+  float: left;
+  border: 2px solid #666666;
+  background-color: #ccc;
+  margin-right: 5px;
+  -webkit-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 3px #000;
+  -ms-box-shadow: inset 0 0 3px #000;
+  box-shadow: inset 0 0 3px #000;
+  text-align: center;
+  cursor: move;
+  z-index: 1;
 }
