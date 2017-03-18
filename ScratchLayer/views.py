@@ -4,6 +4,8 @@
 from django.http import HttpResponse
 from django.http import Http404
 from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 def index(request):
 	return render(request,'ScratchLayer/index.html')
@@ -11,3 +13,12 @@ def index(request):
 
 def prueba(request):
 	return render(request,'ScratchLayer/prueba.html')
+
+@csrf_exempt
+def ajax(request): 
+
+	data= {
+		'hola':request.POST	
+	}
+
+	return JsonResponse(data)

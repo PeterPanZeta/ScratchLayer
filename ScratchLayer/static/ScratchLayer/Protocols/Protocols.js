@@ -161,10 +161,12 @@ function Packet() {
 		divDrop.addEventListener('dragover', allowDrop, false);
 		divDrop.addEventListener('drop',function(e){drop(e,false)}, false);
 
-		form.id="Form"+this.id;
+		form.id="Form"+this.id
+		form.setAttribute("method","post");
 		form.style.height="50%";
 		form.style.width="auto";
-		form.innerHTML="<input type='text'></input><input type='submit'></input>"
+
+		form.innerHTML="<input name='prueba' id='prueba' type='text'></input><input type='button' id='buttonSubmit"+this.id+"' onclick='Submit(this.id)'></input>";
 		form.appendChild(divDrop);
 
 		this.PV.appendChild(form);
