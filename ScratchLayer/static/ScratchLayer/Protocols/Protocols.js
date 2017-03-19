@@ -163,10 +163,11 @@ function Packet() {
 
 		form.id="Form"+this.id
 		form.setAttribute("method","post");
+		form.setAttribute("onsubmit","Submit(this,event)");
 		form.style.height="50%";
 		form.style.width="auto";
 
-		form.innerHTML="<input name='prueba' id='prueba' type='text'></input><input type='button' id='buttonSubmit"+this.id+"' onclick='Submit(this.id)'></input>";
+		form.innerHTML="<input type='text' name='prueba' placeholder='Usuario'></input><input type='submit' id='buttonSubmit"+this.id+"' value='Ingresar'></input>";
 		form.appendChild(divDrop);
 
 		this.PV.appendChild(form);
@@ -300,7 +301,7 @@ function Ethernet() {
 		this.PV.classList.add("column");
 		this.PV.setAttribute("draggable","true");
 		this.PV.addEventListener('dragstart', drag, false);
-		this.PV.innerHTML="<header>Ethernet <button id='remove' class='remove' onclick='removeElement(this)'></button></header>"
+		this.PV.innerHTML="<header>Ethernet <button id='remove' class='remove' onclick='removeElement(this)'></button></header><input type='text' name='prueba2' placeholder='Usuario'>"
 
 		divDrop.id="Drop"+this.id;
 		this.idDrop=divDrop.id;

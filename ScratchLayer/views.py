@@ -17,8 +17,9 @@ def prueba(request):
 @csrf_exempt
 def ajax(request): 
 
+	print request.POST
 	data= {
-		'hola':request.POST	
+		'hola':request.POST.get("prueba",None)
 	}
 
 	return JsonResponse(data)

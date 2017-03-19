@@ -22,23 +22,19 @@ $(document).ready(function() {
 
 });
 
-function Submit(e){
-	
-	var	id = e.split("buttonSubmit")[1];
-	var form = $("Form"+id);
+function Submit(form,e){
+	e.preventDefault();
 
-	console.log(form.serialize());
-
+	console.log($( form ).serialize());
 	 $.ajax({
 	 		type: 'POST',
             url: '/ScratchLayer/ajax/',
-            data: form.serialize(),
+            data: $( form ).serialize() ,
         	dataType: 'json',
-            // Mostramos un mensaje con la respuesta de PHP
             success: function (data) {
            	 		alert(data.hola);
         	}
-        }) 
+        });
 
         return false;
 }
