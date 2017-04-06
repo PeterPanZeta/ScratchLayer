@@ -1,5 +1,7 @@
 # from django.shortcuts import render
 
+import static.ScratchLayer.Scapy.AllScapy as sp
+
 # Create your views here.
 from django.http import HttpResponse
 from django.http import Http404
@@ -17,9 +19,11 @@ def prueba(request):
 @csrf_exempt
 def ajax(request): 
 
-	print request.POST
+	#print request.POST
 	data= {
 		'hola':request.POST.get("prueba",None)
 	}
+
+	sp.main(request)
 
 	return JsonResponse(data)

@@ -25,18 +25,18 @@ $(document).ready(function() {
 function Submit(form,e){
 	e.preventDefault();
 
-	console.log($( form ).serialize());
+	console.log($( form ).serialize()+'&'+"pk=true");
 	 $.ajax({
 	 		type: 'POST',
             url: '/ScratchLayer/ajax/',
-            data: $( form ).serialize() ,
+            data: $( form ).serialize()+'&'+"pk=true" ,
         	dataType: 'json',
             success: function (data) {
            	 		alert(data.hola);
         	}
         });
 
-        return false;
+    	return false;
 }
 
 function allowDrop(e) {
