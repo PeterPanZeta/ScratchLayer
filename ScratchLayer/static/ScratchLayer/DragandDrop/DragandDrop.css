@@ -1,8 +1,8 @@
 /* Prevent the text contents of draggable elements from being selectable. */  
 .column {
   /*overflow: hidden;*/
-  height: 150px;
-  width: 150px;
+  height: 200px;
+  width: 200px;
   float: left;
   border: 2px solid #666666;
   background-color: #ccc;
@@ -17,6 +17,7 @@
   text-align: center;
   cursor: move;
   z-index: 1;
+  overflow:hidden;
 }
 header {
   color: #fff;
@@ -45,11 +46,11 @@ header {
 }
 
 #elements1{
-    height: 550px;
+    height: 100%;
     padding: 5px;
 }
 
 #panelPrincipal{
-    height: 550px;
+    height: 500px;
     padding: 1px;
 }

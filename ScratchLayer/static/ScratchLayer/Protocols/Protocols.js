@@ -149,7 +149,7 @@ function Packet() {
 		this.id=this.PV.id;
 		//console.log("PUSS "+this.id);
 
-		this.PV.classList.add("column");
+		this.PV.classList.add("PacketNew");
 		this.PV.setAttribute("draggable","true");
 		this.PV.addEventListener('dragstart', drag, false);
 		this.PV.innerHTML="<header id= 'header"+this.id+"'>Packet <button id='remove"+this.id+"' class='remove' onclick='removeElement(this,event)'></button></header>"
@@ -162,12 +162,14 @@ function Packet() {
 		divDrop.addEventListener('drop',function(e){drop(e,false)}, false);
 
 		form.id="Form"+this.id
+		form.setAttribute("class","form-horizontal");
+		form.setAttribute("role","form");
 		form.setAttribute("method","post");
 		form.setAttribute("onsubmit","Submit(this,event)");
-		form.style.height="50%";
-		form.style.width="auto";
+		form.style.height="100%";
+		form.style.width="100%";
 
-		form.innerHTML="<input type='text' name='prueba' placeholder='Usuario'></input><input type='submit' id='buttonSubmit"+this.id+"' value='Ingresar'></input>";
+		form.innerHTML="<div class='form-group'><label class='col-lg-3' control-label'>NºP:</label><input class='col-lg-3' type='text'></input><input type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div>";
 		form.appendChild(divDrop);
 
 		this.PV.appendChild(form);
@@ -298,10 +300,10 @@ function Ethernet() {
 		contElement=contElement+1;
 		this.id=this.PV.id;
 
-		this.PV.classList.add("column");
+		this.PV.classList.add("EthernetNew");
 		this.PV.setAttribute("draggable","true");
 		this.PV.addEventListener('dragstart', drag, false);
-		this.PV.innerHTML="<header>Ethernet <button id='remove' class='remove' onclick='removeElement(this)'></button></header><input type='text' name='prueba2' placeholder='Usuario'>"
+		this.PV.innerHTML="<header>Ethernet <button id='remove' class='remove' onclick='removeElement(this)'></button></header><div class='form-group'><label class='col-lg-2' control-label'>src:</label><input class='col-lg-3' type='text' name='srcEther' placeholder='ff:ff:ff:ff:ff:ff'></input><label class='col-lg-2' control-label'>dst:</label><input class='col-lg-3' type='text' name='dstEther' placeholder='78:24:af:6d:17:4b'></input></div>"
 
 		divDrop.id="Drop"+this.id;
 		this.idDrop=divDrop.id;
@@ -340,6 +342,23 @@ function createElement(idSrt,parent) {
     		//parent.getPV().appendChild(newElement.getPV());
     		parentinations[newElement.getId()]=newElement;
     		return newElement;
+
+    	case "IP":
+    		newElement = new Ethernet();
+    		newElement.newPV();
+    		newElement.setParent(parent);
+    		//parent.getPV().appendChild(newElement.getPV());
+    		parentinations[newElement.getId()]=newElement;
+    		return newElement;
+
+    	case "ICMP":
+    		newElement = new Ethernet();
+    		newElement.newPV();
+    		newElement.setParent(parent);
+    		//parent.getPV().appendChild(newElement.getPV());
+    		parentinations[newElement.getId()]=newElement;
+    		return newElement;
+
     }
 }
 
