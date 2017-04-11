@@ -303,7 +303,7 @@ function Ethernet() {
 		this.PV.classList.add("EthernetNew");
 		this.PV.setAttribute("draggable","true");
 		this.PV.addEventListener('dragstart', drag, false);
-		this.PV.innerHTML="<header>Ethernet <button id='remove' class='remove' onclick='removeElement(this)'></button></header><div class='form-group'><label class='col-lg-2' control-label'>src:</label><input class='col-lg-3' type='text' name='srcEther' placeholder='ff:ff:ff:ff:ff:ff'></input><label class='col-lg-2' control-label'>dst:</label><input class='col-lg-3' type='text' name='dstEther' placeholder='78:24:af:6d:17:4b'></input></div>"
+		this.PV.innerHTML="<header>Ethernet  <input type='hidden' name='Ether' value='True'><button id='remove' class='remove' onclick='removeElement(this)'></button></header><div class='form-group'><label class='col-lg-2' control-label'>src:</label><input class='col-lg-3' type='text' name='srcEther' placeholder='ff:ff:ff:ff:ff:ff'></input><label class='col-lg-2' control-label'>dst:</label><input class='col-lg-3' type='text' name='dstEther' placeholder='78:24:af:6d:17:4b'></input></div>"
 
 		divDrop.id="Drop"+this.id;
 		this.idDrop=divDrop.id;

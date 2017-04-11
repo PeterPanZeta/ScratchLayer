@@ -1,28 +1,52 @@
 
 from scapy.all import *
 
-def function():
-	pass
-
 def main(petition):
 
-	packet=None
+	packetSc=None
+	
+	EthernetSc=None
+
 	error=False
 	messageError=""
 
 	if(petition.POST.get("pk",None) != None):
 
 		if(petition.POST.get("Ether",None) != None):
-			if(petition.POST.get("dstEther",None) != None and (parseMac(petition.POST.get("dstEther",None))==False)):
+			
+			dstEther=None
+			srcEther=None
+			typeEther=None
+
+			if((petition.POST.get("dstEther",None) != None) and (not parseMac(petition.POST.get("dstEther",None)))):
+				
 				error=True
 				messageError="Se ha producido un error en dst"
 
+			else:
+				dstEther=petition.POST.get("dstEther",None)
+
+
+			if((petition.POST.get("srcEther",None) != None) and (not parseMac(petition.POST.get("srcEther",None)))):
+
+				error=True
+				messageError="Se ha producido un error en src"
+
+			else:
+				srcEther=petition.POST.get("srcEther",None)
+
+			if(petition.POST.get("typeEther",None) != None):
+				typeEther=petition.POST.get("typeEther",None)
+
+			if( not error):
+				EthernetSc = Ether(src=srcEther,dst=dstEther,type=typeEther)
+				
 		if(petition.POST.get("ARP",None) != None):
 			None
 		else:
 			if(petition.POST.get("IP",None) != None):
 
-				packet=packet/IP(dst=petition.POST.get("dstIP",None))/ICMP()
+				packetSc=packetSc/IP(dst=petition.POST.get("dstIP",None))/ICMP()
 
 				if(petition.POST.get("ICMP",None) != None):
 					None
@@ -33,11 +57,13 @@ def main(petition):
 						None
 					if(petition.POST.get("UDP",None) != None):
 						None
-		if (packet!= None):
+
+		if (packetSc!= None):
 			if(error):
 				print messageError
 			else:
-				send(packet)
+				send(packetSc)
+
 	else:
 		print "Nada"
 
