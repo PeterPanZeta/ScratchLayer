@@ -169,7 +169,7 @@ function Packet() {
 		form.style.height="100%";
 		form.style.width="100%";
 
-		form.innerHTML="<div class='form-group'><label class='col-lg-3' control-label'>NºP:</label><input class='col-lg-3' type='text'></input><input type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div>";
+		form.innerHTML=" <input type='hidden' name='id' value="+this.id+"> <div class='form-group'><label class='col-lg-3' control-label'>NºP:</label><input class='col-lg-3' type='text'></input><input type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div>";
 		form.appendChild(divDrop);
 
 		this.PV.appendChild(form);

@@ -5,10 +5,8 @@ def main(petition):
 
 	packetSc=None
 	
-	EthernetSc=None
-
 	error=False
-	messageError=""
+	messageError="Se han detectado los siguientes errores: "
 
 	if(petition.POST.get("pk",None) != None):
 
@@ -20,8 +18,8 @@ def main(petition):
 
 			if((petition.POST.get("dstEther",None) != None) and (not parseMac(petition.POST.get("dstEther",None)))):
 				
-				error=True
-				messageError="Se ha producido un error en dst"
+				error = True
+				messageError = messageError+"El campo dst, perteneciente a Ethernet no es correcto"
 
 			else:
 				dstEther=petition.POST.get("dstEther",None)
@@ -30,7 +28,7 @@ def main(petition):
 			if((petition.POST.get("srcEther",None) != None) and (not parseMac(petition.POST.get("srcEther",None)))):
 
 				error=True
-				messageError="Se ha producido un error en src"
+				messageError = messageError+"El campo src, perteneciente a Ethernet no es correcto"
 
 			else:
 				srcEther=petition.POST.get("srcEther",None)
@@ -39,7 +37,7 @@ def main(petition):
 				typeEther=petition.POST.get("typeEther",None)
 
 			if( not error):
-				EthernetSc = Ether(src=srcEther,dst=dstEther,type=typeEther)
+				packetSc = Ether(src=srcEther,dst=dstEther,type=typeEther)
 				
 		if(petition.POST.get("ARP",None) != None):
 			None
@@ -58,15 +56,14 @@ def main(petition):
 					if(petition.POST.get("UDP",None) != None):
 						None
 
-		if (packetSc!= None):
-			if(error):
-				print messageError
-			else:
+		if(error):
+			return messageError
+		else:
+			if (packetSc!= None):
 				send(packetSc)
-
-	else:
-		print "Nada"
-
+				return "Send Packet"
+			else:
+				return "El paquete esta vacio"
 
 def parseIP(ip):
 

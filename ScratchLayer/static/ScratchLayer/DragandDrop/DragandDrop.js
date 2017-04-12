@@ -32,7 +32,9 @@ function Submit(form,e){
             data: $( form ).serialize()+'&'+"pk=true" ,
         	dataType: 'json',
             success: function (data) {
-           	 		alert(data.hola);
+				$.notify(data.response+" "+data.id);
+            	$.notify($(data.id), data.response, "info")
+           	 
         	}
         });
 
