@@ -29,12 +29,22 @@ function Submit(form,e){
 	 $.ajax({
 	 		type: 'POST',
             url: '/ScratchLayer/ajax/',
-            data: $( form ).serialize()+'&'+"pk=true" ,
+            data: $( form ).serialize(),
         	dataType: 'json',
             success: function (data) {
-				$.notify(data.response+" "+data.id);
-            	$.notify($(data.id), data.response, "info")
-           	 
+
+            	if(data.response.error){
+
+            		for (var itemin in data.response.message){
+                		$.notify( data.response.message[itemin], "error");
+            		}
+
+            	}
+            	else{
+					$.notify( data.response.message, "success");
+
+            	}
+         	 	
         	}
         });
 
@@ -51,9 +61,19 @@ function allowDrop(e) {
 }
 
 function drag(e) {
+
+    var patt = new RegExp("new");
+
+
 	e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData("text", e.target.id);
-	e.dataTransfer.setDragImage(e.target, 0, 0);
+
+	if (!patt.test(e.target.id)){
+		e.dataTransfer.setDragImage(e.target, 50, 50);
+	}
+	else{
+		e.dataTransfer.setDragImage(e.target, 0, 0);
+	}
 }
 
 function drop(e,move=true){

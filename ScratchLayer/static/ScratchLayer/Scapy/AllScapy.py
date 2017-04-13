@@ -6,7 +6,7 @@ def main(petition):
 	packetSc=None
 	
 	error=False
-	messageError="Se han detectado los siguientes errores: "
+	messageError={}
 
 	if(petition.POST.get("pk",None) != None):
 
@@ -16,19 +16,19 @@ def main(petition):
 			srcEther=None
 			typeEther=None
 
-			if((petition.POST.get("dstEther",None) != None) and (not parseMac(petition.POST.get("dstEther",None)))):
+			if((petition.POST.get("dstEther",None) != None and petition.POST.get("dstEther",None)!= "") and (not parseMac(petition.POST.get("dstEther",None)))):
 				
 				error = True
-				messageError = messageError+"El campo dst, perteneciente a Ethernet no es correcto"
+				messageError["dstEther"] = "El campo dst perteneciente a Ethernet no es correcto"
 
 			else:
 				dstEther=petition.POST.get("dstEther",None)
 
 
-			if((petition.POST.get("srcEther",None) != None) and (not parseMac(petition.POST.get("srcEther",None)))):
+			if((petition.POST.get("srcEther",None) != None and petition.POST.get("srcEther",None)!= "") and (not parseMac(petition.POST.get("srcEther",None)))):
 
 				error=True
-				messageError = messageError+"El campo src, perteneciente a Ethernet no es correcto"
+				messageError["srcEther"] = "El campo src perteneciente a Ethernet no es correcto"
 
 			else:
 				srcEther=petition.POST.get("srcEther",None)
@@ -57,13 +57,25 @@ def main(petition):
 						None
 
 		if(error):
-			return messageError
+			print messageError
+			return {
+					'error':True,
+					'message': messageError
+			}
 		else:
 			if (packetSc!= None):
-				send(packetSc)
-				return "Send Packet"
+				ls(packetSc)
+				#send(packetSc)
+				return {
+					'error':False,
+					'message':{"Correcto":"El paquete ha sido enviado"}
+			}
 			else:
-				return "El paquete esta vacio"
+				print "El paquete esta vacio"
+				return {
+					'error':True,
+					'message':{"Vacio":"El paquete esta Vacio"}
+			}
 
 def parseIP(ip):
 
@@ -71,18 +83,28 @@ def parseIP(ip):
 
 	if(len(parses) == 4):
 		for parse in parses:
-			if(parse.isdigit() == False):
+			if(not parse.isdigit() or parse > 255 or parse < 0):
 				return False
 
 	return True
 
 def parseMac(mac):
 
+	hexa = ["1","2","3","4","5","6","7","8","9","a","A","b","B","c","C","d","D","e","E","f","F"]
+	contador=0
 	value=False
 
 	parses = mac.split(":")
 
 	if(len(parses) == 6):
+		
+		for parse in parses:
+			if(len(parse) == 2):
+				for let in parse:
+					if let in hexa:
+						contador=contador+1
+
+	if(contador==12):
 		value=True
 
 	return value

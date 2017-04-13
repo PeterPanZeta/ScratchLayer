@@ -169,7 +169,7 @@ function Packet() {
 		form.style.height="100%";
 		form.style.width="100%";
 
-		form.innerHTML=" <input type='hidden' name='id' value="+this.id+"> <div class='form-group'><label class='col-lg-3' control-label'>NºP:</label><input class='col-lg-3' type='text'></input><input type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div>";
+		form.innerHTML=" <input type='hidden' name='pk' value="+this.id+"> <div class='form-group'><label class='col-lg-3' control-label'>NºP:</label><input class='col-lg-3' type='text'></input><input type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div>";
 		form.appendChild(divDrop);
 
 		this.PV.appendChild(form);
@@ -323,6 +323,42 @@ function Ethernet() {
 
 }
 
+function IP() {
+
+	ProtocolDrop.call(this,"IP",true);
+
+	IP.prototype.newPV=function() {
+
+		var divDrop = document.createElement("div");
+
+		this.PV = document.createElement("div");
+		this.PV.id = "IPnew"+contElement;
+		contElement=contElement+1;
+		this.id=this.PV.id;
+
+		this.PV.classList.add("IPNew");
+		this.PV.setAttribute("draggable","true");
+		this.PV.addEventListener('dragstart', drag, false);
+		this.PV.innerHTML="<header>IP  <input type='hidden' name='IP' value='True'><button id='remove' class='remove' onclick='removeElement(this)'></button></header><div class='form-group'><label class='col-lg-2' control-label'>src:</label><input class='col-lg-3' type='text' name='srcIP' placeholder='192.168.1.1'></input><label class='col-lg-2' control-label'>dst:</label><input class='col-lg-3' type='text' name='dstIP' placeholder='192.168.1.2'></input></div>"
+
+		divDrop.id="Drop"+this.id;
+		this.idDrop=divDrop.id;
+
+		divDrop.classList.add("drop");
+
+		//divDrop.setAttribute("draggable","true");
+		divDrop.addEventListener('dragover', allowDrop, false);
+		divDrop.addEventListener('drop',function(e){drop(e,false)}, false);
+
+		this.PV.appendChild(divDrop);
+	};
+
+	IP.prototype.getPV=function() {
+		return this.PV;
+	};
+
+}
+
 function createElement(idSrt,parent) {
 	var newElement;
 	switch(idSrt) {
@@ -344,7 +380,7 @@ function createElement(idSrt,parent) {
     		return newElement;
 
     	case "IP":
-    		newElement = new Ethernet();
+    		newElement = new IP();
     		newElement.newPV();
     		newElement.setParent(parent);
     		//parent.getPV().appendChild(newElement.getPV());
@@ -366,4 +402,5 @@ ProtocolDrop.prototype = new Protocol();
 
 Ethernet.prototype = new ProtocolDrop();
 
+IP.prototype = new ProtocolDrop();
 

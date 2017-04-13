@@ -21,8 +21,7 @@ def ajax(request):
 
 	#print request.POST
 	data= {
-		'id': request.POST.get("id",None),
+		'id': request.POST.get("pk",None),
 		'response': sp.main(request)
 	}
-
 	return JsonResponse(data)
