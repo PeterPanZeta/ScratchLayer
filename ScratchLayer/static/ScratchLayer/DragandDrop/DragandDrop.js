@@ -178,8 +178,8 @@ function TransferElement(destHTML,origHTML,srcHTML) {
 
 	if(dest.getId()!="panelPrincipal"){
 
-		var dimChildX = child.getPV().offsetWidth + 20;
-		var dimChildy = child.getPV().offsetHeight + 20;
+		var dimChildX = child.getPV().offsetWidth;
+		var dimChildy = child.getPV().offsetHeight;
 
 		//console.log("y "+dimChildy+" x "+dimChildX);
 		dest.setheight(dest.getPV().style.height);

@@ -114,6 +114,17 @@ def parseIP(ip):
 	else:
 		return False
 
+def parseVERIP(VER):
+
+	if(VER == 4 or VER == 6): #or VER == 0110
+		return True
+	else:
+		return False
+
+def parseIHLIP(IHL):
+
+
+
 def parseMac(mac):
 
 	hexa = ["1","2","3","4","5","6","7","8","9","a","A","b","B","c","C","d","D","e","E","f","F"]
