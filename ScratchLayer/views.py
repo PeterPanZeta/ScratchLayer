@@ -24,4 +24,5 @@ def ajax(request):
 		'id': request.POST.get("pk",None),
 		'response': sp.main(request)
 	}
+	
 	return JsonResponse(data)

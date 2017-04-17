@@ -10,7 +10,7 @@
 .PacketNew {
   /*overflow: hidden;*/
   height: 200px;
-  width: 200px;
+  width: 420px;
   float: left;
   border: 2px solid #666666;
   background-color: #ccc;
@@ -39,7 +39,7 @@
 .EthernetNew {
   /*overflow: hidden;*/
   height: 200px;
-  width: 350px;
+  width: 420px;
   float: left;
   border: 2px solid #666666;
   background-color: #ccc;
@@ -67,8 +67,8 @@
 
 .IPNew{
   /*overflow: hidden;*/
-  height: 200px;
-  width: 350px;
+  height: 250px;
+  width: 420px;
   float: left;
   border: 2px solid #666666;
   background-color: #ccc;
@@ -84,6 +84,10 @@
   cursor: move;
   z-index: 1;
   overflow:hidden;
+}
+.DataIP{
+	height: 100px;
+	width: 420px;
 }
 
 .ICMP {

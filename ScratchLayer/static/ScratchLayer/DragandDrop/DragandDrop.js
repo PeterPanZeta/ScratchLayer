@@ -25,7 +25,6 @@ $(document).ready(function() {
 function Submit(form,e){
 	e.preventDefault();
 
-	console.log($( form ).serialize()+'&'+"pk=true");
 	 $.ajax({
 	 		type: 'POST',
             url: '/ScratchLayer/ajax/',
@@ -41,8 +40,9 @@ function Submit(form,e){
 
             	}
             	else{
-					$.notify( data.response.message, "success");
-
+            		for (var itemin in data.response.message){
+                		$.notify( data.response.message[itemin], "success");
+            		}
             	}
          	 	
         	}

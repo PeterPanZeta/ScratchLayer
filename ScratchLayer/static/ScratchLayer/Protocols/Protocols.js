@@ -169,7 +169,7 @@ function Packet() {
 		form.style.height="100%";
 		form.style.width="100%";
 
-		form.innerHTML=" <input type='hidden' name='pk' value="+this.id+"> <div class='form-group'><label class='col-lg-3' control-label'>NºP:</label><input class='col-lg-3' type='text'></input><input type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div>";
+		form.innerHTML=" <input type='hidden' name='pk' value="+this.id+"><div class='form-group col-lg-12'></div> <div class='form-group col-lg-12'><input class='col-lg-5' type='text' placeholder='NºPaquetes'></input><input class='col-lg-5' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div>";
 		form.appendChild(divDrop);
 
 		this.PV.appendChild(form);
@@ -303,7 +303,7 @@ function Ethernet() {
 		this.PV.classList.add("EthernetNew");
 		this.PV.setAttribute("draggable","true");
 		this.PV.addEventListener('dragstart', drag, false);
-		this.PV.innerHTML="<header>Ethernet  <input type='hidden' name='Ether' value='True'><button id='remove' class='remove' onclick='removeElement(this)'></button></header><div class='form-group'><label class='col-lg-2' control-label'>src:</label><input class='col-lg-3' type='text' name='srcEther' placeholder='ff:ff:ff:ff:ff:ff'></input><label class='col-lg-2' control-label'>dst:</label><input class='col-lg-3' type='text' name='dstEther' placeholder='78:24:af:6d:17:4b'></input></div>"
+		this.PV.innerHTML="<header>Ethernet  <input type='hidden' name='Ether' value='True'><button id='remove' class='remove' onclick='removeElement(this)'></button></header><div class='form-group col-lg-12'></div><div class='form-group col-lg-12'><input class='col-lg-5' type='text' name='srcEther' placeholder='src'></input><input class='col-lg-5' type='text' name='dstEther' placeholder='dst'></input><input class='col-lg-2' type='text' name='typeEther' placeholder='type'></input></div>"
 
 		divDrop.id="Drop"+this.id;
 		this.idDrop=divDrop.id;
@@ -339,7 +339,7 @@ function IP() {
 		this.PV.classList.add("IPNew");
 		this.PV.setAttribute("draggable","true");
 		this.PV.addEventListener('dragstart', drag, false);
-		this.PV.innerHTML="<header>IP  <input type='hidden' name='IP' value='True'><button id='remove' class='remove' onclick='removeElement(this)'></button></header><div class='form-group'><label class='col-lg-2' control-label'>src:</label><input class='col-lg-3' type='text' name='srcIP' placeholder='192.168.1.1'></input><label class='col-lg-2' control-label'>dst:</label><input class='col-lg-3' type='text' name='dstIP' placeholder='192.168.1.2'></input></div>"
+		this.PV.innerHTML="<header>IP  <input type='hidden' name='IP' value='True'><button id='remove' class='remove' onclick='removeElement(this)'></button></header><div class='DataIP'><div class='form-group col-lg-12'></div><div class='form-group col-lg-12'><input class='col-lg-2' type='text' name='VERIP' placeholder='VER'></input><input class='col-lg-3' type='text' name='HLENIP' placeholder='HLEN'></input><input class='col-lg-3' type='text' name='SERVIP' placeholder='T.Servicio'></input><input class='col-lg-4' type='text' name='LOGIP' placeholder='Longitud'></input></div><div class='form-group col-lg-12'><input class='col-lg-4' type='text' name='IdenIP' placeholder='Identificacion'></input><input class='col-lg-4' type='text' name='FlagsIP' placeholder='Flags'></input><input class='col-lg-4' type='text' name='OffFraIP' placeholder='Offset Frag'></input></div><div class='form-group col-lg-12'><input class='col-lg-3' type='text' name='TTLIP' placeholder='TTL'></input><input class='col-lg-4' type='text' name='ProIP' placeholder='Protocolo'></input><input class='col-lg-5' type='text' name='CheckIP' placeholder='Checksum'></input></div><div class='form-group col-lg-12'><input class='col-lg-4' type='text' name='srcIP' placeholder='src'></input><input class='col-lg-4' type='text' name='dstIP' placeholder='dst'></input><input class='col-lg-4' type='text' name='OpcionesIP' placeholder='Opciones'></input></div></div>"
 
 		divDrop.id="Drop"+this.id;
 		this.idDrop=divDrop.id;
@@ -358,6 +358,31 @@ function IP() {
 	};
 
 }
+
+function ICMP() {
+
+	Protocol.call(this,"ICMP",true);
+
+	ICMP.prototype.newPV=function() {
+
+		this.PV = document.createElement("div");
+		this.PV.id = "ICMPnew"+contElement;
+		contElement=contElement+1;
+		this.id=this.PV.id;
+
+		this.PV.classList.add("ICMPNew");
+		this.PV.setAttribute("draggable","true");
+		this.PV.addEventListener('dragstart', drag, false);
+		this.PV.innerHTML="<header>ICMP  <input type='hidden' name='ICMP' value='True'><button id='remove' class='remove' onclick='removeElement(this)'></button></header><div class='DataIP'><div class='form-group col-lg-12'><input class='col-lg-2' type='text' name='VERIP' placeholder='VER'></input><input class='col-lg-3' type='text' name='HLENIP' placeholder='HLEN'></input><input class='col-lg-3' type='text' name='SERVIP' placeholder='T.Servicio'></input><input class='col-lg-4' type='text' name='LOGIP' placeholder='Longitud'></input></div><div class='form-group col-lg-12'><input class='col-lg-4' type='text' name='IdenIP' placeholder='Identificacion'></input><input class='col-lg-4' type='text' name='FlagsIP' placeholder='Flags'></input><input class='col-lg-4' type='text' name='OffFraIP' placeholder='Offset Frag'></input></div><div class='form-group col-lg-12'><input class='col-lg-3' type='text' name='TTLIP' placeholder='TTL'></input><input class='col-lg-4' type='text' name='ProIP' placeholder='Protocolo'></input><input class='col-lg-5' type='text' name='CheckIP' placeholder='Checksum'></input></div><div class='form-group col-lg-12'><input class='col-lg-4' type='text' name='srcIP' placeholder='src'></input><input class='col-lg-4' type='text' name='dstIP' placeholder='dst'></input><input class='col-lg-4' type='text' name='OpcionesIP' placeholder='Opciones'></input></div></div>"
+	
+	};
+
+	IP.prototype.getPV=function() {
+		return this.PV;
+	};
+
+}
+
 
 function createElement(idSrt,parent) {
 	var newElement;
@@ -388,7 +413,7 @@ function createElement(idSrt,parent) {
     		return newElement;
 
     	case "ICMP":
-    		newElement = new Ethernet();
+    		newElement = new ICMP();
     		newElement.newPV();
     		newElement.setParent(parent);
     		//parent.getPV().appendChild(newElement.getPV());
@@ -404,3 +429,4 @@ Ethernet.prototype = new ProtocolDrop();
 
 IP.prototype = new ProtocolDrop();
 
+ICMP.prototype = new Protocol();
