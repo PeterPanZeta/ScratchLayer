@@ -24,11 +24,11 @@ $(document).ready(function() {
 
 function Submit(form,e){
 	e.preventDefault();
-
-	 $.ajax({
+	console.log($( form ).serialize()+"&interfaz="+document.getElementById("interfaces").value);
+	$.ajax({
 	 		type: 'POST',
             url: '/ScratchLayer/ajax/',
-            data: $( form ).serialize(),
+            data: $( form ).serialize()+"&interfaz="+document.getElementById("interfaces").value,
         	dataType: 'json',
             success: function (data) {
 
@@ -198,6 +198,9 @@ function TransferElement(destHTML,origHTML,srcHTML) {
 
 }
 
+function collapse(){
+	alert("HOLA");
+}
 
 function removeElement(elemHTML) {
 

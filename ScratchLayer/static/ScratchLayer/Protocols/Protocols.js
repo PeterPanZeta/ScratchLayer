@@ -162,14 +162,14 @@ function Packet() {
 		divDrop.addEventListener('drop',function(e){drop(e,false)}, false);
 
 		form.id="Form"+this.id
-		form.setAttribute("class","form-horizontal");
+		form.setAttribute("class","form-horizontal col-xs-12");
 		form.setAttribute("role","form");
 		form.setAttribute("method","post");
 		form.setAttribute("onsubmit","Submit(this,event)");
 		form.style.height="100%";
 		form.style.width="100%";
 
-		form.innerHTML=" <input type='hidden' name='pk' value="+this.id+"><div class='form-group col-xs-12'></div> <div class='form-group col-xs-12'><input class='col-xs-5 col-xs-offset-1' type='text' placeholder='NºPaquetes'></input><input class='col-xs-2 col-xs-offset-4' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div>";
+		form.innerHTML=" <input type='hidden' name='pk' value="+this.id+"><div class='form-group col-xs-12'></div> <div class='form-group col-xs-12'><input class='col-xs-5 col-xs-offset-1' type='text' placeholder='NºPaquetes'></input><input class='col-xs-3 col-xs-offset-3' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div>";
 		form.appendChild(divDrop);
 
 		this.PV.appendChild(form);
@@ -303,7 +303,7 @@ function Ethernet() {
 		this.PV.classList.add("EthernetNew");
 		this.PV.setAttribute("draggable","true");
 		this.PV.addEventListener('dragstart', drag, false);
-		this.PV.innerHTML="<header class='col-xs-12'><button type='button' class='col-xs-3 col-xs-offset-4' data-toggle='collapse' data-target='#"+this.id+"collap'>Ethernet</button>  <input type='hidden' name='Ether' value='True'><button class='col-xs-2 col-xs-offset-3' type='button' id='remove' class='remove' onclick='removeElement(this)' align='center'>X</button></header><div class='collapse in' id='"+this.id+"collap'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-5' type='text' name='srcEther' placeholder='src'></input><input class='col-xs-5' type='text' name='dstEther' placeholder='dst'></input><input class='col-xs-2' type='text' name='typeEther' placeholder='type'></input></div></div>"
+		this.PV.innerHTML="<header class='col-xs-12'><button type='button' class='col-xs-3 col-xs-offset-4' data-toggle='collapse' data-target='#"+this.id+"collap'>Ethernet</button> <input type='hidden' name='Ether' value='True'><button class='col-xs-2 col-xs-offset-3' type='button' id='remove' class='remove' onclick='removeElement(this)' align='center'>X</button></header><div class='collapse in' id='"+this.id+"collap'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-5' type='text' name='srcEther' placeholder='src'></input><input class='col-xs-5' type='text' name='dstEther' placeholder='dst'></input><input class='col-xs-2' type='text' name='typeEther' placeholder='type'></input></div></div>"
 
 		divDrop.id="Drop"+this.id;
 		this.idDrop=divDrop.id;
@@ -339,7 +339,7 @@ function IP() {
 		this.PV.classList.add("IPNew");
 		this.PV.setAttribute("draggable","true");
 		this.PV.addEventListener('dragstart', drag, false);
-		this.PV.innerHTML="<header class='col-xs-12'><button type='button' class='col-xs-3 col-xs-offset-4' data-toggle='collapse' data-target='#"+this.id+"collap'>IP</button>  <input type='hidden' name='IP' value='True'><button class='col-xs-2 col-xs-offset-3' type='button' id='remove' class='remove' onclick='removeElement(this)' align='center'>X</button></header><div class='collapse in' id='"+this.id+"collap'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-2' type='text' name='VERIP' placeholder='VER'></input><input class='col-xs-3' type='text' name='HLENIP' placeholder='HLEN'></input><input class='col-xs-3' type='text' name='SERVIP' placeholder='T.Servicio'></input><input class='col-xs-4' type='text' name='LOGIP' placeholder='Longitud'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='IdenIP' placeholder='Identificacion'></input><input class='col-xs-4' type='text' name='FlagsIP' placeholder='Flags'></input><input class='col-xs-4' type='text' name='OffFraIP' placeholder='Offset Frag'></input></div><div class='form-group col-xs-12'><input class='col-xs-3' type='text' name='TTLIP' placeholder='TTL'></input><input class='col-xs-4' type='text' name='ProIP' placeholder='Protocolo'></input><input class='col-xs-5' type='text' name='CheckIP' placeholder='Checksum'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='srcIP' placeholder='src'></input><input class='col-xs-4' type='text' name='dstIP' placeholder='dst'></input><input class='col-xs-4' type='text' name='OpcionesIP' placeholder='Opciones'></input></div></div>"
+		this.PV.innerHTML="<header class='col-xs-12'><button type='button' class='col-xs-3 col-xs-offset-4' data-toggle='collapse' data-target='#"+this.id+"collap' onclick='collapse()'>IP</button>  <input type='hidden' name='IP' value='True'><button class='col-xs-2 col-xs-offset-3' type='button' id='remove' class='remove' onclick='removeElement(this)' align='center'>X</button></header><div class='collapse in' id='"+this.id+"collap'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-2' type='text' name='VERIP' placeholder='VER'></input><input class='col-xs-3' type='text' name='HLENIP' placeholder='HLEN'></input><input class='col-xs-3' type='text' name='SERVIP' placeholder='T.Servicio'></input><input class='col-xs-4' type='text' name='LOGIP' placeholder='Longitud'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='IdenIP' placeholder='Identificacion'></input><input class='col-xs-4' type='text' name='FlagsIP' placeholder='Flags'></input><input class='col-xs-4' type='text' name='OffFraIP' placeholder='Offset Frag'></input></div><div class='form-group col-xs-12'><input class='col-xs-3' type='text' name='TTLIP' placeholder='TTL'></input><input class='col-xs-4' type='text' name='ProIP' placeholder='Protocolo'></input><input class='col-xs-5' type='text' name='CheckIP' placeholder='Checksum'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='srcIP' placeholder='src'></input><input class='col-xs-4' type='text' name='dstIP' placeholder='dst'></input><input class='col-xs-4' type='text' name='OpcionesIP' placeholder='Opciones'></input></div></div>"
 
 		divDrop.id="Drop"+this.id;
 		this.idDrop=divDrop.id;

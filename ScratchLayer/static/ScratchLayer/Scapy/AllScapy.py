@@ -87,20 +87,21 @@ def main(petition):
 					'message': messageError
 			}
 		else:
-			if (packetDf!= None):
+			if (packetDf!= None and petition.POST.get("interfaz",None) != None and petition.POST.get("interfaz",None) != ""):
 				ls(packetDf)
-				send(packetDf)
+				print "Interfaz: "+str(petition.POST.get("interfaz",None))
+				sendp(packetDf,iface=str(petition.POST.get("interfaz",None))) #,iface=petition.POST.get("interfaz",None)
 				print "El paquete ha sido enviado"
 				return {
 					'error':False,
 					'message':{"Correcto":"El paquete ha sido enviado"}
-			}
+				}
 			else:
 				print "El paquete esta vacio"
 				return {
 					'error':True,
 					'message':{"Vacio":"El paquete esta Vacio"}
-			}
+				}
 
 def parseIP(ip):
 
@@ -122,7 +123,7 @@ def parseVERIP(VER):
 		return False
 
 def parseIHLIP(IHL):
-
+	None
 
 
 def parseMac(mac):

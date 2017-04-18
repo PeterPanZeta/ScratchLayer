@@ -9,8 +9,15 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from netifaces import interfaces
+
 def index(request):
-	return render(request,'ScratchLayer/index.html')
+
+	context = {
+			'interfaces': interfaces(),
+		}
+
+	return render(request,'ScratchLayer/index.html', context)
     #return HttpResponse("Hello, world. You're at the polls index.")
 
 def prueba(request):
