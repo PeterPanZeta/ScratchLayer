@@ -97,6 +97,20 @@ function drop(e,move=true){
 	 		//console.log(findObj(dest.id));
 	    	element = createElement(src,findObj(dest.id));
 			//console.log(parentinations[destId]);
+			if(dest.id!="panelPrincipal"){
+				var child = element;
+				var	desti = findObj(dest.id);
+				var dimChildX = child.getPV().offsetWidth;
+				var dimChildy = child.getPV().offsetHeight;
+
+				//console.log("y "+dimChildy+" x "+dimChildX);
+				desti.setheight(desti.getPV().style.height);
+				desti.setwidth(desti.getPV().style.width);
+				desti.getPV().style.width=dimChildX+"px";
+				desti.getPV().style.height=dimChildy+"px";
+				//console.log(child.getPV().offsetWidth);
+
+			}
 
 	    } else{
 	    	var elementHTML = document.getElementById(src);
@@ -153,7 +167,6 @@ function drop(e,move=true){
 		    element.getPV().style.top = y + "px";
 		}
 		else{
-
 			element.getPV().style.position = "relative";
 			element.getPV().style.left = 0 + "px";
 		    element.getPV().style.top = 0 + "px";
@@ -189,10 +202,10 @@ function TransferElement(destHTML,origHTML,srcHTML) {
 		//console.log(child.getPV().offsetWidth);
 
 	}
-
-	parentinations[child.getId()].setParent(findObj(destHTML.id));
 	//dest.getPV().appendChild(child.getPV());
-	//origHTML.removeChild(child.getPV());
+	dest.addChild(child);
+	child.setParent(dest);
+	orig.removeChild(child);
 
 	return child;
 
@@ -204,12 +217,13 @@ function collapse(){
 
 function removeElement(elemHTML) {
 
-	var parent = findObj(elemHTML.parentNode.parentNode.parentNode.id);
+	//var parent = findObj(elemHTML.parentNode.parentNode.parentNode.id);
 	var child = findObj(elemHTML.parentNode.parentNode.id);
 	//console.log(parent);
-	parent.removeChild(child);
-	elemHTML.parentNode.parentNode.parentNode.removeChild(elemHTML.parentNode.parentNode);
-	//elemHTML.parentNode.parentNode.parentNode.removeChild(child.getPV());
+	elemHTML.parentNode.parentNode.parentNode.removeChild(child.getPV());
+
+	child.remove();
+
 	return false;
 
 }

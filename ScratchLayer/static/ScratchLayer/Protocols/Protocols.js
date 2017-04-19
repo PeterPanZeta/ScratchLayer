@@ -24,6 +24,7 @@ function PanelPrincipal(PanelPrincipalHTML) {
 		return this.PV;
 	};
 
+	
 	PanelPrincipal.prototype.addChild = function(Child){
 		
 		this.PV.appendChild(Child.getPV());
@@ -32,19 +33,10 @@ function PanelPrincipal(PanelPrincipalHTML) {
 	};
 
 	PanelPrincipal.prototype.removeChild = function(Child){
-
-		if(Child.removeParent(this)){
-
 			//this.PV.removeChild(Child.getPV());
 			delete this.Children[Child.getId()];
-    		delete parentinations[Child.getId()];
-		}
-		else{
-			console.log("No eres hijo mio "+Child);
-		}
-
 	};
-
+	
 }
 
 
@@ -82,16 +74,17 @@ function Packet() {
 		return "Drop"+this.id;
 	};
 
+	
 	Packet.prototype.getParent = function(){
 		return this.Parent;
 	};
 
 	Packet.prototype.setParent = function(Parent){
 		//console.log(Parent);
-		Parent.addChild(this);
-		this.parent=Parent;
+		//Parent.addChild(this);
+		this.Parent=Parent;
 	};
-
+	
 	Packet.prototype.setwidth = function(width){
 		this.width=width;
 	};
@@ -107,7 +100,7 @@ function Packet() {
 	Packet.prototype.getheight = function(){
 		return this.height;
 	};
-
+	/*
 	Packet.prototype.removeParent = function(Parent){
 
 		if(this.parent.getId() == Parent.getId()){
@@ -118,6 +111,7 @@ function Packet() {
 			return false;
 		}
 	};
+	*/
 
 	Packet.prototype.addChild = function(Child){
 		this.PV.lastChild.lastChild.appendChild(Child.getPV());
@@ -125,20 +119,10 @@ function Packet() {
 	};
 
 	Packet.prototype.removeChild = function(Child){
-
-		if(Child.removeParent(this)){
-
 			//this.PV.removeChild(Child.getPV());
 			delete this.Children[Child.getId()];
-    		delete parentinations[Child.getId()];
-    		//console.log("Borro");
-		}
-		else{
-			//console.log("No eres hijo mio "+Child);
-		}
-
 	};
-
+	
 	Packet.prototype.newPV=function() {
 		var divDrop = document.createElement("div");
 		var form = document.createElement("form");
@@ -177,6 +161,17 @@ function Packet() {
 
 	Packet.prototype.getPV=function() {
 		return this.PV;
+	};
+
+	Packet.prototype.remove=function(){
+		this.Parent.removeChild(this);
+		for(child in this.Children){
+			elemet=this.Children[child];
+			elemet.remove();
+			delete this.Children[elemet.id]
+			delete parentinations[elemet.getId()];
+		}
+		delete this;
 	};
 
 }
@@ -219,16 +214,16 @@ function Protocol(type) {
 	Protocol.prototype.getDrop =function() {
 		return this.drop;
 	};
-
+	
 	Protocol.prototype.getParent = function(){
 		return this.Parent;
 	};
 
 	Protocol.prototype.setParent = function(Parent){
-		Parent.addChild(this);
-		this.parent=Parent;
+		//Parent.addChild(this);
+		this.Parent=Parent;
 	};
-
+	/*
 	Protocol.prototype.removeParent = function(Parent){
 
 		if(this.parent.getId() == Parent.getId()){
@@ -241,6 +236,7 @@ function Protocol(type) {
 			return false;
 		}
 	};
+	*/
 	Protocol.prototype.setwidth = function(width){
 		this.width=width;
 	};
@@ -257,6 +253,13 @@ function Protocol(type) {
 		return this.height;
 	};
 
+	Protocol.prototype.remove=function(){
+		console.log("Sin drop");
+		this.Parent.removeChild(this);
+		delete this;
+	}
+
+
 }
 
 function ProtocolDrop(type) {
@@ -266,7 +269,7 @@ function ProtocolDrop(type) {
 	this.drop=true;
 	this.Children={};
 	this.idDrop="";
-
+	
 	ProtocolDrop.prototype.addChild = function(Child){
 		this.Children[Child.getId()] = Child;
 		//console.log(this.PV.lastChild);
@@ -274,17 +277,20 @@ function ProtocolDrop(type) {
 	};
 
 	ProtocolDrop.prototype.removeChild = function(Child){
-
-		if(Child.removeParent(this)){
-			var Childh = Child.getPV();
-			//this.PV.removeChild(Childh);
 			delete this.Children[Child.getId()];
-    		delete parentinations[Child.getId()];
-		}
-		//else{
-			//console.log("No eres hijo mio "+Child);
-		//}
 	};
+
+	ProtocolDrop.prototype.remove=function(){
+		this.Parent.removeChild(this);
+		for(child in this.Children){
+			elemet=this.Children[child];
+			elemet.remove();
+			delete this.Children[elemet.id]
+			delete parentinations[elemet.getId()];
+		}
+		delete this;
+	};
+	
 }
 
 function Ethernet() {
@@ -391,32 +397,40 @@ function createElement(idSrt,parent) {
 		case "Packet":
 			newElement = new Packet();
 			newElement.newPV();
-			newElement.setParent(parent);
+			/*newElement.setParent(parent);*/
 			//parent.getPV().appendChild(newElement.getPV());
+			parent.addChild(newElement);
+			newElement.setParent(parent);
 			parentinations[newElement.getId()]=newElement;
 			return newElement;
 
     	case "Ethernet":
     		newElement = new Ethernet();
     		newElement.newPV();
-    		newElement.setParent(parent);
+    		/*newElement.setParent(parent);*/
     		//parent.getPV().appendChild(newElement.getPV());
+    		parent.addChild(newElement);
+    		newElement.setParent(parent);
     		parentinations[newElement.getId()]=newElement;
     		return newElement;
 
     	case "IP":
     		newElement = new IP();
     		newElement.newPV();
-    		newElement.setParent(parent);
+    		/*newElement.setParent(parent);*/
     		//parent.getPV().appendChild(newElement.getPV());
+    		parent.addChild(newElement);
+    		newElement.setParent(parent);
     		parentinations[newElement.getId()]=newElement;
     		return newElement;
 
     	case "ICMP":
     		newElement = new ICMP();
     		newElement.newPV();
-    		newElement.setParent(parent);
+    		/*newElement.setParent(parent);*/
     		//parent.getPV().appendChild(newElement.getPV());
+    		parent.addChild(newElement);
+    		newElement.setParent(parent);
     		parentinations[newElement.getId()]=newElement;
     		return newElement;
 
