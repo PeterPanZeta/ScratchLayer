@@ -100,16 +100,8 @@ function drop(e,move=true){
 			if(dest.id!="panelPrincipal"){
 				var child = element;
 				var	desti = findObj(dest.id);
-				var dimChildX = child.getPV().offsetWidth;
-				var dimChildy = child.getPV().offsetHeight;
 
-				//console.log("y "+dimChildy+" x "+dimChildX);
-				desti.setheight(desti.getPV().style.height);
-				desti.setwidth(desti.getPV().style.width);
-				desti.getPV().style.width=dimChildX+"px";
-				desti.getPV().style.height=dimChildy+"px";
-				//console.log(child.getPV().offsetWidth);
-
+				desti.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth)
 			}
 
 	    } else{
@@ -185,22 +177,11 @@ function TransferElement(destHTML,origHTML,srcHTML) {
 	var orig = findObj(origHTML.id);
 
 	if(orig.getId()!="panelPrincipal"){
-		orig.getPV().style.width=orig.getwidth();
-		orig.getPV().style.height=orig.getheight();
+		orig.setSizeOrig();
 	}
 
-	if(dest.getId()!="panelPrincipal"){
-
-		var dimChildX = child.getPV().offsetWidth;
-		var dimChildy = child.getPV().offsetHeight;
-
-		//console.log("y "+dimChildy+" x "+dimChildX);
-		dest.setheight(dest.getPV().style.height);
-		dest.setwidth(dest.getPV().style.width);
-		dest.getPV().style.width=dimChildX+"px";
-		dest.getPV().style.height=dimChildy+"px";
-		//console.log(child.getPV().offsetWidth);
-
+	if(dest.id!="panelPrincipal"){
+		dest.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth)
 	}
 	//dest.getPV().appendChild(child.getPV());
 	dest.addChild(child);
@@ -211,16 +192,18 @@ function TransferElement(destHTML,origHTML,srcHTML) {
 
 }
 
-function collapse(){
-	alert("HOLA");
+function collapseElement(ElementHTML){
+	var element = findObj(ElementHTML.id);
+	//console.log(element);
+	element.collapse();
 }
 
 function removeElement(elemHTML) {
 
 	//var parent = findObj(elemHTML.parentNode.parentNode.parentNode.id);
-	var child = findObj(elemHTML.parentNode.parentNode.id);
+	var child = findObj(elemHTML.id);
 	//console.log(parent);
-	elemHTML.parentNode.parentNode.parentNode.removeChild(child.getPV());
+	elemHTML.parentNode.removeChild(child.getPV());
 
 	child.remove();
 
