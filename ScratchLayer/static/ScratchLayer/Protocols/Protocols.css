@@ -9,8 +9,8 @@
 
 .PacketNew {
   /*overflow: hidden;*/
-  height: 200px;
-  width: 420px;
+  height: 250px;
+  width: 380px;
   float: left;
   border: 2px solid #666666;
   background-color: #ccc;
@@ -38,8 +38,8 @@
 
 .EthernetNew {
   /*overflow: hidden;*/
-  height: 200px;
-  width: 420px;
+  height: 250px;
+  width: 380px;
   float: left;
   border: 2px solid #666666;
   background-color: #ccc;

@@ -181,7 +181,12 @@ function TransferElement(destHTML,origHTML,srcHTML) {
 	}
 
 	if(dest.id!="panelPrincipal"){
-		dest.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth)
+		if(dest.getType()!="Packet"){
+			dest.setModSize(child.getPV().offsetHeight+45,child.getPV().offsetWidth+37);
+		}
+		else{
+			dest.setModSize(child.getPV().offsetHeight+105,child.getPV().offsetWidth+37);
+		}
 	}
 	//dest.getPV().appendChild(child.getPV());
 	dest.addChild(child);
