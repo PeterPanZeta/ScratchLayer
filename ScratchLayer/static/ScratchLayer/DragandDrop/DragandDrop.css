@@ -54,3 +54,8 @@ header {
     height: 800px;
     padding: 1px;
 }
+.botonCollap{
+  text-decoration:none;
+  color:#fff;
+  cursor:pointer;
+}

@@ -83,14 +83,14 @@ function drop(e,move=true){
 
     var element; // Elemento arrastrado
 	var src = e.dataTransfer.getData("text");
-    var patt = new RegExp(src);
-    var patt2 = new RegExp("Drop"); 
+    //var patt = new RegExp(src.split("new")[0]);
+    //var patt2 = new RegExp("Drop"); 
     var dest = e.target;
-    
+    var	desti = findObj(dest.id);
     //console.log("SRC DROP: "+src);
-    if(!patt.test(dest.id) && (patt2.test(dest.id) || dest.id == "panelPrincipal" ) && dest.id!=src){ //1ºy 3º no permite meterse sobre si mismo, 2º solo se permite en los drop
+    if(desti.dropInElemt(src)){ //1ºy 3º no permite meterse sobre si mismo, 2º solo se permite en los drop !patt.test(dest.id) && (patt2.test(dest.id) || dest.id == "panelPrincipal" ) && dest.id!=src && 
 	    
-	    patt = new RegExp("new");
+	    var patt = new RegExp("new");
 
 	    if (!patt.test(src)){
 	    	//console.log("DestTunig "+dest.id.split("Drop")[1]);
@@ -99,8 +99,6 @@ function drop(e,move=true){
 			//console.log(parentinations[destId]);
 			if(dest.id!="panelPrincipal"){
 				var child = element;
-				var	desti = findObj(dest.id);
-
 				desti.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth)
 			}
 
@@ -164,6 +162,8 @@ function drop(e,move=true){
 		    element.getPV().style.top = 0 + "px";
 
 		}
+	}else{
+		$.notify(src.split("new")[0]+" no puede introducirse dentro de "+dest.id.split("new")[0].split("Drop")[1], "error");
 	}
     return false;
 }
@@ -181,12 +181,15 @@ function TransferElement(destHTML,origHTML,srcHTML) {
 	}
 
 	if(dest.id!="panelPrincipal"){
-		if(dest.getType()!="Packet"){
-			dest.setModSize(child.getPV().offsetHeight+45,child.getPV().offsetWidth+37);
+		/*if(dest.getType()!="Packet"){*/
+		
+
+			dest.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth);
+		/*
 		}
 		else{
 			dest.setModSize(child.getPV().offsetHeight+105,child.getPV().offsetWidth+37);
-		}
+		}*/
 	}
 	//dest.getPV().appendChild(child.getPV());
 	dest.addChild(child);
