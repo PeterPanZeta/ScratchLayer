@@ -51,6 +51,8 @@ function Submit(form,e){
     	return false;
 }
 
+
+
 function allowDrop(e) {
 	if (e.preventDefault) {
 	e.preventDefault(); // Necessary. Allows us to drop.
@@ -86,6 +88,7 @@ function drop(e,move=true){
     //var patt = new RegExp(src.split("new")[0]);
     //var patt2 = new RegExp("Drop"); 
     var dest = e.target;
+    console.log(dest.id)
     var	desti = findObj(dest.id);
     //console.log("SRC DROP: "+src);
     if(desti.dropInElemt(src)){ //1ºy 3º no permite meterse sobre si mismo, 2º solo se permite en los drop !patt.test(dest.id) && (patt2.test(dest.id) || dest.id == "panelPrincipal" ) && dest.id!=src && 
