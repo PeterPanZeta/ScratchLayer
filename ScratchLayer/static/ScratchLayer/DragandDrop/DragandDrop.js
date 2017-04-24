@@ -1,5 +1,6 @@
 var panelPrincipal = new PanelPrincipal(document.getElementById("panelPrincipal"));
 var parentinations = {"panelPrincipal":panelPrincipal};
+var onmouseover=undefined; 
 //console.log(parentinations["panelPrincipal"]);
 
 $(document).ready(function() {
@@ -9,7 +10,7 @@ $(document).ready(function() {
 		elem.addEventListener('dragstart', drag, false);
 
 	});
-
+	
     /*var parentination1 = document.getElementById("elements1");
 
 	parentination1.addEventListener('dragover', allowDrop, false);
@@ -19,8 +20,12 @@ $(document).ready(function() {
 
 	parentination2.addEventListener('dragover', allowDrop, false);
 	parentination2.addEventListener('drop',function(e){drop(e)}, false);
-
 });
+
+function enter(e) {
+	console.log(e.target.id);
+ 	topEleme(e.target);
+}
 
 function Submit(form,e){
 	e.preventDefault();
@@ -88,7 +93,7 @@ function drop(e,move=true){
     //var patt = new RegExp(src.split("new")[0]);
     //var patt2 = new RegExp("Drop"); 
     var dest = e.target;
-    console.log(dest.id)
+    //console.log(dest.id)
     var	desti = findObj(dest.id);
     //console.log("SRC DROP: "+src);
     if(desti.dropInElemt(src)){ //1ºy 3º no permite meterse sobre si mismo, 2º solo se permite en los drop !patt.test(dest.id) && (patt2.test(dest.id) || dest.id == "panelPrincipal" ) && dest.id!=src && 
@@ -220,6 +225,19 @@ function removeElement(elemHTML) {
 
 	return false;
 
+}
+
+function topEleme(element){
+	if(onmouseover==undefined){
+		onmouseover=element;
+		element.style.zIndex="1";
+	}
+	else{
+		onmouseover.style.zIndex="0";
+		element.style.zIndex="1";
+		onmouseover=element;	
+	}
+	//console.log("top "+element.id);
 }
 
 function findObj(ObjHTMLId) {
