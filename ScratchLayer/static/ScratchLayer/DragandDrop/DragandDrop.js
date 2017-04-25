@@ -23,8 +23,13 @@ $(document).ready(function() {
 });
 
 function enter(e) {
-	console.log(e.target.id);
- 	topEleme(e.target);
+
+	var patt = new RegExp("Drop");
+	if(patt.test(e.target.id)){
+		var Dest = findObj(e.target.id); 
+		topEleme(Dest.getPV());
+	}
+ 	
 }
 
 function Submit(form,e){
@@ -209,9 +214,38 @@ function TransferElement(destHTML,origHTML,srcHTML) {
 }
 
 function collapseElement(ElementHTML){
-	var element = findObj(ElementHTML.id);
+	var element = findObj(ElementHTML.parentNode.parentNode.id);
+	if(element.isCollap()){
+		ElementHTML.style.backgroundImage = "url('/static/ScratchLayer/images/arriba.png')";
+	}else{
+		ElementHTML.style.backgroundImage = "url('/static/ScratchLayer/images/abajo.png')";
+	}
 	//console.log(element);
 	element.collapse();
+}
+
+function minimax(ElementHTML) {
+	var element = findObj(ElementHTML.parentNode.parentNode.id);
+	if(element.isCollap()){
+		ElementHTML.setAttribute("class","col-xs-1 col-xs-offset-5 mini");
+		ElementHTML.style.backgroundImage = "url('/static/ScratchLayer/images/mini.png')";
+	}else{
+		ElementHTML.setAttribute("class","col-xs-1 col-xs-offset-3 mini");
+		ElementHTML.style.backgroundImage = "url('/static/ScratchLayer/images/max.png')";
+	}
+	//console.log(element);
+	element.collapse();
+}
+
+function chincheta(ElementHTML){
+	var element = findObj(ElementHTML.parentNode.parentNode.id);
+	if(element.isChincheta()){
+		ElementHTML.style.backgroundImage = "url('/static/ScratchLayer/images/chin.png')";
+	}else{
+		ElementHTML.style.backgroundImage = "url('/static/ScratchLayer/images/cheta.png')";
+	}
+	//console.log(element);
+	element.stop();
 }
 
 function removeElement(elemHTML) {
@@ -232,11 +266,12 @@ function topEleme(element){
 		onmouseover=element;
 		element.style.zIndex="1";
 	}
-	else{
+	else if(onmouseover.id!=element.id){
 		onmouseover.style.zIndex="0";
 		element.style.zIndex="1";
 		onmouseover=element;	
 	}
+	
 	//console.log("top "+element.id);
 }
 

@@ -1,5 +1,5 @@
 header {
-  color: #2EFE64;
+  color: #fff;
   text-shadow: #000 0 1px;
   box-shadow: 5px;
   padding: 5px;
@@ -20,7 +20,7 @@ header {
   -moz-border-radius-topright: 10px;
   border-top-right-radius: 10px;
 }
-.Packet {
+.icon {
 	height: 30px;
     width: 30px;
     cursor: move;
@@ -49,14 +49,6 @@ header {
   overflow:hidden;
 }
 
-.Ethernet {
-    height: 30px;
-    width: 30px;
-    cursor: move;
-    /*border: 1px;
-    border: red 1px solid;*/
-}
-
 .EthernetNew {
   /*overflow: hidden;*/
   height: 171px;
@@ -78,14 +70,6 @@ header {
   overflow:hidden;
 }
 
-.IP {
-    height: 30px;
-    width: 30px;
-    cursor: move;
-    /*border: 1px;
-    border: red 1px solid;*/
-}
-
 .IPNew{
   /*overflow: hidden;*/
   height: 300px;
@@ -105,18 +89,6 @@ header {
   cursor: move;
   z-index: 1;
   overflow:hidden;
-}
-.DataIP{
-	height: 100px;
-	width: 420px;
-}
-
-.ICMP {
-    height: 30px;
-    width: 30px;
-    cursor: move;
-    /*border: 1px;
-    border: red 1px solid;*/
 }
 
 .ICMPNew {

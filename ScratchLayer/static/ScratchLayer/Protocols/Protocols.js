@@ -1,4 +1,5 @@
 var contElement=1;
+var nPack=1;
 
 function PanelPrincipal(PanelPrincipalHTML) {
 
@@ -60,6 +61,7 @@ function Protocol(type) {
 	this.widthCollap="";
 	this.heightCollap="";
 	this.collap=false;
+	this.chincheta=false;
 
 	Protocol.prototype.viewId = function(){
 		console.log(this.id);
@@ -77,6 +79,10 @@ function Protocol(type) {
 		return this.type;
 	};
 
+	Protocol.prototype.isChincheta = function(){
+		return this.chincheta;
+	};
+
 	Protocol.prototype.getIdDrop = function() {
 		if(this.dropable){		
 			return "Drop"+this.id;
@@ -84,6 +90,10 @@ function Protocol(type) {
 		else{
 			return false;
 		}
+	};
+
+	Protocol.prototype.isCollap=function() {
+		return this.collap;
 	};
 
 	Protocol.prototype.setId = function(id){
@@ -156,6 +166,16 @@ function Protocol(type) {
 		}
 		if(this.Parent.getId()!="panelPrincipal"){
 			this.Parent.setModSize(this.PV.offsetHeight,this.PV.offsetWidth);
+		}
+	};
+
+	Protocol.prototype.stop=function(){
+		if(this.chincheta){
+			this.PV.setAttribute("draggable","true");
+			this.chincheta=false;
+		}else{
+			this.PV.setAttribute("draggable","false");
+			this.chincheta=true;
 		}
 	};
 
@@ -301,9 +321,10 @@ function ProtocolDrop(type) {
 	
 }
 
-function Packet(){
+function Packet(idPack){
 
 	ProtocolDrop.call(this,"Packet",true);
+	this.idPack=idPack;
 
 	Packet.prototype.newPV=function() {
 	var form = document.createElement("form");
@@ -320,7 +341,7 @@ function Packet(){
 	this.PV.setAttribute("draggable","true");
 	this.PV.addEventListener('dragstart', drag, false);
 	this.PV.addEventListener('dragenter', enter, false);
-	this.PV.innerHTML="<header onmouseover='topEleme(this.parentNode)' id= 'header"+this.id+"' class='col-xs-12'> <div class='col-xs-3 col-xs-offset-4'>Packet</div><a class='col-xs-1 col-xs-offset-3 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a></header>"
+	this.PV.innerHTML="<header onmouseover='topEleme(this.parentNode)' id= 'header"+this.id+"' class='col-xs-12'><div class='col-xs-3'>Packet:"+idPack+"</div><a type='button' id='collap' onclick='minimax(this)' class='col-xs-1 col-xs-offset-5 mini'><a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'><a class='col-xs-1 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a></header></div class='col-xs-12' id='formula'><div>"
 	form.id="Form"+this.id
 	form.setAttribute("class","form-horizontal col-xs-12");
 	form.setAttribute("role","form");
@@ -341,7 +362,42 @@ function Packet(){
 	this.idDrop=this.drop.id;
 	form.appendChild(this.drop);
 
-	this.PV.appendChild(form);
+	this.PV.lastChild.appendChild(form);
+	};
+
+	Packet.prototype.collapse=function(){
+
+		if(isEmpty(this.Children)){
+			if(this.collap){
+				this.PV.style.height=this.height+"px";
+				this.PV.style.width=this.width+"px";
+				this.collap=false;
+			}
+			else{
+				//console.log(this.heightCollap);
+				this.PV.style.height=35+"px";
+				this.PV.style.width=220+"px";
+				this.collap=true;
+			}
+		}else{
+			for(child in this.Children){
+				elemet=this.Children[child];
+				if(this.collap){
+					this.PV.style.height=(35+this.heightCollap)+elemet.getPV().offsetHeight+10+"px";
+					this.PV.style.width=elemet.getPV().offsetWidth+37+"px";
+					this.collap=false;
+				}
+				else{
+					this.PV.style.height=35+"px";
+					this.PV.style.width=220+"px";
+					this.collap=true;
+				}
+			}
+		}
+	};
+	Packet.prototype.addChild = function(Child){
+		this.Children[Child.getId()] = Child;
+		this.PV.lastChild.lastChild.lastChild.appendChild(Child.getPV());
 	};
 }
 
@@ -362,7 +418,7 @@ function Ethernet() {
 		this.PV.setAttribute("draggable","true");
 		this.PV.addEventListener('dragstart', drag, false);
 		this.PV.addEventListener('dragenter', enter, false);
-		this.PV.innerHTML="<header onmouseover='topEleme(this.parentNode)' class='col-xs-12'><a type='button' class='col-xs-3 col-xs-offset-4 botonsCollap' cursor:pointer;' data-toggle='collapse' data-target='#"+this.id+"collap' onclick='collapseElement(this.parentNode.parentNode)'>Ethernet</a> <input type='hidden' name='Ether' value='True'><a class='col-xs-1 col-xs-offset-3 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a></header><div class='collapse in' id='"+this.id+"collap'><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-5' type='text' name='srcEther' placeholder='src'></input><input class='col-xs-5' type='text' name='dstEther' placeholder='dst'></input><input class='col-xs-2' type='text' name='typeEther' placeholder='type'></input></div></div></div>"
+		this.PV.innerHTML="<header onmouseover='topEleme(this.parentNode)' class='col-xs-12'><div class='col-xs-3'>Ethernet</div> <input type='hidden' name='Ether' value='True'><a type='button' id='collap' data-toggle='collapse' data-target='#"+this.id+"collap' onclick='collapseElement(this)' class='col-xs-1 col-xs-offset-5 collap'><a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'><input type='hidden' name='Ether' value='True'><a class='col-xs-1 remove' type='button' id='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a></header><div class='collapse in' id='"+this.id+"collap'><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-5' type='text' name='srcEther' placeholder='src'></input><input class='col-xs-5' type='text' name='dstEther' placeholder='dst'></input><input class='col-xs-2' type='text' name='typeEther' placeholder='type'></input></div></div></div>"
 
 		var drop = createDrop(this.id)
 		
@@ -390,7 +446,7 @@ function IP() {
 		this.PV.setAttribute("draggable","true");
 		this.PV.addEventListener('dragstart', drag, false);
 		this.PV.addEventListener('dragenter', enter, false);
-		this.PV.innerHTML="<header onmouseover='topEleme(this.parentNode)' class='col-xs-12'><a type='button' class='col-xs-3 col-xs-offset-4 botonsCollap' data-toggle='collapse' data-target='#"+this.id+"collap' onclick='collapseElement(this.parentNode.parentNode)'>IP</a>  <input type='hidden' name='IP' value='True'><a class='col-xs-1 col-xs-offset-3 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a></header><div class='collapse in' id='"+this.id+"collap'><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-2' type='text' name='VERIP' placeholder='VER'></input><input class='col-xs-3' type='text' name='HLENIP' placeholder='HLEN'></input><input class='col-xs-3' type='text' name='SERVIP' placeholder='T.Servicio'></input><input class='col-xs-4' type='text' name='LOGIP' placeholder='Longitud'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='IdenIP' placeholder='Identificacion'></input><input class='col-xs-4' type='text' name='FlagsIP' placeholder='Flags'></input><input class='col-xs-4' type='text' name='OffFraIP' placeholder='Offset Frag'></input></div><div class='form-group col-xs-12'><input class='col-xs-3' type='text' name='TTLIP' placeholder='TTL'></input><input class='col-xs-4' type='text' name='ProIP' placeholder='Protocolo'></input><input class='col-xs-5' type='text' name='CheckIP' placeholder='Checksum'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='srcIP' placeholder='src'></input><input class='col-xs-4' type='text' name='dstIP' placeholder='dst'></input><input class='col-xs-4' type='text' name='OpcionesIP' placeholder='Opciones'></input></div></div></div>"
+		this.PV.innerHTML="<header onmouseover='topEleme(this.parentNode)' class='col-xs-12'><div class='col-xs-3'>IP</div><a type='button' id='collap' data-toggle='collapse' data-target='#"+this.id+"collap' onclick='collapseElement(this)' class='col-xs-1 col-xs-offset-5 collap'><a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'>  <input type='hidden' name='IP' value='True'><a class='col-xs-1 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a></header><div class='collapse in' id='"+this.id+"collap'><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-2' type='text' name='VERIP' placeholder='VER'></input><input class='col-xs-3' type='text' name='HLENIP' placeholder='HLEN'></input><input class='col-xs-3' type='text' name='SERVIP' placeholder='T.Servicio'></input><input class='col-xs-4' type='text' name='LOGIP' placeholder='Longitud'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='IdenIP' placeholder='Identificacion'></input><input class='col-xs-4' type='text' name='FlagsIP' placeholder='Flags'></input><input class='col-xs-4' type='text' name='OffFraIP' placeholder='Offset Frag'></input></div><div class='form-group col-xs-12'><input class='col-xs-3' type='text' name='TTLIP' placeholder='TTL'></input><input class='col-xs-4' type='text' name='ProIP' placeholder='Protocolo'></input><input class='col-xs-5' type='text' name='CheckIP' placeholder='Checksum'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='srcIP' placeholder='src'></input><input class='col-xs-4' type='text' name='dstIP' placeholder='dst'></input><input class='col-xs-4' type='text' name='OpcionesIP' placeholder='Opciones'></input></div></div></div>"
 
 		var drop = createDrop(this.id)
 		
@@ -415,7 +471,7 @@ function ICMP() {
 		this.PV.classList.add("ICMPNew");
 		this.PV.setAttribute("draggable","true");
 		this.PV.addEventListener('dragstart', drag, false);
-		this.PV.innerHTML="<header onmouseover='topEleme(this.parentNode)' class='col-xs-12'><a type='button' class='col-xs-3 col-xs-offset-4 botonsCollap' data-toggle='collapse' data-target='#"+this.id+"collap' onclick='collapseElement(this.parentNode.parentNode)'>ICMP</a>  <input type='hidden' name='IP' value='True'><a class='col-xs-1 col-xs-offset-3 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a></header><div class='collapse in' id='"+this.id+"collap'><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-2' type='text' name='VERIP' placeholder='VER'></input><input class='col-xs-3' type='text' name='HLENIP' placeholder='HLEN'></input><input class='col-xs-3' type='text' name='SERVIP' placeholder='T.Servicio'></input><input class='col-xs-4' type='text' name='LOGIP' placeholder='Longitud'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='IdenIP' placeholder='Identificacion'></input><input class='col-xs-4' type='text' name='FlagsIP' placeholder='Flags'></input><input class='col-xs-4' type='text' name='OffFraIP' placeholder='Offset Frag'></input></div><div class='form-group col-xs-12'><input class='col-xs-3' type='text' name='TTLIP' placeholder='TTL'></input><input class='col-xs-4' type='text' name='ProIP' placeholder='Protocolo'></input><input class='col-xs-5' type='text' name='CheckIP' placeholder='Checksum'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='srcIP' placeholder='src'></input><input class='col-xs-4' type='text' name='dstIP' placeholder='dst'></input><input class='col-xs-4' type='text' name='OpcionesIP' placeholder='Opciones'></input></div></div></div>"
+		this.PV.innerHTML="<header onmouseover='topEleme(this.parentNode)' class='col-xs-12'><div class='col-xs-3'>ICMP</div><a type='button' id='collap' data-toggle='collapse' data-target='#"+this.id+"collap' onclick='collapseElement(this)' class='col-xs-1 col-xs-offset-5 collap'> <a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'> <input type='hidden' name='ICMP' value='True'><a class='col-xs-1 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a></header><div class='collapse in' id='"+this.id+"collap'><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-2' type='text' name='VERIP' placeholder='VER'></input><input class='col-xs-3' type='text' name='HLENIP' placeholder='HLEN'></input><input class='col-xs-3' type='text' name='SERVIP' placeholder='T.Servicio'></input><input class='col-xs-4' type='text' name='LOGIP' placeholder='Longitud'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='IdenIP' placeholder='Identificacion'></input><input class='col-xs-4' type='text' name='FlagsIP' placeholder='Flags'></input><input class='col-xs-4' type='text' name='OffFraIP' placeholder='Offset Frag'></input></div><div class='form-group col-xs-12'><input class='col-xs-3' type='text' name='TTLIP' placeholder='TTL'></input><input class='col-xs-4' type='text' name='ProIP' placeholder='Protocolo'></input><input class='col-xs-5' type='text' name='CheckIP' placeholder='Checksum'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='srcIP' placeholder='src'></input><input class='col-xs-4' type='text' name='dstIP' placeholder='dst'></input><input class='col-xs-4' type='text' name='OpcionesIP' placeholder='Opciones'></input></div></div></div>"
 	};
 }
 
@@ -425,7 +481,8 @@ function createElement(idSrt,parent) {
 	//console.log(parent);
 	switch(idSrt) {
 		case "Packet":
-			newElement = new Packet();
+			newElement = new Packet(nPack);
+			nPack=nPack+1;
 			break;
     	case "Ethernet":
     		newElement = new Ethernet();

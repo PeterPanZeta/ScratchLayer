@@ -50,6 +50,30 @@
   background-image: url("/static/ScratchLayer/images/cerrar.png");
   background-size: 30px 20px
 }
+.collap{
+  width: 20px;
+  height: 20px;
+  cursor:pointer;
+  background-image: url("/static/ScratchLayer/images/arriba.png");
+  background-size: 30px 20px
+}
+
+.mini{
+  width: 20px;
+  height: 20px;
+  cursor:pointer;
+  background-image: url("/static/ScratchLayer/images/mini.png");
+  background-size: 30px 20px
+}
+
+.chincheta{
+  width: 20px;
+  height: 20px;
+  cursor:pointer;
+  background-image: url("/static/ScratchLayer/images/chin.png");
+  background-size: 30px 20px
+}
+
 .drop{
   float: left;
   border: 2px solid #666666;
