@@ -32,16 +32,17 @@ function enter(e) {
  	
 }
 
-function Submit(form,e){
+function SubmitPrin(form,e){
 	e.preventDefault();
-	console.log($( form ).serialize()+"&interfaz="+document.getElementById("interfaces").value);
+	var load = document.getElementById("load"+form.id.split("Form")[1])
+	load.style.visibility="initial";
 	$.ajax({
 	 		type: 'POST',
-            url: '/ScratchLayer/ajax/',
+            url: '/ScratchLayer/ajaxPPrin/',
             data: $( form ).serialize()+"&interfaz="+document.getElementById("interfaces").value,
         	dataType: 'json',
             success: function (data) {
-
+				load.style.visibility="hidden";
             	if(data.response.error){
 
             		for (var itemin in data.response.message){
@@ -61,7 +62,35 @@ function Submit(form,e){
     	return false;
 }
 
+function SubmitSniff(form,e){
+	e.preventDefault();
+	var load = document.getElementById("load"+form.id.split("Form")[1])
+	load.style.visibility="initial";
+	$.ajax({
+	 		type: 'POST',
+            url: '/ScratchLayer/ajaxPPrin/',
+            data: $( form ).serialize()+"&interfaz="+document.getElementById("interfaces").value,
+        	dataType: 'json',
+            success: function (data) {
+				load.style.visibility="hidden";
+            	if(data.response.error){
 
+            		for (var itemin in data.response.message){
+                		$.notify( data.response.message[itemin], "error");
+            		}
+
+            	}
+            	else{
+            		for (var itemin in data.response.message){
+                		$.notify( data.response.message[itemin], "success");
+            		}
+            	}
+         	 	
+        	}
+        });
+
+    	return false;
+}
 
 function allowDrop(e) {
 	if (e.preventDefault) {
@@ -84,7 +113,7 @@ function drag(e) {
 		e.dataTransfer.setDragImage(e.target, 50, 50);
 	}
 	else{
-		e.dataTransfer.setDragImage(e.target, 0, 0);
+		e.dataTransfer.setDragImage(e.target.parentNode, 0, 0);
 	}
 }
 
@@ -94,21 +123,21 @@ function drop(e,move=true){
   	e.preventDefault();
 
     var element; // Elemento arrastrado
-	var src = e.dataTransfer.getData("text");
+	var src = document.getElementById(e.dataTransfer.getData("text"));//e.dataTransfer.getData("text");
     //var patt = new RegExp(src.split("new")[0]);
     //var patt2 = new RegExp("Drop"); 
     var dest = e.target;
     //console.log(dest.id)
     var	desti = findObj(dest.id);
     //console.log("SRC DROP: "+src);
-    if(desti.dropInElemt(src)){ //1ºy 3º no permite meterse sobre si mismo, 2º solo se permite en los drop !patt.test(dest.id) && (patt2.test(dest.id) || dest.id == "panelPrincipal" ) && dest.id!=src && 
+    if(desti.dropInElemt(src.id)){ //1ºy 3º no permite meterse sobre si mismo, 2º solo se permite en los drop !patt.test(dest.id) && (patt2.test(dest.id) || dest.id == "panelPrincipal" ) && dest.id!=src && 
 	    
 	    var patt = new RegExp("new");
 
-	    if (!patt.test(src)){
+	    if (!patt.test(src.id)){
 	    	//console.log("DestTunig "+dest.id.split("Drop")[1]);
 	 		//console.log(findObj(dest.id));
-	    	element = createElement(src,findObj(dest.id));
+	    	element = createElement(src.id,findObj(dest.id));
 			//console.log(parentinations[destId]);
 			if(dest.id!="panelPrincipal"){
 				var child = element;
@@ -116,15 +145,15 @@ function drop(e,move=true){
 			}
 
 	    } else{
-	    	var elementHTML = document.getElementById(src);
+	    	src=src.parentNode;
 	    	//console.log("ElementHTML "+elementHTML.id);
 	    	//console.log("Padre del elemento: "+elementHTML.parentNode.id);
 	    	//console.log("DEST: "+dest.id);
 	    	
 
-	    	if(dest.id!=elementHTML.parentNode.id){
+	    	if(dest.id!=src.parentNode.id){
 				//console.log("TransferElement");
-	    		element = TransferElement(dest,elementHTML.parentNode,elementHTML);
+	    		element = TransferElement(dest,src.parentNode,src);
 	    		//console.log("Return "+ element);
 	    	}
 	    	else{
@@ -133,7 +162,7 @@ function drop(e,move=true){
 	    		//console.log(dest);
 	    		//console.log("Nuevo DEST: "+dest.id);
 	    		//console.log("NO TransferElement");
-	    		element = findObj(src);
+	    		element = findObj(src.id);
 	    		//console.log("Return "+ element);
 	    	}
 
@@ -176,7 +205,14 @@ function drop(e,move=true){
 
 		}
 	}else{
-		$.notify(src.split("new")[0]+" no puede introducirse dentro de "+dest.id.split("new")[0].split("Drop")[1], "error");
+
+		var patt = new RegExp("new");
+
+	    if (!patt.test(src.id)){
+			$.notify(src.id+" no puede introducirse dentro de "+dest.id.split("new")[0].split("Drop")[1], "error");
+	    }else{
+			$.notify(src.id.split("header")[1].split("new")[0]+" no puede introducirse dentro de "+dest.id.split("new")[0].split("Drop")[1], "error");
+		}
 	}
     return false;
 }
@@ -227,10 +263,10 @@ function collapseElement(ElementHTML){
 function minimax(ElementHTML) {
 	var element = findObj(ElementHTML.parentNode.parentNode.id);
 	if(element.isCollap()){
-		ElementHTML.setAttribute("class","col-xs-1 col-xs-offset-5 mini");
+		ElementHTML.previousSibling.setAttribute("class","col-xs-1 col-xs-offset-4 load");
 		ElementHTML.style.backgroundImage = "url('/static/ScratchLayer/images/mini.png')";
 	}else{
-		ElementHTML.setAttribute("class","col-xs-1 col-xs-offset-3 mini");
+		ElementHTML.previousSibling.setAttribute("class","col-xs-1 col-xs-offset-2 load");
 		ElementHTML.style.backgroundImage = "url('/static/ScratchLayer/images/max.png')";
 	}
 	//console.log(element);
@@ -240,8 +276,10 @@ function minimax(ElementHTML) {
 function chincheta(ElementHTML){
 	var element = findObj(ElementHTML.parentNode.parentNode.id);
 	if(element.isChincheta()){
+		ElementHTML.parentNode.setAttribute("draggable","true");
 		ElementHTML.style.backgroundImage = "url('/static/ScratchLayer/images/chin.png')";
 	}else{
+		ElementHTML.parentNode.setAttribute("draggable","false");
 		ElementHTML.style.backgroundImage = "url('/static/ScratchLayer/images/cheta.png')";
 	}
 	//console.log(element);
@@ -290,4 +328,19 @@ function findObj(ObjHTMLId) {
 
 	}
 	//console.log(parentinations[ObjHTMLId]);	
+}
+
+function viewPanel(ElementHTML) {
+	ElementHTML.innerHTML="Panel Principal <span class='sr-only'>(current)</span>";
+	ElementHTML.parentNode.setAttribute("class","active");
+	document.getElementById("sni").parentNode.setAttribute("class"," ");
+	document.getElementById("Pprin").style.display="initial";
+	document.getElementById("Snffer").style.display="none";
+}
+function viewSniffer(ElementHTML) {
+	ElementHTML.innerHTML="Sniffer <span class='sr-only'>(current)</span>";
+	ElementHTML.parentNode.setAttribute("class","active");
+	document.getElementById("pprin").parentNode.setAttribute("class"," ");
+	document.getElementById("Snffer").style.display="initial";
+	document.getElementById("Pprin").style.display="none";
 }

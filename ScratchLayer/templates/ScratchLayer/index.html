@@ -8,46 +8,80 @@
 
 {% include 'ScratchLayer/nav.html' %}
 
-<div class="container">
+<div id='Pprin' class="col-xs-12" >
   <div class="row">
-    <div class="col-xs-1" >
-     <div class="panel panel-default">
-        <div class="panel-heading"><h8>Elementos</h8></div>
-        <div id="elements1" class="panel-body">
-          <div class="col-xs-6" >
-            <img id="Packet" class="icon" draggable="true"  src="{% static 'ScratchLayer/images/package.png' %}">
-            <br>
-            <img id="Ethernet" class="icon" draggable="true"  src="{% static 'ScratchLayer/images/ethernet.png' %}">
-            <br>
-            <img id="IP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/IP.png' %}">
-            <br>
-            <img id="ICMP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/ICMP.png' %}">
-            <br>
-            <img id="ARP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/ARP.png' %}">
-            <br>
-            <img id="TCP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/TCP.png' %}">
-            <br>
-            <img id="UDP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/UDP.png' %}">
-            <br>
-            <img id="RIP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/RIP.png' %}">
+      <div class="col-md-1" >
+       <div class="panel panel-default">
+          <div class="panel-heading"><h8>Element</h8></div>
+          <div id="elements1" class="panel-body">
+            <div class="row col-lg-1 col-xs-12" >
+
+              <div class="col-xs-1">
+                <img id="Packet" class="icon" draggable="true"  src="{% static 'ScratchLayer/images/package.png' %}">
+              </div>
+              <div class="col-xs-1">
+                <img id="Ethernet" class="icon" draggable="true"  src="{% static 'ScratchLayer/images/ethernet.png' %}">
+              </div>
+              <div class="col-xs-1">
+                <img id="IP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/IP.png' %}">
+              </div>
+              <div class="col-xs-1">
+                <img id="ICMP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/ICMP.png' %}">
+              </div>
+              <div class="col-xs-1">
+                <img id="ARP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/ARP.png' %}">
+              </div>
+              <div class="col-xs-1">
+                <img id="TCP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/TCP.png' %}">
+              </div>
+              <div class="col-xs-1">
+                <img id="UDP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/UDP.png' %}">
+              </div>
+              <div class="col-xs-1">
+                <img id="RIP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/RIP.png' %}">
+              </div>
+              <div class="col-xs-1">
+                <img id="DATA" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/DATA.png' %}">
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="col-xs-11">
-      <div class="panel panel-default">
-        <div class="panel-heading col-xs-12"> <div class="col-xs-6">Panel Principal</div><select id="interfaces" class="col-xs-2 col-xs-offset-4">
-          {% for inter in interfaces %} 
-              <option value="{{inter}}">{{ inter }}</option> 
-          {% endfor %}
-        </select></div>
-        <div id="panelPrincipal" class="panel-body"></div>
+      <div class="col-md-11">
+        <div class="panel panel-default">
+          <div class="panel-heading col-xs-12"> <div class="col-lg-6 col-xs-6">Panel Principal</div><select id="interfaces" class="col-lg-2 col-xs-3  col-lg-offset-4 col-xs-offset-3">
+            {% for inter in interfaces %} 
+                <option value="{{inter}}">{{ inter }}</option> 
+            {% endfor %}
+          </select></div>
+          <div id="panelPrincipal" class="panel-body"></div>
+        </div>
       </div>
-    </div>
   </div>
   <div class="row">
-
   </div>
+</div>
+<div id='Snffer' class="col-xs-12" style="display:none;">
+  <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <form method = "post" onsubmit="SubmitSniff(this,event)">
+          <div class="panel-heading col-xs-12"> 
+            <input type="text" name="filter" class="col-lg-6 col-xs-6" placeholder="Filter"> 
+            <select id="interfaces" class="col-lg-2 col-xs-3 col-lg-offset-4 col-xs-offset-3">
+              {% for inter in interfaces %} 
+                  <option value="{{inter}}">{{ inter }}</option> 
+              {% endfor %}
+            </select>
+          </div>
+          </form>
+          <div id="panelPrincipal" class="panel-body"></div>
+        </div>
+      </div>
+  </div>
+  <div class="row">
+  </div>
+</div>
 </body>
 
 <!-- CDN Bootstrap -->
