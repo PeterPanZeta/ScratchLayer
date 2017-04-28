@@ -24,18 +24,7 @@ def prueba(request):
 	return render(request,'ScratchLayer/prueba.html')
 
 @csrf_exempt
-def ajaxPPrin(request): 
-
-	#print request.POST
-	data= {
-		'id': request.POST.get("pk",None),
-		'response': sp.main(request)
-	}
-	
-	return JsonResponse(data)
-
-@csrf_exempt
-def ajaxSniff(request): 
+def ajax(request): 
 
 	#print request.POST
 	data= {

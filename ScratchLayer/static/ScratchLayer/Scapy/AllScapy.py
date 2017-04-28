@@ -1,7 +1,7 @@
 
 from scapy.all import *
 
-def main(petition):
+def PPrin(petition):
 
 	packetDf=None
 	
@@ -108,6 +108,26 @@ def main(petition):
 					'message':{"Vacio":"El paquete esta Vacio"}
 				}
 
+def Sniff(petition):
+
+	filte = "";
+	count = "";	
+
+	if(petition.POST.get("filter",None)==""):
+		filte=None
+	else:
+		filte=petition.POST.get("filter",None)
+
+	if(petition.POST.get("count",None)==""):
+		count=None
+	else:
+		count=petition.POST.get("count",None)
+
+	return{
+		'error':False,
+		'sniff':sniff(filter=filte,count=count,iface=petition.POST.get("interface",None))
+	}
+
 def parseIP(ip):
 
 	parses = ip.split(".")
@@ -146,3 +166,15 @@ def parseMac(mac):
 		return True
 	else:
 		return False
+
+def main(petition):
+	if(petition.POST.get("mode",None) != None):
+		if(petition.POST.get("mode",None)=="PPrin"):
+			return PPrin(petition)
+		else:
+			return Sniff(petition)
+	else:
+		return {
+				'error':True,
+				'message':{"Vacio":"No entiendo el Modo"}
+				}

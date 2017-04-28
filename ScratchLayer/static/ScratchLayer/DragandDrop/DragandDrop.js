@@ -38,8 +38,8 @@ function SubmitPrin(form,e){
 	load.style.visibility="initial";
 	$.ajax({
 	 		type: 'POST',
-            url: '/ScratchLayer/ajaxPPrin/',
-            data: $( form ).serialize()+"&interfaz="+document.getElementById("interfaces").value,
+            url: '/ScratchLayer/ajax/',
+            data: "mode=PPrin&"+$( form ).serialize()+"&interfaz="+document.getElementById("interfaces1").value,
         	dataType: 'json',
             success: function (data) {
 				load.style.visibility="hidden";
@@ -64,11 +64,13 @@ function SubmitPrin(form,e){
 
 function SubmitSniff(form,e){
 	e.preventDefault();
-	var load = document.getElementById("load"+form.id.split("Form")[1])
+
+	console.log( $( form ).serialize());
+	/*var load = document.getElementById("load"+form.id.split("Form")[1])
 	load.style.visibility="initial";
 	$.ajax({
 	 		type: 'POST',
-            url: '/ScratchLayer/ajaxPPrin/',
+            url: '/ScratchLayer/ajax/',
             data: $( form ).serialize()+"&interfaz="+document.getElementById("interfaces").value,
         	dataType: 'json',
             success: function (data) {
@@ -88,7 +90,7 @@ function SubmitSniff(form,e){
          	 	
         	}
         });
-
+		*/
     	return false;
 }
 

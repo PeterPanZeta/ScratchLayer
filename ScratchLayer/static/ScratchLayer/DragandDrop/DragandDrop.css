@@ -29,9 +29,16 @@
     padding: 5px;
 }
 
-#panelPrincipal{
+.panelPrincipal{
     height: 800px;
     padding: 1px;
+}
+.Sniff{
+
+  height: 100%; /*800px;*/
+  padding: 1px;
+  /*overflow: scroll;*/
+
 }
 .botonsCollap{
   text-decoration:none;

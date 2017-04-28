@@ -49,12 +49,12 @@
       </div>
       <div class="col-md-11">
         <div class="panel panel-default">
-          <div class="panel-heading col-xs-12"> <div class="col-lg-6 col-xs-6">Panel Principal</div><select id="interfaces" class="col-lg-2 col-xs-3  col-lg-offset-4 col-xs-offset-3">
+          <div class="panel-heading col-xs-12"> <div class="col-lg-6 col-xs-6">Panel Principal</div><select id="interfaces1" class="col-lg-1 col-xs-2  col-lg-offset-5 col-xs-offset-4">
             {% for inter in interfaces %} 
                 <option value="{{inter}}">{{ inter }}</option> 
             {% endfor %}
           </select></div>
-          <div id="panelPrincipal" class="panel-body"></div>
+          <div id="panelPrincipal" class="panel-body panelPrincipal"></div>
         </div>
       </div>
   </div>
@@ -63,22 +63,29 @@
 </div>
 <div id='Snffer' class="col-xs-12" style="display:none;">
   <div class="row">
-      <div class="col-md-12">
+    <div class="col-md-12">
         <div class="panel panel-default">
-          <form method = "post" onsubmit="SubmitSniff(this,event)">
-          <div class="panel-heading col-xs-12"> 
-            <input type="text" name="filter" class="col-lg-6 col-xs-6" placeholder="Filter"> 
-            <select id="interfaces" class="col-lg-2 col-xs-3 col-lg-offset-4 col-xs-offset-3">
-              {% for inter in interfaces %} 
-                  <option value="{{inter}}">{{ inter }}</option> 
-              {% endfor %}
-            </select>
+          <div class="panel-heading col-xs-12"><form method="post" onsubmit="SubmitSniff(this,event)"><input type="text" name="filter" class="col-lg-8 col-xs-7" placeholder="Filter"><input type="text" name="count" class="col-lg-1 col-xs-1" placeholder="Count"> <select name="interfaz" id="interfaces2" class="col-lg-1 col-xs-2">
+            {% for inter in interfaces %} 
+                <option value="{{inter}}">{{ inter }}</option> 
+            {% endfor %}
+          </select>
+          <input class='col-lg-1 col-xs-1 col-lg-offset-1 col-xs-offset-1' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input>
+          </form></div>
+          <div id="Sniffer" class="panel-body Sniff">
+            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+              <thead>
+                  <tr> 
+                      <th>Packet</th>
+                  </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
           </div>
-          </form>
-          <div id="panelPrincipal" class="panel-body"></div>
         </div>
-      </div>
-  </div>
+      </div>      
+   </div>
   <div class="row">
   </div>
 </div>
@@ -100,7 +107,20 @@
 <link href="{% static 'ScratchLayer/DragandDrop/DragandDrop.css' %}" rel="stylesheet"/>
 <script src="{% static 'ScratchLayer/DragandDrop/DragandDrop.js' %}"></script>
 
+<!-- DataTables JavaScript -->
+<link href="{% static 'ScratchLayer/datatables-responsive/dataTables.responsive.css' %}" rel="stylesheet">
+<script src="{% static 'ScratchLayer/datatables/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'ScratchLayer/datatables-plugins/dataTables.bootstrap.min.js' %}"></script>
+<script src="{% static 'ScratchLayer/datatables-responsive/dataTables.responsive.js' %}"></script>
+
 <!--notify-->
 <script src="{% static 'ScratchLayer/notify/notify.js' %}"></script>
 
+<script>
+$(document).ready(function() {
+    $('#dataTables-example').DataTable({
+        responsive: true
+    });
+});
+</script>
 </html>
