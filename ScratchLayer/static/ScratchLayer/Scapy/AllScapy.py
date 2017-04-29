@@ -109,9 +109,10 @@ def PPrin(petition):
 				}
 
 def Sniff(petition):
+	print "LLEGO "+" "+str(petition.POST.get("count",None))+" "+str(petition.POST.get("interfaz",None))
 
-	filte = "";
-	count = "";	
+	filte = ""
+	count = ""	
 
 	if(petition.POST.get("filter",None)==""):
 		filte=None
@@ -122,11 +123,33 @@ def Sniff(petition):
 		count=None
 	else:
 		count=petition.POST.get("count",None)
+	re = serialize(sniff(filter=filte,count=int(count),iface=str(petition.POST.get("interfaz",None))))
 
-	return{
-		'error':False,
-		'sniff':sniff(filter=filte,count=count,iface=petition.POST.get("interface",None))
-	}
+	print "Termine"
+	return re
+	
+def serialize(elements):
+	for x in xrange(0,elements.__leng__()):
+		elemt = elements[x]
+
+		if(Ether in elemt):
+			None
+
+		if(ARP in elemt):
+			None
+
+		if(IP in elemt):
+			None
+
+		if(TCP in elemt):
+			None
+
+		if(UDP in elemt):
+			None
+
+		if(RIP in elemt):
+			None
+
 
 def parseIP(ip):
 

@@ -66,16 +66,16 @@ function SubmitSniff(form,e){
 	e.preventDefault();
 
 	console.log( $( form ).serialize());
-	/*var load = document.getElementById("load"+form.id.split("Form")[1])
-	load.style.visibility="initial";
+	//var load = document.getElementById("load"+form.id.split("Form")[1])
+	//load.style.visibility="initial";
 	$.ajax({
 	 		type: 'POST',
             url: '/ScratchLayer/ajax/',
-            data: $( form ).serialize()+"&interfaz="+document.getElementById("interfaces").value,
+            data: "mode=Sniff&"+$( form ).serialize(),
         	dataType: 'json',
             success: function (data) {
-				load.style.visibility="hidden";
-            	if(data.response.error){
+				//load.style.visibility="hidden";
+            	/*if(data.response.error){
 
             		for (var itemin in data.response.message){
                 		$.notify( data.response.message[itemin], "error");
@@ -83,14 +83,15 @@ function SubmitSniff(form,e){
 
             	}
             	else{
+
             		for (var itemin in data.response.message){
                 		$.notify( data.response.message[itemin], "success");
             		}
-            	}
-         	 	
+
+            	}*/
+            	console.log(data.sniff);
         	}
         });
-		*/
     	return false;
 }
 

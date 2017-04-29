@@ -58,12 +58,11 @@
         </div>
       </div>
   </div>
-  <div class="row">
-  </div>
 </div>
+
 <div id='Snffer' class="col-xs-12" style="display:none;">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-xs-10 col-xs-offset-1">
         <div class="panel panel-default">
           <div class="panel-heading col-xs-12"><form method="post" onsubmit="SubmitSniff(this,event)"><input type="text" name="filter" class="col-lg-8 col-xs-7" placeholder="Filter"><input type="text" name="count" class="col-lg-1 col-xs-1" placeholder="Count"> <select name="interfaz" id="interfaces2" class="col-lg-1 col-xs-2">
             {% for inter in interfaces %} 
@@ -79,16 +78,15 @@
                       <th>Packet</th>
                   </tr>
               </thead>
-              <tbody>
+              <tbody id="tbodySniffer">
               </tbody>
             </table>
           </div>
         </div>
       </div>      
    </div>
-  <div class="row">
-  </div>
 </div>
+
 </body>
 
 <!-- CDN Bootstrap -->
