@@ -123,32 +123,115 @@ def Sniff(petition):
 		count=None
 	else:
 		count=petition.POST.get("count",None)
-	re = serialize(sniff(filter=filte,count=int(count),iface=str(petition.POST.get("interfaz",None))))
 
-	print "Termine"
-	return re
+	return {
+			'error':False,
+			'sniff':serializeDataSniff(sniff(filter=filte,count=int(count),iface=str(petition.POST.get("interfaz",None))))
+			}
 	
-def serialize(elements):
-	for x in xrange(0,elements.__leng__()):
-		elemt = elements[x]
+def serializeDataSniff(elements):
 
+	Data={}
+
+	count=1
+
+	for elemt in elements:
+		packet = {}
 		if(Ether in elemt):
-			None
-
+			elemtEther = elemt.getlayer(Ether)
+			packet["Ether"]={
+				'dst':elemtEther.dst,
+				'src':elemtEther.src,
+				'type':elemtEther.type
+			}
 		if(ARP in elemt):
-			None
+			elemtARP = elemt.getlayer(ARP)
+			packet["ARP"]={
+				'hwtype':elemtARP.hwtype,
+				'ptype':elemtARP.ptype,
+				'hwlen':elemtARP.hwlen,
+				'plen':elemtARP.plen,
+				'op':elemtARP.op,
+				'hwsrc':elemtARP.hwsrc,
+				'psrc':elemtARP.psrc,
+				'hwdst':elemtARP.hwdst,
+				'pdst':elemtARP.pdst
+			}
 
 		if(IP in elemt):
-			None
+			elemtIP = elemt.getlayer(IP)
+			packet["IP"]={
+				'version':elemtIP.version,
+				'ihl':elemtIP.ihl,
+				'tos':elemtIP.tos,
+				'len':elemtIP.len,
+				'id':elemtIP.id,
+				'flags':elemtIP.flags,
+				'frag':elemtIP.frag,
+				'ttl':elemtIP.ttl,
+				'proto':elemtIP.proto,
+				'chksum':elemtIP.chksum,
+				'src':elemtIP.src,
+				'dst':elemtIP.dst,
+				'options':elemtIP.options
+			}
+
+		if(ICMP in elemt):
+			elemtICMP = elemt.getlayer(ICMP)
+			packet["ICMP"]={
+				'type':elemtICMP.type,
+				'code':elemtICMP.code,
+				'chksum':elemtICMP.chksum,
+				'id':elemtICMP.id,
+				'seq':elemtICMP.seq,
+				'ts_ori':elemtICMP.ts_ori,
+				'ts_rx':elemtICMP.ts_rx,
+				'ts_tx':elemtICMP.ts_tx,
+				'gw':elemtICMP.gw,
+				'ptr':elemtICMP.ptr,
+				'reserved':elemtICMP.reserved,
+				'length':elemtICMP.length,
+				'addr_mask':elemtICMP.addr_mask,
+				'nexthopmtu':elemtICMP.nexthopmtu,
+				'unused':elemtICMP.unused
+			}
 
 		if(TCP in elemt):
-			None
+			elemtTCP = elemt.getlayer(TCP)
+			packet["TCP"]={
+				'sport':elemtTCP.sport,
+				'dport':elemtTCP.dport,
+				'seq':elemtTCP.seq,
+				'ack':elemtTCP.ack,
+				'dataofs':elemtTCP.dataofs,
+				'reserved':elemtTCP.reserved,
+				'flags':elemtTCP.flags,
+				'window':elemtTCP.window,
+				'chksum':elemtTCP.chksum,
+				'urgptr':elemtTCP.urgptr,
+				'options':elemtTCP.options
+			}
 
 		if(UDP in elemt):
-			None
+			elemtUDP = elemt.getlayer(UDP)
+			packet["UDP"]={
+				'sport':elemtUDP.sport,
+				'dport':elemtUDP.dport,
+				'len':elemtUDP.len,
+				'chksum':elemtUDP.chksum
+			}
 
 		if(RIP in elemt):
-			None
+			elemtRIP = elemt.getlayer(RIP)
+			packet["RIP"]={
+				'cmd':elemtRIP.cmd,
+				'version':elemtRIP.version,
+				'null':elemtRIP.null
+			}
+		Data["Packet"+str(count)]=packet
+		count=count+1
+
+	return Data
 
 
 def parseIP(ip):

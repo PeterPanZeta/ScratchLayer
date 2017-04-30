@@ -89,7 +89,7 @@ function SubmitSniff(form,e){
             		}
 
             	}*/
-            	console.log(data.sniff);
+            	console.log(data.response.sniff);
         	}
         });
     	return false;
