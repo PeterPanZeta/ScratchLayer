@@ -126,7 +126,7 @@ def Sniff(petition):
 
 	return {
 			'error':False,
-			'sniff':serializeDataSniff(sniff(filter=filte,count=int(count),iface=str(petition.POST.get("interfaz",None))))
+			'message':serializeDataSniff(sniff(filter=filte,count=int(count),iface=str(petition.POST.get("interfaz",None))))
 			}
 	
 def serializeDataSniff(elements):
@@ -136,44 +136,40 @@ def serializeDataSniff(elements):
 	count=1
 
 	for elemt in elements:
+
 		packet = {}
-		if(Ether in elemt):
-			elemtEther = elemt.getlayer(Ether)
-			packet["Ether"]={
-				'dst':elemtEther.dst,
-				'src':elemtEther.src,
-				'type':elemtEther.type
-			}
-		if(ARP in elemt):
-			elemtARP = elemt.getlayer(ARP)
-			packet["ARP"]={
-				'hwtype':elemtARP.hwtype,
-				'ptype':elemtARP.ptype,
-				'hwlen':elemtARP.hwlen,
-				'plen':elemtARP.plen,
-				'op':elemtARP.op,
-				'hwsrc':elemtARP.hwsrc,
-				'psrc':elemtARP.psrc,
-				'hwdst':elemtARP.hwdst,
-				'pdst':elemtARP.pdst
+
+		if(RIP in elemt):
+			elemtRIP = elemt.getlayer(RIP)
+			packet["RIP"]={
+				'cmd':elemtRIP.cmd,
+				'version':elemtRIP.version,
+				'null':elemtRIP.null
 			}
 
-		if(IP in elemt):
-			elemtIP = elemt.getlayer(IP)
-			packet["IP"]={
-				'version':elemtIP.version,
-				'ihl':elemtIP.ihl,
-				'tos':elemtIP.tos,
-				'len':elemtIP.len,
-				'id':elemtIP.id,
-				'flags':elemtIP.flags,
-				'frag':elemtIP.frag,
-				'ttl':elemtIP.ttl,
-				'proto':elemtIP.proto,
-				'chksum':elemtIP.chksum,
-				'src':elemtIP.src,
-				'dst':elemtIP.dst,
-				'options':elemtIP.options
+		if(UDP in elemt):
+			elemtUDP = elemt.getlayer(UDP)
+			packet["UDP"]={
+				'sport':elemtUDP.sport,
+				'dport':elemtUDP.dport,
+				'len':elemtUDP.len,
+				'chksum':elemtUDP.chksum
+			}
+
+		if(TCP in elemt):
+			elemtTCP = elemt.getlayer(TCP)
+			packet["TCP"]={
+				'sport':elemtTCP.sport,
+				'dport':elemtTCP.dport,
+				'seq':elemtTCP.seq,
+				'ack':elemtTCP.ack,
+				'dataofs':elemtTCP.dataofs,
+				'reserved':elemtTCP.reserved,
+				'flags':elemtTCP.flags,
+				'window':elemtTCP.window,
+				'chksum':elemtTCP.chksum,
+				'urgptr':elemtTCP.urgptr,
+				'options':elemtTCP.options
 			}
 
 		if(ICMP in elemt):
@@ -194,41 +190,50 @@ def serializeDataSniff(elements):
 				'addr_mask':elemtICMP.addr_mask,
 				'nexthopmtu':elemtICMP.nexthopmtu,
 				'unused':elemtICMP.unused
+			}	
+
+		if(IP in elemt):
+			elemtIP = elemt.getlayer(IP)
+			packet["IP"]={
+				'version':elemtIP.version,
+				'ihl':elemtIP.ihl,
+				'tos':elemtIP.tos,
+				'len':elemtIP.len,
+				'id':elemtIP.id,
+				'flags':elemtIP.flags,
+				'frag':elemtIP.frag,
+				'ttl':elemtIP.ttl,
+				'proto':elemtIP.proto,
+				'chksum':elemtIP.chksum,
+				'src':elemtIP.src,
+				'dst':elemtIP.dst,
+				'options':elemtIP.options
 			}
 
-		if(TCP in elemt):
-			elemtTCP = elemt.getlayer(TCP)
-			packet["TCP"]={
-				'sport':elemtTCP.sport,
-				'dport':elemtTCP.dport,
-				'seq':elemtTCP.seq,
-				'ack':elemtTCP.ack,
-				'dataofs':elemtTCP.dataofs,
-				'reserved':elemtTCP.reserved,
-				'flags':elemtTCP.flags,
-				'window':elemtTCP.window,
-				'chksum':elemtTCP.chksum,
-				'urgptr':elemtTCP.urgptr,
-				'options':elemtTCP.options
+		if(ARP in elemt):
+			elemtARP = elemt.getlayer(ARP)
+			packet["ARP"]={
+				'hwtype':elemtARP.hwtype,
+				'ptype':elemtARP.ptype,
+				'hwlen':elemtARP.hwlen,
+				'plen':elemtARP.plen,
+				'op':elemtARP.op,
+				'hwsrc':elemtARP.hwsrc,
+				'psrc':elemtARP.psrc,
+				'hwdst':elemtARP.hwdst,
+				'pdst':elemtARP.pdst
 			}
 
-		if(UDP in elemt):
-			elemtUDP = elemt.getlayer(UDP)
-			packet["UDP"]={
-				'sport':elemtUDP.sport,
-				'dport':elemtUDP.dport,
-				'len':elemtUDP.len,
-				'chksum':elemtUDP.chksum
+		if(Ether in elemt):
+			elemtEther = elemt.getlayer(Ether)
+			packet["Ether"]={
+				'dst':elemtEther.dst,
+				'src':elemtEther.src,
+				'type':elemtEther.type
 			}
 
-		if(RIP in elemt):
-			elemtRIP = elemt.getlayer(RIP)
-			packet["RIP"]={
-				'cmd':elemtRIP.cmd,
-				'version':elemtRIP.version,
-				'null':elemtRIP.null
-			}
 		Data["Packet"+str(count)]=packet
+		
 		count=count+1
 
 	return Data

@@ -74,25 +74,65 @@ function SubmitSniff(form,e){
             data: "mode=Sniff&"+$( form ).serialize(),
         	dataType: 'json',
             success: function (data) {
-				//load.style.visibility="hidden";
-            	/*if(data.response.error){
 
+            	AddPacketSniff();
+				//load.style.visibility="hidden";
+            	if(data.response.error){
             		for (var itemin in data.response.message){
                 		$.notify( data.response.message[itemin], "error");
             		}
-
             	}
             	else{
-
-            		for (var itemin in data.response.message){
-                		$.notify( data.response.message[itemin], "success");
-            		}
-
-            	}*/
-            	console.log(data.response.sniff);
+            		console.log("Antes");
+                	AddPacketSniff(data.response.message);
+                	console.log("Destras");
+            	}
+            	//console.log(data.response.sniff);
         	}
         });
     	return false;
+}
+
+function AddPacketSniff(elements) {
+	tBodySniff = document.getElementById("tbodySniffer");
+	for (var packet in elements){
+		var layerIten = "";
+		if(Exists(elements[packet],"Ether")){
+			layerIten="Ether";
+		}
+		if(Exists(elements[packet],"ARP")){
+			layerIten=layerIten+"/ARP";
+		}else{
+			if(Exists(elements[packet],"IP")){
+				layerIten=layerIten+"/IP";
+
+				if(Exists(elements[packet],"ICMP")){
+					layerIten=layerIten+"/ICMP";
+				}else{
+					if(Exists(elements[packet],"TCP")){
+					layerIten=layerIten+"/TCP";
+					}
+					if(Exists(elements[packet],"UDP")){
+						layerIten=layerIten+"/UDP";
+					}
+					if(Exists(elements[packet],"RIP")){
+						layerIten=layerIten+"/RIP";
+					}
+				}
+			}
+		}
+		console.log(elements[packet]);
+		console.log(layerIten);
+	}
+}
+
+function Exists (element, item) {
+	for(var i in element){
+		if(item==i){
+			return true;
+		}
+	}
+	return false;
 }
 
 function allowDrop(e) {
