@@ -137,78 +137,17 @@ def serializeDataSniff(elements):
 
 	for elemt in elements:
 
+		layers = ""
+
 		packet = {}
-
-		if(RIP in elemt):
-			elemtRIP = elemt.getlayer(RIP)
-			packet["RIP"]={
-				'cmd':elemtRIP.cmd,
-				'version':elemtRIP.version,
-				'null':elemtRIP.null
+		if(Ether in elemt):
+			elemtEther = elemt.getlayer(Ether)
+			packet["Ether"]={
+				'dst':elemtEther.dst,
+				'src':elemtEther.src,
+				'type':elemtEther.type
 			}
-
-		if(UDP in elemt):
-			elemtUDP = elemt.getlayer(UDP)
-			packet["UDP"]={
-				'sport':elemtUDP.sport,
-				'dport':elemtUDP.dport,
-				'len':elemtUDP.len,
-				'chksum':elemtUDP.chksum
-			}
-
-		if(TCP in elemt):
-			elemtTCP = elemt.getlayer(TCP)
-			packet["TCP"]={
-				'sport':elemtTCP.sport,
-				'dport':elemtTCP.dport,
-				'seq':elemtTCP.seq,
-				'ack':elemtTCP.ack,
-				'dataofs':elemtTCP.dataofs,
-				'reserved':elemtTCP.reserved,
-				'flags':elemtTCP.flags,
-				'window':elemtTCP.window,
-				'chksum':elemtTCP.chksum,
-				'urgptr':elemtTCP.urgptr,
-				'options':elemtTCP.options
-			}
-
-		if(ICMP in elemt):
-			elemtICMP = elemt.getlayer(ICMP)
-			packet["ICMP"]={
-				'type':elemtICMP.type,
-				'code':elemtICMP.code,
-				'chksum':elemtICMP.chksum,
-				'id':elemtICMP.id,
-				'seq':elemtICMP.seq,
-				'ts_ori':elemtICMP.ts_ori,
-				'ts_rx':elemtICMP.ts_rx,
-				'ts_tx':elemtICMP.ts_tx,
-				'gw':elemtICMP.gw,
-				'ptr':elemtICMP.ptr,
-				'reserved':elemtICMP.reserved,
-				'length':elemtICMP.length,
-				'addr_mask':elemtICMP.addr_mask,
-				'nexthopmtu':elemtICMP.nexthopmtu,
-				'unused':elemtICMP.unused
-			}	
-
-		if(IP in elemt):
-			elemtIP = elemt.getlayer(IP)
-			packet["IP"]={
-				'version':elemtIP.version,
-				'ihl':elemtIP.ihl,
-				'tos':elemtIP.tos,
-				'len':elemtIP.len,
-				'id':elemtIP.id,
-				'flags':elemtIP.flags,
-				'frag':elemtIP.frag,
-				'ttl':elemtIP.ttl,
-				'proto':elemtIP.proto,
-				'chksum':elemtIP.chksum,
-				'src':elemtIP.src,
-				'dst':elemtIP.dst,
-				'options':elemtIP.options
-			}
+			layers="Ether"
 
 		if(ARP in elemt):
 			elemtARP = elemt.getlayer(ARP)
@@ -223,15 +162,83 @@ def serializeDataSniff(elements):
 				'hwdst':elemtARP.hwdst,
 				'pdst':elemtARP.pdst
 			}
-
-		if(Ether in elemt):
-			elemtEther = elemt.getlayer(Ether)
-			packet["Ether"]={
-				'dst':elemtEther.dst,
-				'src':elemtEther.src,
-				'type':elemtEther.type
-			}
-
+			layers=layers+"/ARP"
+		else:
+			if(IP in elemt):
+				elemtIP = elemt.getlayer(IP)
+				packet["IP"]={
+					'version':elemtIP.version,
+					'ihl':elemtIP.ihl,
+					'tos':elemtIP.tos,
+					'len':elemtIP.len,
+					'id':elemtIP.id,
+					'flags':elemtIP.flags,
+					'frag':elemtIP.frag,
+					'ttl':elemtIP.ttl,
+					'proto':elemtIP.proto,
+					'chksum':elemtIP.chksum,
+					'src':elemtIP.src,
+					'dst':elemtIP.dst,
+					'options':elemtIP.options
+				}
+				layers=layers+"/IP"
+			if(ICMP in elemt):
+				elemtICMP = elemt.getlayer(ICMP)
+				packet["ICMP"]={
+					'type':elemtICMP.type,
+					'code':elemtICMP.code,
+					'chksum':elemtICMP.chksum,
+					'id':elemtICMP.id,
+					'seq':elemtICMP.seq,
+					'ts_ori':elemtICMP.ts_ori,
+					'ts_rx':elemtICMP.ts_rx,
+					'ts_tx':elemtICMP.ts_tx,
+					'gw':elemtICMP.gw,
+					'ptr':elemtICMP.ptr,
+					'reserved':elemtICMP.reserved,
+					'length':elemtICMP.length,
+					'addr_mask':elemtICMP.addr_mask,
+					'nexthopmtu':elemtICMP.nexthopmtu,
+					'unused':elemtICMP.unused
+				}
+				layers=layers+"/ICMP"
+			else:
+				if(UDP in elemt):
+					elemtUDP = elemt.getlayer(UDP)
+					packet["UDP"]={
+						'sport':elemtUDP.sport,
+						'dport':elemtUDP.dport,
+						'len':elemtUDP.len,
+						'chksum':elemtUDP.chksum
+					}
+					layers=layers+"/UDP"
+					
+					if(RIP in elemt):
+						elemtRIP = elemt.getlayer(RIP)
+						packet["RIP"]={
+							'cmd':elemtRIP.cmd,
+							'version':elemtRIP.version,
+							'null':elemtRIP.null
+						}
+						layers=layers+"/RIP"
+				else:
+					if(TCP in elemt):
+						elemtTCP = elemt.getlayer(TCP)
+						packet["TCP"]={
+							'sport':elemtTCP.sport,
+							'dport':elemtTCP.dport,
+							'seq':elemtTCP.seq,
+							'ack':elemtTCP.ack,
+							'dataofs':elemtTCP.dataofs,
+							'reserved':elemtTCP.reserved,
+							'flags':elemtTCP.flags,
+							'window':elemtTCP.window,
+							'chksum':elemtTCP.chksum,
+							'urgptr':elemtTCP.urgptr,
+							'options':elemtTCP.options
+						}
+						layers=layers+"/TCP"	
+		packet["layers"]=layers
 		Data["Packet"+str(count)]=packet
 		
 		count=count+1
