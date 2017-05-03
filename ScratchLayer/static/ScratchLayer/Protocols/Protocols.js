@@ -447,6 +447,31 @@ function Ethernet() {
 
 }
 
+function ARP() {
+
+	Protocol.call(this,"ARP",true);
+
+	ARP.prototype.newPV=function() {
+
+		this.PV = document.createElement("div");
+		this.PV.id = "ARPnew"+contElement;
+		contElement=contElement+1;
+		this.id=this.PV.id;
+
+		var header = document.createElement("header");
+		header.id="header"+this.id;
+		header.classList.add("col-xs-12");
+		header.setAttribute("ondragstart", "drag(event)");
+		header.setAttribute("onmouseover", "topEleme(this.parentNode)");
+		header.setAttribute("draggable","true");
+		header.innerHTML="<div class='col-xs-3'>ARP</div><a type='button' id='collap' data-toggle='collapse' data-target='#"+this.id+"collap' onclick='collapseElement(this)' class='col-xs-1 col-xs-offset-5 collap'> <a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'> <input type='hidden' name='ARP' value='True'><a class='col-xs-1 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a>"
+
+		this.PV.classList.add("ARPNew");
+		this.PV.appendChild(header);
+		this.PV.innerHTML=this.PV.innerHTML+"<div class='collapse in' id='"+this.id+"collap'><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-6' type='text' name='hwtyARP' placeholder='T HARDWARE'></input><input class='col-xs-6' type='text' name='ptyARP' placeholder='T PROTOCOL'></input></div><div class='form-group col-xs-12'><input class='col-xs-3' type='text' name='hwlenARP' placeholder='HLEN'></input><input class='col-xs-3' type='text' name='plenARP' placeholder='PLEN'></input><input class='col-xs-6' type='text' name='opARP' placeholder='OPERACION'></input></div><div class='form-group col-xs-12'><input class='col-xs-6' type='text' name='hwsrcARP' placeholder='HW src'></input><input class='col-xs-6' type='text' name='psrcARP' placeholder='IP src'></input></div><div class='form-group col-xs-12'><input class='col-xs-6' type='text' name='hwdstARP' placeholder='HW dst'></input><input class='col-xs-6' type='text' name='pdstARP' placeholder='IP dst'></input></div></div></div>"
+	};
+}
+
 function IP() {
 
 	ProtocolDrop.call(this,"IP",true);
@@ -502,8 +527,110 @@ function ICMP() {
 
 		this.PV.classList.add("ICMPNew");
 		this.PV.appendChild(header);
-		this.PV.innerHTML=this.PV.innerHTML+"<div class='collapse in' id='"+this.id+"collap'><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-2' type='text' name='VERIP' placeholder='VER'></input><input class='col-xs-3' type='text' name='HLENIP' placeholder='HLEN'></input><input class='col-xs-3' type='text' name='SERVIP' placeholder='T.Servicio'></input><input class='col-xs-4' type='text' name='LOGIP' placeholder='Longitud'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='IdenIP' placeholder='Identificacion'></input><input class='col-xs-4' type='text' name='FlagsIP' placeholder='Flags'></input><input class='col-xs-4' type='text' name='OffFraIP' placeholder='Offset Frag'></input></div><div class='form-group col-xs-12'><input class='col-xs-3' type='text' name='TTLIP' placeholder='TTL'></input><input class='col-xs-4' type='text' name='ProIP' placeholder='Protocolo'></input><input class='col-xs-5' type='text' name='CheckIP' placeholder='Checksum'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='srcIP' placeholder='src'></input><input class='col-xs-4' type='text' name='dstIP' placeholder='dst'></input><input class='col-xs-4' type='text' name='OpcionesIP' placeholder='Opciones'></input></div></div></div>"
+		this.PV.innerHTML=this.PV.innerHTML+"<div class='collapse in' id='"+this.id+"collap'><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-3' type='text' name='typeICMP' placeholder='Type'></input><input class='col-xs-3' type='text' name='codeICMP' placeholder='CODE'></input><input class='col-xs-6' type='text' name='checkICMP' placeholder='Checksum'></input></div><div class='form-group col-xs-12'><input class='col-xs-6' type='text' name='idenICMP' placeholder='Iden'></input><input class='col-xs-6' type='text' name='nseqICMP' placeholder='N seq'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='tsoriICMP' placeholder='TStamp Ori'></input><input class='col-xs-4' type='text' name='tsrxICMP' placeholder='TStamp Rv'></input><input class='col-xs-4' type='text' name='tstxICMP' placeholder='TStamp Trans'></input></div><div class='form-group col-xs-12'><input class='col-xs-12' type='text' name='addrmaskICMP' placeholder='Dic Mascara'></input></div></div></div>"
 	};
+}
+
+function TCP() {
+
+	ProtocolDrop.call(this,"TCP",true);
+
+	TCP.prototype.newPV=function() {
+
+		this.dropin={"DATA":"DATA"};
+
+		this.PV = document.createElement("div");
+		this.PV.id = "TCPnew"+contElement;
+		contElement=contElement+1;
+		this.id=this.PV.id;
+
+		var header = document.createElement("header");
+		header.id="header"+this.id;
+		header.classList.add("col-xs-12");
+		header.setAttribute("ondragstart", "drag(event)");
+		header.setAttribute("onmouseover", "topEleme(this.parentNode)");
+		header.setAttribute("draggable","true");
+		header.innerHTML="<div class='col-xs-3'>TCP</div><a type='button' id='collap' data-toggle='collapse' data-target='#"+this.id+"collap' onclick='collapseElement(this)' class='col-xs-1 col-xs-offset-5 collap'><a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'>  <input type='hidden' name='TCP' value='True'><a class='col-xs-1 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a>"
+		
+		this.PV.classList.add("TCPNew");
+		this.PV.appendChild(header);
+		this.PV.innerHTML=this.PV.innerHTML+"<div class='collapse in' id='"+this.id+"collap'><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-6' type='text' name='srcportTCP' placeholder='Port src'></input><input class='col-xs-6' type='text' name='dstportTCP' placeholder='Port dst'></input></input></div><div class='form-group col-xs-12'><input class='col-xs-12' type='text' name='sequennTCP' placeholder='N Sequence'></div><div class='form-group col-xs-12'><input class='col-xs-12' type='text' name='ackTCP' placeholder='N ACK'></input></div><div class='form-group col-xs-12'><input class='col-xs-3' type='text' name='offsetTCP' placeholder='Offset'></input><input class='col-xs-2' type='text' name='reserdTCP' placeholder='Rvd'></input><input class='col-xs-3' type='text' name='flagTCP' placeholder='Flag'></input><input class='col-xs-4' type='text' name='windTCP' placeholder='Windows'></input></div><div class='form-group col-xs-12'><input class='col-xs-4' type='text' name='checkTCP' placeholder='Checksum'></input><input class='col-xs-4' type='text' name='urgpoTCP' placeholder='UrgentPoin'></input><input class='col-xs-4' type='text' name='OpTCP' placeholder='Options'></input></div></div></div>"
+
+		var drop = createDrop(this.id)
+		
+		this.PV.appendChild(drop);
+		this.drop=drop.firstChild;
+		this.idDrop=this.drop.id;
+	};
+
+}
+
+function UDP() {
+
+	ProtocolDrop.call(this,"UDP",true);
+
+	UDP.prototype.newPV=function() {
+
+		this.dropin={"DATA":"DATA","RIP":"RIP"};
+
+		this.PV = document.createElement("div");
+		this.PV.id = "UDPnew"+contElement;
+		contElement=contElement+1;
+		this.id=this.PV.id;
+
+		var header = document.createElement("header");
+		header.id="header"+this.id;
+		header.classList.add("col-xs-12");
+		header.setAttribute("ondragstart", "drag(event)");
+		header.setAttribute("onmouseover", "topEleme(this.parentNode)");
+		header.setAttribute("draggable","true");
+		header.innerHTML="<div class='col-xs-3'>UDP</div><a type='button' id='collap' data-toggle='collapse' data-target='#"+this.id+"collap' onclick='collapseElement(this)' class='col-xs-1 col-xs-offset-5 collap'><a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'>  <input type='hidden' name='UDP' value='True'><a class='col-xs-1 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a>"
+		
+		this.PV.classList.add("UDPNew");
+		this.PV.appendChild(header);
+		this.PV.innerHTML=this.PV.innerHTML+"<div class='collapse in' id='"+this.id+"collap'><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-6' type='text' name='sportUDP' placeholder='Port src'></input><input class='col-xs-6' type='text' name='dport' placeholder='Port dst'></input></div><div class='form-group col-xs-12'><input class='col-xs-6' type='text' name='lenUDP' placeholder='LENG'></input><input class='col-xs-6' type='text' name='checkUDP' placeholder='Checksum'></input></div></div></div>"
+
+		var drop = createDrop(this.id)
+		
+		this.PV.appendChild(drop);
+		this.drop=drop.firstChild;
+		this.idDrop=this.drop.id;
+	};
+
+}
+
+function RIP() {
+
+	ProtocolDrop.call(this,"RIP",true);
+
+	RIP.prototype.newPV=function() {
+
+		this.dropin={"DATARIP":"DATARIP"};
+
+		this.PV = document.createElement("div");
+		this.PV.id = "RIPnew"+contElement;
+		contElement=contElement+1;
+		this.id=this.PV.id;
+
+		var header = document.createElement("header");
+		header.id="header"+this.id;
+		header.classList.add("col-xs-12");
+		header.setAttribute("ondragstart", "drag(event)");
+		header.setAttribute("onmouseover", "topEleme(this.parentNode)");
+		header.setAttribute("draggable","true");
+		header.innerHTML="<div class='col-xs-3'>RIP</div><a type='button' id='collap' data-toggle='collapse' data-target='#"+this.id+"collap' onclick='collapseElement(this)' class='col-xs-1 col-xs-offset-5 collap'><a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'>  <input type='hidden' name='RIP' value='True'><a class='col-xs-1 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a>"
+		
+		this.PV.classList.add("RIPNew");
+		this.PV.appendChild(header);
+		this.PV.innerHTML=this.PV.innerHTML+"<div class='collapse in' id='"+this.id+"collap'><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><input class='col-xs-6' type='text' name='cmdRIP' placeholder='Command'></input><input class='col-xs-6' type='text' name='verRIP' placeholder='Version'></input></div></div></div>"
+
+		var drop = createDrop(this.id)
+		
+		this.PV.appendChild(drop);
+		this.drop=drop.firstChild;
+		this.idDrop=this.drop.id;
+	};
+
 }
 
 
@@ -518,11 +645,23 @@ function createElement(idSrt,parent) {
     	case "Ethernet":
     		newElement = new Ethernet();
     		break;
+    	case "ARP":
+    		newElement = new ARP();
+    		break;
     	case "IP":
     		newElement = new IP();
     		break;
     	case "ICMP":
     		newElement = new ICMP();
+    		break;
+    	case "TCP":
+    		newElement = new TCP();
+    		break;
+    	case "UDP":
+    		newElement = new UDP();
+    		break;
+    	case "RIP":
+    		newElement = new RIP();
     		break;
 	}
 	newElement.newPV();
@@ -569,4 +708,12 @@ Ethernet.prototype = new ProtocolDrop();
 
 IP.prototype = new ProtocolDrop();
 
+TCP.prototype = new ProtocolDrop();
+
+UDP.prototype = new ProtocolDrop();
+
 ICMP.prototype = new Protocol();
+
+RIP.prototype = new ProtocolDrop();
+
+ARP.prototype = new Protocol();

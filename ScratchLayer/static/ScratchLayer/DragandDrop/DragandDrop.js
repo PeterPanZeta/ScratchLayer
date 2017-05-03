@@ -87,9 +87,9 @@ function SubmitSniff(form,e){
             		}
             	}
             	else{
-            		console.log("Antes");
+            		//console.log("Antes");
                 	AddPacketSniff(data.response.message);
-                	console.log("Destras");
+                	//console.log("Destras");
             	}
             	//console.log(data.response.sniff);
         	}
@@ -100,45 +100,26 @@ function SubmitSniff(form,e){
 function AddPacketSniff(elements) {
 
 	for (var packet in elements){
-		var layerDescrip = "";
 		sniffElements[packet]=elements[packet];
-
-		if(Exists(elements[packet],"Ether")){
-			layerDescrip="Ether(src="+elements[packet].Ether.src+" dst="+elements[packet].Ether.dst+")";
-		}
-		if(Exists(elements[packet],"ARP")){
-			layerDescrip=layerDescrip+"/ARP";
-		}else{
-			if(Exists(elements[packet],"IP")){
-				layerDescrip=layerDescrip+"/IP(src="+elements[packet].IP.src+" dst="+elements[packet].IP.dst+")";
-
-				if(Exists(elements[packet],"ICMP")){
-					layerDescrip=layerDescrip+"/ICMP";
-				}else{
-					if(Exists(elements[packet],"TCP")){
-						layerDescrip=layerDescrip+"/TCP(sport="+elements[packet].TCP.sport+" dport"+elements[packet].TCP.dport+")";
-					}else{
-						if(Exists(elements[packet],"UDP")){
-							layerDescrip=layerDescrip+"/UDP(sport="+elements[packet].UDP.sport+" dport"+elements[packet].UDP.dport+")";
-						}
-					}
-					if(Exists(elements[packet],"RIP")){
-						layerDescrip=layerDescrip+"/RIP";
-					}
-				}
-			}
-			
-			//tBodySniff.innerHTML="<tr><th>"+layerDescrip+"</th></tr>"+tBodySniff.innerHTML
-		}
-		tableSniff.row.add( ["<button onclick='(createElementSniff(\""+packet+"\"))'>Send PP</button>  "+layerDescrip] ).draw();
-		//console.log(elements[packet]);
-		//console.log(layerDescrip);
+		tableSniff.row.add( ["<button onclick='(createElementSniff(\""+packet+"\"))'>Send PP</button> ("+elements[packet].iface+") "+elements[packet].layerDescrip] ).draw();
 	}
 }
 
-function createElementSniff(packet) {
-	
-	console.log(sniffElements[packet]+" "+sniffElements[packet].layers);
+function createElementSniff(packetName) {
+	var packet =  sniffElements[packetName];
+	//packetObj = createElement("Packet",findObj("panelPrincipal"));
+	//var mult = 1;
+	//document.getElementById("formSniff").filter.value="SIIIIIIIIIIIIii";
+	console.log(packet.layers.split("/"));
+	layers=packet.layers.split("/");
+
+	for (layer in layers) {
+		console.log(layer);
+	}
+
+	/*var child = element;
+	desti.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth);
+	console.log(sniffElements[packet]+" "+sniffElements[packet].layers);*/
 }
 
 function Exists (element, item) {
@@ -199,7 +180,7 @@ function drop(e,move=true){
 			//console.log(parentinations[destId]);
 			if(dest.id!="panelPrincipal"){
 				var child = element;
-				desti.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth)
+				desti.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth);
 			}
 
 	    } else{

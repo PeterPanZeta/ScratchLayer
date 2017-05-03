@@ -23,13 +23,13 @@
                 <img id="Ethernet" class="icon" draggable="true"  src="{% static 'ScratchLayer/images/ethernet.png' %}">
               </div>
               <div class="col-xs-1">
+                <img id="ARP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/ARP.png' %}">
+              </div>
+              <div class="col-xs-1">
                 <img id="IP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/IP.png' %}">
               </div>
               <div class="col-xs-1">
                 <img id="ICMP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/ICMP.png' %}">
-              </div>
-              <div class="col-xs-1">
-                <img id="ARP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/ARP.png' %}">
               </div>
               <div class="col-xs-1">
                 <img id="TCP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/TCP.png' %}">
@@ -64,7 +64,7 @@
   <div class="row">
     <div class="col-xs-10 col-xs-offset-1">
         <div class="panel panel-default">
-          <div class="panel-heading col-xs-12"><form method="post" onsubmit="SubmitSniff(this,event)"><input type="text" name="filter" class="col-lg-8 col-xs-7" placeholder="Filter"><input type="text" name="count" class="col-lg-1 col-xs-1" placeholder="Count"> <select name="interfaz" id="interfaces2" class="col-lg-1 col-xs-2">
+          <div class="panel-heading col-xs-12"><form id="formSniff" method="post" onsubmit="SubmitSniff(this,event)"><input type="text" name="filter" class="col-lg-8 col-xs-7" placeholder="Filter"><input type="text" name="count" class="col-lg-1 col-xs-1" placeholder="Count"> <select name="interfaz" id="interfaces2" class="col-lg-1 col-xs-2">
             {% for inter in interfaces %} 
                 <option value="{{inter}}">{{ inter }}</option> 
             {% endfor %}
