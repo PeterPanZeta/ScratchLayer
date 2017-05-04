@@ -101,26 +101,49 @@ function AddPacketSniff(elements) {
 
 	for (var packet in elements){
 		sniffElements[packet]=elements[packet];
+		//console.log(sniffElements[packet]);
 		tableSniff.row.add( ["<button onclick='(createElementSniff(\""+packet+"\"))'>Send PP</button> ("+elements[packet].iface+") "+elements[packet].layerDescrip] ).draw();
 	}
 }
 
 function createElementSniff(packetName) {
+	viewPanel(document.getElementById("pprin"));
 	var packet =  sniffElements[packetName];
-	//packetObj = createElement("Packet",findObj("panelPrincipal"));
-	//var mult = 1;
-	//document.getElementById("formSniff").filter.value="SIIIIIIIIIIIIii";
-	console.log(packet.layers.split("/"));
+	var child;
+	var parent = createElement(packetName,findObj("panelPrincipal"));
+	//sleep(1000);
+	//var form = document.getElementById("FormPacketnew"+packetName.split("/")[1]);
 	layers=packet.layers.split("/");
+	for (var i=0; i<layers.length; i++) {
+		
+		child= createElement(layers[i],parent);
 
-	for (layer in layers) {
-		console.log(layer);
+		//sleep(1000);
+		parent.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth);
+		//child.getPV().style.position = "relative";
+		//child.getPV().style.left = 0 + "px";
+		//child.getPV().style.top = 0 + "px";
+
+		//sleep(1000);
+		
+		parent=child;
+		//console.log(packet[layers[i]]);
 	}
 
 	/*var child = element;
 	desti.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth);
 	console.log(sniffElements[packet]+" "+sniffElements[packet].layers);*/
 }
+
+function sleep(millis)
+{
+    var date = new Date();
+    var curDate = null;
+    do { curDate = new Date(); }
+    while(curDate-date < millis);
+}
+
+
 
 function Exists (element, item) {
 	for(var i in element){
@@ -161,64 +184,42 @@ function drop(e,move=true){
  	e.stopPropagation(); // Stops some browsers from redirecting.
   	e.preventDefault();
 
-    var element; // Elemento arrastrado
-	var src = document.getElementById(e.dataTransfer.getData("text"));//e.dataTransfer.getData("text");
-    //var patt = new RegExp(src.split("new")[0]);
-    //var patt2 = new RegExp("Drop"); 
-    var dest = e.target;
-    //console.log(dest.id)
-    var	desti = findObj(dest.id);
-    //console.log("SRC DROP: "+src);
-    if(desti.dropInElemt(src.id)){ //1ºy 3º no permite meterse sobre si mismo, 2º solo se permite en los drop !patt.test(dest.id) && (patt2.test(dest.id) || dest.id == "panelPrincipal" ) && dest.id!=src && 
+    var element;
+	var src = document.getElementById(e.dataTransfer.getData("text"));
+    var destHTML = e.target;
+    var	desti = findObj(destHTML.id);
+
+    if(desti.dropInElemt(src.id)){
 	    
 	    var patt = new RegExp("new");
 
 	    if (!patt.test(src.id)){
-	    	//console.log("DestTunig "+dest.id.split("Drop")[1]);
-	 		//console.log(findObj(dest.id));
-	    	element = createElement(src.id,findObj(dest.id));
-			//console.log(parentinations[destId]);
-			if(dest.id!="panelPrincipal"){
-				var child = element;
-				desti.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth);
-			}
-
+	    	element = createElement(src.id,desti);
+	    	if(destHTML.id!="panelPrincipal")desti.setModSize(element.getPV().offsetHeight,element.getPV().offsetWidth);
 	    } else{
 	    	src=src.parentNode;
-	    	//console.log("ElementHTML "+elementHTML.id);
-	    	//console.log("Padre del elemento: "+elementHTML.parentNode.id);
-	    	//console.log("DEST: "+dest.id);
-	    	
 
-	    	if(dest.id!=src.parentNode.id){
-				//console.log("TransferElement");
-	    		element = TransferElement(dest,src.parentNode,src);
-	    		//console.log("Return "+ element);
+	     	if(destHTML.id!=src.parentNode.id){
+	    		element = TransferElement(destHTML,src.parentNode,src);
 	    	}
 	    	else{
-
-	    		//dest = elementHTML.parentNode; //Para evitar los casos en los que los elementos se menten dentro de si mismos.
-	    		//console.log(dest);
-	    		//console.log("Nuevo DEST: "+dest.id);
-	    		//console.log("NO TransferElement");
 	    		element = findObj(src.id);
-	    		//console.log("Return "+ element);
 	    	}
 
 	    }
 
-	    if(dest.id=="panelPrincipal"){
+	    if(destHTML.id=="panelPrincipal"){
 
 	    	//console.log("libre movimiento");
 
-	    	tamContX = $('#'+dest.id).width();
-		    tamContY = $('#'+dest.id).height();
+	    	tamContX = $('#'+destHTML.id).width();
+		    tamContY = $('#'+destHTML.id).height();
 
 		    tamElemX = $('#'+element.id).width();
 		    tamElemY = $('#'+element.id).height();
 
-		    posXCont = $('#'+dest.id).position().left;
-		    posYCont = $('#'+dest.id).position().top;
+		    posXCont = $('#'+destHTML.id).position().left;
+		    posYCont = $('#'+destHTML.id).position().top;
 
 		    // Posicion absoluta del raton
 		    x = e.layerX;
@@ -258,28 +259,14 @@ function drop(e,move=true){
 
 function TransferElement(destHTML,origHTML,srcHTML) {
 
-	//console.log("ParentTransfer "+orig);
-	//console.log("DestTransfer "+dest);
 	var child = findObj(srcHTML.id);
 	var	dest = findObj(destHTML.id);
 	var orig = findObj(origHTML.id);
 
-	if(orig.getId()!="panelPrincipal"){
-		orig.setSizeOrig();
-	}
+	if(orig.getId()!="panelPrincipal")orig.setSizeOrig();
 
-	if(dest.id!="panelPrincipal"){
-		/*if(dest.getType()!="Packet"){*/
-		
+	if(dest.id!="panelPrincipal")dest.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth);
 
-			dest.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth);
-		/*
-		}
-		else{
-			dest.setModSize(child.getPV().offsetHeight+105,child.getPV().offsetWidth+37);
-		}*/
-	}
-	//dest.getPV().appendChild(child.getPV());
 	dest.addChild(child);
 	child.setParent(dest);
 	orig.removeChild(child);

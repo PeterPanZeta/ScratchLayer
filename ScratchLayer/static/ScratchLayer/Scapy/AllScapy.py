@@ -147,13 +147,13 @@ def serializeDataSniff(elements,interface):
 		packet = {}
 		if(Ether in elemt):
 			elemtEther = elemt.getlayer(Ether)
-			packet["Ether"]={
+			packet["Ethernet"]={
 				'dst':elemtEther.dst,
 				'src':elemtEther.src,
 				'type':elemtEther.type
 			}
-			layers="Ether"
-			layerDescrip="Ether(src="+elemtEther.src+" dst="+elemtEther.dst+")"
+			layers="Ethernet"
+			layerDescrip="Ethernet(src="+elemtEther.src+" dst="+elemtEther.dst+")"
 
 		if(ARP in elemt):
 			elemtARP = elemt.getlayer(ARP)
@@ -256,7 +256,7 @@ def serializeDataSniff(elements,interface):
 		packet["iface"]=interface
 		packet["layers"]=layers
 		packet["layerDescrip"]=layerDescrip
-		ide="Packet"+str(time.tm_hour)+str(time.tm_min)+str(time.tm_sec+count)
+		ide="Packet/"+str(time.tm_hour)+str(time.tm_min)+str(time.tm_sec+count)
 		Data[ide]=packet
 		
 		count=count+1

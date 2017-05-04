@@ -636,11 +636,21 @@ function RIP() {
 
 function createElement(idSrt,parent) {
 	var newElement;
+	
+	//console.log(idSrt);
 	//console.log(parent);
-	switch(idSrt) {
+	switch(idSrt.split("/")[0]) {
 		case "Packet":
-			newElement = new Packet(nPack);
-			nPack=nPack+1;
+			
+			if(idSrt.split("/")[1]!=undefined){
+				console.log(idSrt);
+				console.log(idSrt.split("/")[1]);
+				newElement = new Packet(idSrt.split("/")[1]);
+			}
+			else{
+				newElement = new Packet(nPack);
+				nPack=nPack+1;
+			}
 			break;
     	case "Ethernet":
     		newElement = new Ethernet();
@@ -669,11 +679,12 @@ function createElement(idSrt,parent) {
 	//parent.getPV().appendChild(newElement.getPV());
 	parent.addChild(newElement);
 	//console.log(findObj(parent.id));
-	newElement.setParent(findObj(parent.id));
+	newElement.setParent(parent);
 	parentinations[newElement.getId()]=newElement;
 	newElement.setWH(newElement.getPV().offsetWidth,newElement.getPV().offsetHeight);
 	newElement.setWHCollap(document.getElementById(newElement.getId()+"collapElement").offsetWidth,document.getElementById(newElement.getId()+"collapElement").offsetHeight);
 	if(newElement.isDropable())newElement.iniDropWH();
+	if(parent.getId()!="panelPrincipal")parent.setModSize(newElement.getPV().offsetHeight,newElement.getPV().offsetWidth);
 	return newElement;
 }
 
