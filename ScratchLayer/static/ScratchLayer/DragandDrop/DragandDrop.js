@@ -108,42 +108,94 @@ function AddPacketSniff(elements) {
 
 function createElementSniff(packetName) {
 	viewPanel(document.getElementById("pprin"));
-	var packet =  sniffElements[packetName];
+	
+	var dataPacket = sniffElements[packetName];
 	var child;
-	var parent = createElement(packetName,findObj("panelPrincipal"));
-	//sleep(1000);
-	//var form = document.getElementById("FormPacketnew"+packetName.split("/")[1]);
-	layers=packet.layers.split("/");
+
+	var packet = createElement(packetName,findObj("panelPrincipal"));
+	var parent = packet;
+
+	layers=dataPacket.layers.split("/");
 	for (var i=0; i<layers.length; i++) {
-		
-		child= createElement(layers[i],parent);
-
-		//sleep(1000);
-		parent.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth);
-		//child.getPV().style.position = "relative";
-		//child.getPV().style.left = 0 + "px";
-		//child.getPV().style.top = 0 + "px";
-
-		//sleep(1000);
-		
+		child = createElement(layers[i],parent);
 		parent=child;
-		//console.log(packet[layers[i]]);
 	}
 
-	/*var child = element;
-	desti.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth);
-	console.log(sniffElements[packet]+" "+sniffElements[packet].layers);*/
+	for (var i=0; i<layers.length; i++) loadData(document.getElementById("Form"+packet.getId()),dataPacket[layers[i]],layers[i]);
+	minimax(document.getElementById(packet.getId()+"buttonMinimax"));
 }
 
-function sleep(millis)
-{
-    var date = new Date();
-    var curDate = null;
-    do { curDate = new Date(); }
-    while(curDate-date < millis);
+function loadData(form, dataLoad, layer) {
+
+		switch(layer) {
+
+    	case "Ethernet":
+    		form.srcEther.value = dataLoad.dst;
+    		form.dstEther.value = dataLoad.src;
+    		form.typeEther.value = dataLoad.type;
+    		break; 
+    	case "ARP":
+    		form.hwtyARP.value = dataLoad.hwtype;
+    		form.ptyARP.value = dataLoad.ptype;
+    		form.hwlenARP.value = dataLoad.hwlen;
+    		form.plenARP.value = dataLoad.plen;
+    		form.opARP.value = dataLoad.op;
+    		form.hwsrcARP.value = dataLoad.hwsrc;
+    		form.psrcARP.value = dataLoad.psrc;
+    		form.hwdstARP.value = dataLoad.hwdst;
+    		form.pdstARP.value = dataLoad.pdst;
+    		break;
+    	case "IP":
+    		form.VERIP.value = dataLoad.version;
+    		form.HLENIP.value = dataLoad.ihl;
+    		form.SERVIP.value = dataLoad.tos;
+    		form.LOGIP.value = dataLoad.len;
+    		form.IdenIP.value = dataLoad.id;
+    		form.FlagsIP.value = dataLoad.flags;
+    		form.OffFraIP.value = dataLoad.frag;
+    		form.TTLIP.value = dataLoad.ttl;
+    		form.ProIP.value = dataLoad.proto;
+    		form.CheckIP.value = dataLoad.chksum;
+    		form.srcIP.value = dataLoad.src;
+    		form.dstIP.value = dataLoad.dst;
+    		form.OpcionesIP.value = dataLoad.options;
+    		break;
+    	case "ICMP":
+    		form.typeICMP.value = dataLoad.type;
+    		form.codeICMP.value = dataLoad.code;
+    		form.checkICMP.value = dataLoad.chksum;
+    		form.idenICMP.value = dataLoad.id;
+    		form.nseqICMP.value = dataLoad.seq;
+    		form.tsoriICMP.value = dataLoad.ts_ori;
+    		form.tsrxICMP.value = dataLoad.ts_rx;
+    		form.tstxICMP.value = dataLoad.ts_tx;
+    		form.addrmaskICMP.value = dataLoad.addr_mask;
+     		break;
+    	case "TCP":
+    		form.srcportTCP.value = dataLoad.sport;
+    		form.dstportTCP.value = dataLoad.dport;
+    		form.sequennTCP.value = dataLoad.seq;
+    		form.ackTCP.value = dataLoad.ack;
+    		form.offsetTCP.value = dataLoad.dataofs;
+    		form.reserdTCP.value = dataLoad.reserved;
+    		form.flagTCP.value = dataLoad.flags;
+    		form.windTCP.value = dataLoad.window;
+    		form.checkTCP.value = dataLoad.chksum;
+    		form.urgpoTCP.value = dataLoad.urgptr;
+    		form.OpTCP.value = dataLoad.options;			
+    		break;
+    	case "UDP":
+    		form.sportUDP.value = dataLoad.sport;			
+    		form.dportUDP.value = dataLoad.dport;
+    		form.lenUDP.value = dataLoad.len;
+    		form.checkUDP.value = dataLoad.chksum;
+    		break;
+    	case "RIP":
+    		form.cmdRIP.value = elemtRIP.cmd;
+			form.verUDP.value = elemtRIP.version;
+    		break;
+	}
 }
-
-
 
 function Exists (element, item) {
 	for(var i in element){
@@ -195,7 +247,6 @@ function drop(e,move=true){
 
 	    if (!patt.test(src.id)){
 	    	element = createElement(src.id,desti);
-	    	if(destHTML.id!="panelPrincipal")desti.setModSize(element.getPV().offsetHeight,element.getPV().offsetWidth);
 	    } else{
 	    	src=src.parentNode;
 

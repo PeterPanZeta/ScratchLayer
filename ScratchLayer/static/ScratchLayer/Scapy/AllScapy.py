@@ -16,7 +16,7 @@ def PPrin(petition):
 
 	if(petition.POST.get("pk",None) != None):
 
-		if(petition.POST.get("Ether",None) != None):
+		if(petition.POST.get("Ethernet",None) != None):
 			
 			EtherDf=Ether()
 
@@ -153,7 +153,7 @@ def serializeDataSniff(elements,interface):
 				'type':elemtEther.type
 			}
 			layers="Ethernet"
-			layerDescrip="Ethernet(src="+elemtEther.src+" dst="+elemtEther.dst+")"
+			layerDescrip="Ethernet " #(src="+elemtEther.src+" dst="+elemtEther.dst+")"
 
 		if(ARP in elemt):
 			elemtARP = elemt.getlayer(ARP)
@@ -169,7 +169,7 @@ def serializeDataSniff(elements,interface):
 				'pdst':elemtARP.pdst
 			}
 			layers=layers+"/ARP"
-			layerDescrip=layerDescrip+"/ARP"
+			layerDescrip=layerDescrip+"/ ARP OP:"+str(elemtARP.op)+" "+elemtARP.pdst+" says "+elemtARP.psrc
 		else:
 			if(IP in elemt):
 				elemtIP = elemt.getlayer(IP)
@@ -189,7 +189,7 @@ def serializeDataSniff(elements,interface):
 					'options':elemtIP.options
 				}
 				layers=layers+"/IP"
-				layerDescrip=layerDescrip+"/IP(src="+elemtIP.src+" dst="+elemtIP.dst+")"
+				layerDescrip=layerDescrip+"/ IP "
 
 			if(ICMP in elemt):
 				elemtICMP = elemt.getlayer(ICMP)
@@ -202,16 +202,11 @@ def serializeDataSniff(elements,interface):
 					'ts_ori':elemtICMP.ts_ori,
 					'ts_rx':elemtICMP.ts_rx,
 					'ts_tx':elemtICMP.ts_tx,
-					'gw':elemtICMP.gw,
-					'ptr':elemtICMP.ptr,
-					'reserved':elemtICMP.reserved,
-					'length':elemtICMP.length,
-					'addr_mask':elemtICMP.addr_mask,
-					'nexthopmtu':elemtICMP.nexthopmtu,
-					'unused':elemtICMP.unused
+					'addr_mask':elemtICMP.addr_mask
 				}
+
 				layers=layers+"/ICMP"
-				layerDescrip=layerDescrip+"/ICMP"
+				layerDescrip=layerDescrip+"/ ICMP "+elemtIP.src+" > "+elemtIP.dst+" Type:"+str(elemtICMP.type)+" Code:"+str(elemtICMP.code)
 
 			else:
 				if(UDP in elemt):
@@ -223,7 +218,7 @@ def serializeDataSniff(elements,interface):
 						'chksum':elemtUDP.chksum
 					}
 					layers=layers+"/UDP"
-					layerDescrip=layerDescrip+"/UDP(sport="+str(elemtUDP.sport)+" dport="+str(elemtUDP.dport)+")"
+					layerDescrip=layerDescrip+"/UDP "+elemtIP.src+":"+str(elemtUDP.sport)+" > "+elemtIP.dst+":"+str(elemtUDP.dport)
 
 					if(RIP in elemt):
 						elemtRIP = elemt.getlayer(RIP)
@@ -233,7 +228,7 @@ def serializeDataSniff(elements,interface):
 							'null':elemtRIP.null
 						}
 						layers=layers+"/RIP"
-						layerDescrip=layerDescrip+"/RIP"
+						layerDescrip=layerDescrip+"/ RIP "
 				else:
 					if(TCP in elemt):
 						elemtTCP = elemt.getlayer(TCP)
@@ -251,7 +246,7 @@ def serializeDataSniff(elements,interface):
 							'options':elemtTCP.options
 						}
 						layers=layers+"/TCP"
-						layerDescrip=layerDescrip+"/TCP(sport="+str(elemtTCP.sport)+" dport="+str(elemtTCP.dport)+")"
+						layerDescrip=layerDescrip+"/ TCP "+elemtIP.src+":"+str(elemtTCP.sport)+" > "+elemtIP.dst+":"+str(elemtTCP.dport)
 						
 		packet["iface"]=interface
 		packet["layers"]=layers
