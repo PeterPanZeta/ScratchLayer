@@ -22,7 +22,8 @@ $(document).ready(function() {
 	parentination2.addEventListener('dragover', allowDrop, false);
 	parentination2.addEventListener('drop',function(e){drop(e)}, false);
 	tableSniff = $('#dataTables-Sniffer').DataTable({
-    	responsive: true
+    	responsive: true,
+    	bSort: false
     });
 });
 
@@ -102,7 +103,7 @@ function AddPacketSniff(elements) {
 	for (var packet in elements){
 		sniffElements[packet]=elements[packet];
 		//console.log(sniffElements[packet]);
-		tableSniff.row.add( ["<button onclick='(createElementSniff(\""+packet+"\"))'>Send PP</button> ("+elements[packet].iface+") "+elements[packet].layerDescrip] ).draw();
+		tableSniff.row.add( ["<input type='checkbox' name="+packet+" id="+packet+"> ("+elements[packet].iface+") "+elements[packet].layerDescrip] ).draw();
 	}
 }
 

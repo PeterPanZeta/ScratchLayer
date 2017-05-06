@@ -51,8 +51,8 @@ header {
 
 .EthernetNew {
   /*overflow: hidden;*/
-  height: 171px;
-  width: 380px;
+  height: 204px;
+  width: 400px;
   float: left;
   border: 2px solid #666666;
   background-color: #ccc;
@@ -72,8 +72,8 @@ header {
 
 .IPNew{
   /*overflow: hidden;*/
-  height: 300px;
-  width: 380px;
+  height: 319px;
+  width: 400px;
   float: left;
   border: 2px solid #666666;
   background-color: #ccc;
@@ -94,7 +94,7 @@ header {
 .ICMPNew {
   /*overflow: hidden;*/
   height: 228px;
-  width: 380px;
+  width: 400px;
   float: left;
   border: 2px solid #666666;
   background-color: #ccc;
@@ -113,8 +113,8 @@ header {
 }
 .ARPNew {
   /*overflow: hidden;*/
-  height: 228px;
-  width: 380px;
+  height: 234px;
+  width: 400px;
   float: left;
   border: 2px solid #666666;
   background-color: #ccc;
@@ -133,8 +133,8 @@ header {
 }
 .TCPNew {
   /*overflow: hidden;*/
-  height: 343px;
-  width: 380px;
+  height: 356px;
+  width: 400px;
   float: left;
   border: 2px solid #666666;
   background-color: #ccc;
@@ -154,7 +154,7 @@ header {
 .UDPNew {
   /*overflow: hidden;*/
   height: 214px;
-  width: 380px;
+  width: 400px;
   float: left;
   border: 2px solid #666666;
   background-color: #ccc;
@@ -174,7 +174,7 @@ header {
 .RIPNew {
   /*overflow: hidden;*/
   height: 171px;
-  width: 380px;
+  width: 400px;
   float: left;
   border: 2px solid #666666;
   background-color: #ccc;

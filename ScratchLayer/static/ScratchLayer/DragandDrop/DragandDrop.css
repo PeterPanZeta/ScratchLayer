@@ -6,6 +6,11 @@ input {
   background-color: "#00FF00"
 }
 
+label {
+  font-family: Arial;
+  font-size: 8pt; 
+  background-color: "#00FF00"
+}
 .column {
   /*overflow: hidden;*/
   height: 200px;
