@@ -60,7 +60,7 @@
   </div>
 </div>
 
-<div id='Snffer' class="col-xs-12" style="display:none;">
+<div id='Snffer' class="col-xs-12">
   <div class="row">
     <div class="col-xs-10 col-xs-offset-1">
         <div class="panel panel-default">
@@ -71,13 +71,23 @@
           </select>
           <input class='col-lg-1 col-xs-1 col-lg-offset-1 col-xs-offset-1' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input>
           </form></div>
-          <div id="Sniffer" class="panel-body Sniff">
-            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-Sniffer">
-              <thead>
+          <div id="Sniffer" class="panel-body Sniff">  
+            <table width="100%" class="table table-striped table-hover display select " cellspacing="0" id="dataTables-Sniffer"> <!--table-bordered-->
+             <thead>
                   <tr> 
-                      <th><input type="checkbox" name="all" id="selectAll"> <button onclick='(createElementSniff(\""+packet+"\"))'>Send PP</button>  Packet</th>
-                  </tr>
+                     <th><input name="select_all" value="1" type="checkbox"></th>
+                      <th>Packet</th>
+                 </tr>
               </thead>
+                <tfoot>
+                    <tr> 
+                      <th></th>
+                      <th style="text-align: right;">
+                        <button  onclick='createElementsSniff()'>Tras</button>
+                      </th>
+                  </tr>
+                </tfoot>
+                <tbody></tbody>
             </table>
           </div>
         </div>

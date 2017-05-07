@@ -2,6 +2,7 @@ var panelPrincipal = new PanelPrincipal(document.getElementById("panelPrincipal"
 var parentinations = {"panelPrincipal":panelPrincipal};
 var onmouseover=undefined;
 var sniffElements= {};
+var rows_selected = [];
 //console.log(parentinations["panelPrincipal"]);
 
 $(document).ready(function() {
@@ -11,21 +12,131 @@ $(document).ready(function() {
 		elem.addEventListener('dragstart', drag, false);
 
 	});
-	
-    /*var parentination1 = document.getElementById("elements1");
-
-	parentination1.addEventListener('dragover', allowDrop, false);
-	parentination1.addEventListener('drop', drop, false);*/
 
 	var parentination2 = document.getElementById("panelPrincipal");
 
 	parentination2.addEventListener('dragover', allowDrop, false);
 	parentination2.addEventListener('drop',function(e){drop(e)}, false);
+
 	tableSniff = $('#dataTables-Sniffer').DataTable({
     	responsive: true,
-    	bSort: false
+    	bSort: false,
+    	width: '1%',
+        className: 'dt-body-center',
+        'select': {
+         'style': 'multi'
+      	},
+    	columnDefs: [
+            {
+         'targets': 0,
+         'searchable': false,
+         'orderable': false,
+         'width': '1%',
+         'className': 'dt-body-center',
+         'render': function (data, type, full, meta){
+             return '<input type="checkbox">';
+         }},{targets: 1 }],
+
+         'rowCallback': function(row, data, dataIndex){
+         // Get row ID
+         var rowId = data[0];
+
+         // If row ID is in the list of selected row IDs
+         if($.inArray(rowId, rows_selected) !== -1){
+            $(row).find('input[type="checkbox"]').prop('checked', true);
+            $(row).addClass('selected');
+         }
+      	}
     });
+
+    $('#dataTables-Sniffer tbody').on('click', 'input[type="checkbox"]', function(e){
+      var $row = $(this).closest('tr');
+
+      // Get row data
+      var data = tableSniff.row($row).data();
+
+      // Get row ID
+      var rowId = data[0];
+
+      
+      // Determine whether row ID is in the list of selected row IDs 
+      var index = $.inArray(rowId, rows_selected);
+
+      // If checkbox is checked and row ID is not in list of selected row IDs
+      if(this.checked && index === -1){
+      	console.log("Pongo: "+rowId);
+         rows_selected.push(rowId);
+
+      // Otherwise, if checkbox is not checked and row ID is in list of selected row IDs
+      } else if (!this.checked && index !== -1){
+      	console.log("quito: "+index);
+         rows_selected.splice(index, 1);
+      }
+
+      if(this.checked){
+         $row.addClass('selected');
+      } else {
+         $row.removeClass('selected');
+      }
+      // Update state of "Select all" control
+      updateDataTableSelectAllCtrl(tableSniff);
+
+      // Prevent click event from propagating to parent
+      e.stopPropagation();
+   });
+
+	$('#dataTables-Sniffer').on('click', 'tbody td, thead th:first-child', function(e){
+		$(this).parent().find('input[type="checkbox"]').trigger('click');
+	});
+
+	 tableSniff.on('draw', function(){
+      // Update state of "Select all" control
+      updateDataTableSelectAllCtrl(tableSniff);
+   });
+
+ // Handle click on "Select all" control
+   $('thead input[name="select_all"]', tableSniff.table().container()).on('click', function(e){
+      if(this.checked){
+         $('#dataTables-Sniffer tbody input[type="checkbox"]:not(:checked)').trigger('click');
+      } else {
+         $('#dataTables-Sniffer tbody input[type="checkbox"]:checked').trigger('click');
+      }
+
+      // Prevent click event from propagating to parent
+      e.stopPropagation();
+   });
+
+    document.getElementById("Snffer").style.display="none";
 });
+
+function updateDataTableSelectAllCtrl(tableSniff){
+   var $tableSniff             = tableSniff.table().node();
+   var $chkbox_all        = $('tbody input[type="checkbox"]', $tableSniff);
+   var $chkbox_checked    = $('tbody input[type="checkbox"]:checked', $tableSniff);
+   var chkbox_select_all  = $('thead input[name="select_all"]', $tableSniff).get(0);
+
+   // If none of the checkboxes are checked
+   if($chkbox_checked.length === 0){
+      chkbox_select_all.checked = false;
+      if('indeterminate' in chkbox_select_all){
+         chkbox_select_all.indeterminate = false;
+      }
+
+   // If all of the checkboxes are checked
+   } else if ($chkbox_checked.length === $chkbox_all.length){
+      chkbox_select_all.checked = true;
+      if('indeterminate' in chkbox_select_all){
+         chkbox_select_all.indeterminate = false;
+      }
+
+   // If some of the checkboxes are checked
+   } else {
+      chkbox_select_all.checked = true;
+      if('indeterminate' in chkbox_select_all){
+         chkbox_select_all.indeterminate = true;
+      }
+   }
+}
 
 function enter(e) {
 
@@ -79,20 +190,14 @@ function SubmitSniff(form,e){
             data: "mode=Sniff&"+$( form ).serialize(),
         	dataType: 'json',
             success: function (data) {
-
-            	AddPacketSniff();
-				//load.style.visibility="hidden";
-            	if(data.response.error){
+	           	if(data.response.error){
             		for (var itemin in data.response.message){
                 		$.notify( data.response.message[itemin], "error");
             		}
             	}
             	else{
-            		//console.log("Antes");
                 	AddPacketSniff(data.response.message);
-                	//console.log("Destras");
             	}
-            	//console.log(data.response.sniff);
         	}
         });
     	return false;
@@ -102,13 +207,18 @@ function AddPacketSniff(elements) {
 
 	for (var packet in elements){
 		sniffElements[packet]=elements[packet];
-		//console.log(sniffElements[packet]);
-		tableSniff.row.add( ["<input type='checkbox' name="+packet+" id="+packet+"> ("+elements[packet].iface+") "+elements[packet].layerDescrip] ).draw();
+		tableSniff.row.add( [packet,"("+elements[packet].iface+") "+"Packet:"+packet.split("/")[1]+"[ "+elements[packet].layerDescrip+" ]",""] ).draw();
 	}
 }
 
-function createElementSniff(packetName) {
+function createElementsSniff(argument) {
 	viewPanel(document.getElementById("pprin"));
+  	$.each(rows_selected, function(index, rowId){
+    	traspast(rowId) 
+  	});
+}
+
+function traspast(packetName) {
 	
 	var dataPacket = sniffElements[packetName];
 	var child;
