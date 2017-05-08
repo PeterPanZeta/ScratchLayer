@@ -6,12 +6,19 @@ function PanelPrincipal(PanelPrincipalHTML) {
 	this.id="panelPrincipal";
 	this.idDrop="panelPrincipal";
 	this.typeEther="panelPrincipal";
+	this.width="";
+	this.height="";
 	this.Children={};
 	this.dropable=true;
 	this.PV=PanelPrincipalHTML;
 
 	PanelPrincipal.prototype.getId = function(){
 		return this.id;
+	};
+
+	PanelPrincipal.prototype.setWH = function() {
+		this.width=this.PV.offsetWidth;
+		this.height=this.PV.offsetHeight;		
 	};
 
 	PanelPrincipal.prototype.getType = function(){
@@ -47,6 +54,42 @@ function PanelPrincipal(PanelPrincipalHTML) {
 			delete this.Children[Child.getId()];
 	};
 	
+	PanelPrincipal.prototype.setModSize = function(elementHTML=undefined,x=undefined,y=undefined,t=undefined,l=undefined){
+		
+		var height;
+		var width;
+		var top;
+		var left;
+
+		if(elementHTML!=undefined){
+			height = parseInt(elementHTML.offsetHeight);
+			width = parseInt(elementHTML.offsetWidth);
+			top = parseInt(elementHTML.style.top.split("px")[0]);
+			//left = elementHTML.style.left.split("px")[0];
+		}else{
+			height=x;
+			width=y;
+			left=l;
+			top=t;
+		}
+
+		if(parseInt(height + top) > parseInt(this.height)){
+			this.PV.style.height=top+height+5+"px";
+		}else{
+			this.PV.style.height=this.height+"px";
+		}
+		/*
+		if(parseInt(width) > parseInt(this.width)){
+			this.PV.style.width = width+7+"px";
+		}else{
+			this.PV.style.width = this.width+"px";
+		}*/
+	};
+
+	PanelPrincipal.prototype.setSizeOrig = function () {
+		this.PV.style.height=this.height+"px";
+		this.PV.style.width = this.width+"px";
+	};
 }
 
 function Protocol(type) {
@@ -145,7 +188,7 @@ function Protocol(type) {
 	};
 
 	Protocol.prototype.remove=function(){
-		if(this.Parent.getId()!="panelPrincipal")this.Parent.setSizeOrig();
+		/*if(this.Parent.getId()!="panelPrincipal")*/this.Parent.setSizeOrig();
 		this.Parent.removeChild(this);
 		delete this;
 	};
@@ -164,9 +207,10 @@ function Protocol(type) {
 			this.PV.style.height=this.height-this.heightCollap+"px";
 			this.collap=true;
 		}
-		if(this.Parent.getId()!="panelPrincipal"){
-			this.Parent.setModSize(this.PV.offsetHeight,this.PV.offsetWidth);
-		}
+		console.log("Parent: "+this.Parent.getId());
+		/*if(this.Parent.getId()!="panelPrincipal"){*/
+		this.Parent.setModSize(this.PV);
+		/*}*/
 	};
 
 	Protocol.prototype.stop=function(){
@@ -225,7 +269,10 @@ function ProtocolDrop(type) {
 			delete this.Children[Child.getId()];
 	};
 
-	ProtocolDrop.prototype.setModSize = function(height,width){
+	ProtocolDrop.prototype.setModSize = function(elementHTML){
+		var height = elementHTML.offsetHeight;
+		var width = elementHTML.offsetWidth;
+
 		this.heightMod=this.PV.offsetHeight;
 		this.widthMod=this.PV.offsetWidth;
 
@@ -244,9 +291,9 @@ function ProtocolDrop(type) {
 		this.drop.style.width=width+4+"px";
 		this.drop.style.height=height+4+"px";
 
-		if(this.Parent.getId()!="panelPrincipal"){
-			this.Parent.setModSize(this.PV.offsetHeight,this.PV.offsetWidth);
-		}
+		/*if(this.Parent.getId()!="panelPrincipal"){*/
+			this.Parent.setModSize(this.PV);
+		/*}*/
 	};
 
 	ProtocolDrop.prototype.setModSizePre = function(){
@@ -267,9 +314,9 @@ function ProtocolDrop(type) {
 		this.PV.style.height=heightN+"px";
 		this.iniDropWH();
 
-		if(this.Parent.getId()!="panelPrincipal"){
-			this.Parent.setModSize(this.PV.offsetHeight,this.PV.offsetWidth);
-		}
+		/*if(this.Parent.getId()!="panelPrincipal"){*/
+			this.Parent.setModSize(this.PV);
+		/*}*/
 
 	};
 
@@ -302,14 +349,15 @@ function ProtocolDrop(type) {
 				}
 			}
 		}
-		if(this.Parent.getId()!="panelPrincipal"){
-			this.Parent.setModSize(this.PV.offsetHeight,this.PV.offsetWidth);
-		}
+		console.log("Parent: "+this.Parent.getId());
+		/*if(this.Parent.getId()!="panelPrincipal"){*/
+		this.Parent.setModSize(this.PV);
+		/*}*/
 	};
 
 	ProtocolDrop.prototype.remove=function(){
 		this.Parent.removeChild(this);
-		if(this.Parent.getId()!="panelPrincipal")this.Parent.setSizeOrig();
+		/*if(this.Parent.getId()!="panelPrincipal")*/this.Parent.setSizeOrig();
 		for(child in this.Children){
 			elemet=this.Children[child];
 			elemet.remove();
@@ -402,7 +450,9 @@ function Packet(idPack){
 				}
 			}
 		}
+		this.Parent.setModSize(this.PV);
 	};
+
 	Packet.prototype.addChild = function(Child){
 		this.Children[Child.getId()] = Child;
 		this.PV.lastChild.lastChild.lastChild.appendChild(Child.getPV());
@@ -632,7 +682,7 @@ function createElement(idSrt,parent) {
 	newElement.setWH(newElement.getPV().offsetWidth,newElement.getPV().offsetHeight);
 	newElement.setWHCollap(document.getElementById(newElement.getId()+"collapElement").offsetWidth,document.getElementById(newElement.getId()+"collapElement").offsetHeight);
 	if(newElement.isDropable())newElement.iniDropWH();
-	if(parent.getId()!="panelPrincipal")parent.setModSize(newElement.getPV().offsetHeight,newElement.getPV().offsetWidth);
+	if(parent.getId()!="panelPrincipal")parent.setModSize(newElement.getPV());
 
 	return newElement;
 }

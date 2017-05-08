@@ -1,11 +1,14 @@
-var panelPrincipal = new PanelPrincipal(document.getElementById("panelPrincipal"));
-var parentinations = {"panelPrincipal":panelPrincipal};
-var onmouseover=undefined;
-var sniffElements= {};
+var panelPrincipal;
+var parentinations = {};
+var onmouseover = undefined;
+var sniffElements = {};
 var rows_selected = [];
 //console.log(parentinations["panelPrincipal"]);
 
 $(document).ready(function() {
+	panelPrincipal = new PanelPrincipal(document.getElementById("panelPrincipal"));
+	panelPrincipal.setWH();
+	parentinations = {"panelPrincipal":panelPrincipal};
 	var elements = document.getElementById("elements1").childNodes;
 
 	[].forEach.call(elements, function(elem) {
@@ -110,6 +113,7 @@ $(document).ready(function() {
 });
 
 function updateDataTableSelectAllCtrl(tableSniff){
+   
    var $tableSniff             = tableSniff.table().node();
    var $chkbox_all        = $('tbody input[type="checkbox"]', $tableSniff);
    var $chkbox_checked    = $('tbody input[type="checkbox"]:checked', $tableSniff);
@@ -231,8 +235,9 @@ function traspast(packetName) {
 		child = createElement(layers[i],parent);
 		parent=child;
 	}
-
-	for (var i=0; i<layers.length; i++) loadData(document.getElementById("Form"+packet.getId()),dataPacket[layers[i]],layers[i]);
+	//packet.getPV().style.position = "absolute";
+	var form = document.getElementById("Form"+packet.getId());
+	for (var i=0; i<layers.length; i++) loadData(form,dataPacket[layers[i]],layers[i]);
 	minimax(document.getElementById(packet.getId()+"buttonMinimax"));
 }
 
@@ -241,8 +246,8 @@ function loadData(form, dataLoad, layer) {
 		switch(layer) {
 
     	case "Ethernet":
-    		form.srcEther.value = dataLoad.dst;
-    		form.dstEther.value = dataLoad.src;
+    		form.srcEther.value = dataLoad.src;
+    		form.dstEther.value = dataLoad.dst;
     		form.typeEther.value = dataLoad.type;
     		break; 
     	case "ARP":
@@ -391,10 +396,15 @@ function drop(e,move=true){
 		    if (posXCont + tamContX <= x + tamElemX){
 		        x = posXCont + tamContX - tamElemX;
 		    }
-
+		    /*
 		    if (posYCont + tamContY <= y + tamElemY){
 		        y = posYCont + tamContY - tamElemY;
-		    }
+		    }*/
+		    /*console.log("Parent: "+destHTML.id);
+		    console.log("x: "+x+" tamElemX: "+tamElemX);
+		    console.log("y: "+y+" tamElemY: "+tamElemY);
+			*/
+		    panelPrincipal.setModSize(undefined, tamElemY, tamElemX,y,x);
 
 		    element.getPV().style.position = "absolute";
 		    element.getPV().style.left = x + "px";
@@ -411,9 +421,9 @@ function drop(e,move=true){
 		var patt = new RegExp("new");
 
 	    if (!patt.test(src.id)){
-			$.notify(src.id+" no puede introducirse dentro de "+dest.id.split("new")[0].split("Drop")[1], "error");
+			$.notify(src.id+" no puede introducirse dentro de "+destHTML.id.split("new")[0].split("Drop")[1], "error");
 	    }else{
-			$.notify(src.id.split("header")[1].split("new")[0]+" no puede introducirse dentro de "+dest.id.split("new")[0].split("Drop")[1], "error");
+			$.notify(src.id.split("header")[1].split("new")[0]+" no puede introducirse dentro de "+destHTML.id.split("new")[0].split("Drop")[1], "error");
 		}
 	}
     return false;
@@ -427,7 +437,7 @@ function TransferElement(destHTML,origHTML,srcHTML) {
 
 	if(orig.getId()!="panelPrincipal")orig.setSizeOrig();
 
-	if(dest.id!="panelPrincipal")dest.setModSize(child.getPV().offsetHeight,child.getPV().offsetWidth);
+	if(dest.id!="panelPrincipal")dest.setModSize(child.getPV());
 
 	dest.addChild(child);
 	child.setParent(dest);
