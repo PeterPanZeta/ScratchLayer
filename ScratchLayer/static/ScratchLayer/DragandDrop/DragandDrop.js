@@ -22,7 +22,7 @@ $(document).ready(function() {
 	parentination2.addEventListener('drop',function(e){drop(e)}, false);
 
 	tableSniff = $('#dataTables-Sniffer').DataTable({
-    	responsive: true,
+    	//responsive: true,
     	bSort: false,
     	width: '1%',
         className: 'dt-body-center',

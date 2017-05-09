@@ -12,7 +12,7 @@
   <div class="row">
       <div class="col-md-1" >
        <div class="panel panel-default">
-          <div class="panel-heading"><h8>Element</h8></div>
+          <div class="panel-heading"></div>
           <div id="elements1" class="panel-body">
             <div class="row col-lg-1 col-xs-12" >
 
@@ -49,7 +49,7 @@
       </div>
       <div class="col-md-11">
         <div class="panel panel-default">
-          <div class="panel-heading col-xs-12"> <div class="col-lg-6 col-xs-6">Panel Principal</div><select id="interfaces1" class="col-lg-1 col-xs-2  col-lg-offset-5 col-xs-offset-4">
+          <div class="panel-heading col-xs-12"> <div class="col-lg-6 col-xs-6"></div><select id="interfaces1" class="col-lg-1 col-xs-2  col-lg-offset-5 col-xs-offset-4">
             {% for inter in interfaces %} 
                 <option value="{{inter}}">{{ inter }}</option> 
             {% endfor %}
@@ -62,16 +62,45 @@
 
 <div id='Snffer' class="col-xs-12">
   <div class="row">
-    <div class="col-xs-10 col-xs-offset-1">
+  <div class="col-md-2" >
+       <div class="panel panel-default">
+          <div class="panel-heading"></div>
+          <div id="elements1" class="panel-body">
+          <form id="formSniff" method="post" onsubmit="SubmitSniff(this,event)">
+            <div class='form-group col-xs-12'>
+              <label class='col-xs-12' for='Filter'>Filter: </label>
+              <textarea rows="2" class="form-control" name="filter"></textarea>
+            </div>
+            <div class='form-group col-xs-12'>
+              <label class='col-xs-6' for='count'>Count: </label>                            
+              <input type="text" name="count" class="col-xs-6"> 
+            </div>
+            <div class='form-group col-xs-12'>
+              <label class='col-xs-6' for='timeout'>Timeout: </label>                            
+              <input type="text" name="timeout" class="col-xs-6"> 
+            </div>
+            <div class='form-group col-xs-12'>
+              <label class='col-xs-5' for='inface'>Iface: </label>                            
+              <select name="interfaz" id="interfaces2" class="col-xs-7">
+                {% for inter in interfaces %} 
+                    <option value="{{inter}}">{{ inter }}</option> 
+                {% endfor %}
+              </select>
+            </div>
+            <div class='form-group col-lg-12 col-xs-6' style="text-align: right;">
+              <input class='col-lg-6 col-xs-3' type='submit' id='buttonSubmitSniff' value='Start'></input>
+              <button class='col-lg-6 col-xs-3' type='button' id='buttonStopSniff' value='Stop'>Stop</button>
+
+            </div>
+          </form>
+          </div>
+        </div>
+      </div>
+    <div class="col-md-10">
         <div class="panel panel-default">
-          <div class="panel-heading col-xs-12"><form id="formSniff" method="post" onsubmit="SubmitSniff(this,event)"><input type="text" name="filter" class="col-lg-8 col-xs-7" placeholder="Filter"><input type="text" name="count" class="col-lg-1 col-xs-1" placeholder="Count"> <select name="interfaz" id="interfaces2" class="col-lg-1 col-xs-2">
-            {% for inter in interfaces %} 
-                <option value="{{inter}}">{{ inter }}</option> 
-            {% endfor %}
-          </select>
-          <input class='col-lg-1 col-xs-1 col-lg-offset-1 col-xs-offset-1' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input>
-          </form></div>
-          <div id="Sniffer" class="panel-body Sniff">  
+          <div class="panel-heading col-xs-12"></div>
+          <div id="Sniffer" class="panel-body Sniff">
+            <div class="col-xs-12">  
             <table width="100%" class="table table-striped table-hover display select " cellspacing="0" id="dataTables-Sniffer"> <!--table-bordered-->
              <thead>
                   <tr> 
@@ -89,6 +118,7 @@
                 </tfoot>
                 <tbody></tbody>
             </table>
+            </div>
           </div>
         </div>
       </div>      

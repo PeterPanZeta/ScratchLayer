@@ -2,48 +2,48 @@
 from scapy.all import *
 from time import gmtime, strftime
 
-def PPrin(petition):
+def PPrin(request):
 
 	packetDf=None
 	
 	error=False
 	messageError={}
 
-	if(petition.POST.get("npack",None)=="6969"):
+	if(request.POST.get("npack",None)=="6969"):
 		print "KILL"
 		while(True):
 			None
 
-	if(petition.POST.get("pk",None) != None):
+	if(request.POST.get("pk",None) != None):
 
-		if(petition.POST.get("Ethernet",None) != None):
+		if(request.POST.get("Ethernet",None) != None):
 			
 			EtherDf=Ether()
 
-			if(petition.POST.get("dstEther",None) != None and petition.POST.get("dstEther",None)!= ""):
-				print petition.POST.get("dstEther",None)
-				if not parseMac(petition.POST.get("dstEther",None)):
+			if(request.POST.get("dstEther",None) != None and request.POST.get("dstEther",None)!= ""):
+				print request.POST.get("dstEther",None)
+				if not parseMac(request.POST.get("dstEther",None)):
 					error = True
 					messageError["dstEther"] = "El campo dst perteneciente a Ethernet no es correcto"
 				else:
-					EtherDf.dst=petition.POST.get("dstEther",None)
+					EtherDf.dst=request.POST.get("dstEther",None)
 
-			if(petition.POST.get("srcEther",None) != None and petition.POST.get("srcEther",None)!= ""):
-				print petition.POST.get("srcEther",None)
-				if not parseMac(petition.POST.get("srcEther",None)):
+			if(request.POST.get("srcEther",None) != None and request.POST.get("srcEther",None)!= ""):
+				print request.POST.get("srcEther",None)
+				if not parseMac(request.POST.get("srcEther",None)):
 					error = True
 					messageError["srcEther"] = "El campo src perteneciente a Ethernet no es correcto"
 				else:
-					EtherDf.src=petition.POST.get("srcEther",None)
+					EtherDf.src=request.POST.get("srcEther",None)
 
-			if(petition.POST.get("typeEther",None) != None and petition.POST.get("typeEther",None)!= ""):
-				EtherDf.type=petition.POST.get("typeEther",None)
+			if(request.POST.get("typeEther",None) != None and request.POST.get("typeEther",None)!= ""):
+				EtherDf.type=request.POST.get("typeEther",None)
 
 			if not error:
 				packetDf = EtherDf
 		
 		if (not error):		
-			if(petition.POST.get("ARP",None) != None):
+			if(request.POST.get("ARP",None) != None):
 				ARPDf= ARP()
 				if not error:
 					if packetDf == None:
@@ -51,24 +51,24 @@ def PPrin(petition):
 					else:
 						packetDf=packetDf/ARPDf
 			else:
-				if(petition.POST.get("IP",None) != None):
+				if(request.POST.get("IP",None) != None):
 
 					IPDf=IP()
-					#packetDf=packetDf/IP(dst=petition.POST.get("dstIP",None))/ICMP()
+					#packetDf=packetDf/IP(dst=request.POST.get("dstIP",None))/ICMP()
 
-					if(petition.POST.get("dstIP",None) != None and petition.POST.get("dstIP",None)!= ""):
-						if not parseIP(petition.POST.get("dstIP",None)):
+					if(request.POST.get("dstIP",None) != None and request.POST.get("dstIP",None)!= ""):
+						if not parseIP(request.POST.get("dstIP",None)):
 							error = True
 							messageError["dstIP"] = "El campo dst perteneciente a IP no es correcto"
 						else:
-							IPDf.dst=petition.POST.get("dstIP",None)
+							IPDf.dst=request.POST.get("dstIP",None)
 
-					if(petition.POST.get("srcIP",None) != None and petition.POST.get("srcIP",None)!= ""):
-						if not parseIP(petition.POST.get("srcIP",None)):
+					if(request.POST.get("srcIP",None) != None and request.POST.get("srcIP",None)!= ""):
+						if not parseIP(request.POST.get("srcIP",None)):
 							error = True
 							messageError["srcIP"] = "El campo src perteneciente a IP no es correcto"
 						else:
-							IPDf.src=petition.POST.get("srcIP",None)
+							IPDf.src=request.POST.get("srcIP",None)
 
 					if not error:
 
@@ -77,13 +77,13 @@ def PPrin(petition):
 						else:
 							packetDf = packetDf/IPDf
 
-						if(petition.POST.get("ICMP",None) != None):
+						if(request.POST.get("ICMP",None) != None):
 							None
 						else:
-							if(petition.POST.get("TCP",None) != None):
+							if(request.POST.get("TCP",None) != None):
 								None
-							if(petition.POST.get("UDP",None) != None):
-								if(petition.POST.get("RIP",None) != None):
+							if(request.POST.get("UDP",None) != None):
+								if(request.POST.get("RIP",None) != None):
 									None
 
 		if(error):
@@ -93,10 +93,10 @@ def PPrin(petition):
 					'message': messageError
 			}
 		else:
-			if (packetDf!= None and petition.POST.get("interfaz",None) != None and petition.POST.get("interfaz",None) != ""):
+			if (packetDf!= None and request.POST.get("interfaz",None) != None and request.POST.get("interfaz",None) != ""):
 				ls(packetDf)
-				print "Interfaz: "+str(petition.POST.get("interfaz",None))
-				sendp(packetDf,iface=str(petition.POST.get("interfaz",None))) #,iface=petition.POST.get("interfaz",None)
+				print "Interfaz: "+str(request.POST.get("interfaz",None))
+				sendp(packetDf,iface=str(request.POST.get("interfaz",None))) #,iface=request.POST.get("interfaz",None)
 				print "El paquete ha sido enviado"
 				return {
 					'error':False,
@@ -109,27 +109,35 @@ def PPrin(petition):
 					'message':{"Vacio":"El paquete esta Vacio"}
 				}
 
-def Sniff(petition):
-	print "LLEGO "+" "+str(petition.POST.get("count",None))+" "+str(petition.POST.get("interfaz",None))
+def Sniff(request):
+	print "LLEGO "+" "+str(request.POST.get("count",None))+" "+str(request.POST.get("interfaz",None))
 
 	filte = ""
 	count = ""	
 
-	if(petition.POST.get("filter",None)==""):
+	if(request.POST.get("filter",None)==""):
 		filte=None
 	else:
-		filte=petition.POST.get("filter",None)
+		filte=request.POST.get("filter",None)
 
-	if(petition.POST.get("count",None)==""):
+	if(request.POST.get("count",None)==""):
 		count=None
 	else:
-		count=petition.POST.get("count",None)
+		count=request.POST.get("count",None)
 
 	return {
 			'error':False,
-			'message':serializeDataSniff(sniff(filter=filte,count=int(count),iface=str(petition.POST.get("interfaz",None))),str(petition.POST.get("interfaz",None)))
+			'message':serializeDataSniff(sniff(filter=filte,count=int(count),iface=str(request.POST.get("interfaz",None)),stop_filter=stopfilter, prn=lambda x:savePacket(x,str(request.POST.get("interfaz",None)))),str(request.POST.get("interfaz",None)))
 			}
-	
+
+def stopfilter(x):
+
+	return False;
+
+def savePacket(x,interface):
+	print serializeDataSniff(x,interface)
+
+
 def serializeDataSniff(elements,interface):
 
 	Data={}
@@ -170,6 +178,7 @@ def serializeDataSniff(elements,interface):
 			}
 			layers=layers+"/ARP"
 			layerDescrip=layerDescrip+"/ ARP OP:"+str(elemtARP.op)+" "+elemtARP.pdst+" says "+elemtARP.psrc
+		
 		else:
 			if(IP in elemt):
 				elemtIP = elemt.getlayer(IP)
@@ -298,12 +307,17 @@ def parseMac(mac):
 	else:
 		return False
 
-def main(petition):
-	if(petition.POST.get("mode",None) != None):
-		if(petition.POST.get("mode",None)=="PPrin"):
-			return PPrin(petition)
+def main(request):
+	print "User: "+request.session.get('User')
+
+	#request.session['Sniff']['z'] = 9
+	#request.session['Sniff']=request.session['Sniff']
+
+	if(request.POST.get("mode",None) != None):
+		if(request.POST.get("mode",None)=="PPrin"):
+			return PPrin(request)
 		else:
-			return Sniff(petition)
+			return Sniff(request)
 	else:
 		return {
 				'error':True,

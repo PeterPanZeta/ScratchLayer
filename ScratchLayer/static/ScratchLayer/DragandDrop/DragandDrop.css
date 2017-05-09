@@ -12,6 +12,18 @@ label {
   background-color: "#00FF00"
 }
 
+select {
+  font-family: Arial;
+  font-size: 8pt; 
+  background-color: "#00FF00"
+}
+
+button {
+  font-family: Arial;
+  font-size: 8pt; 
+  background-color: "#00FF00"
+}
+
 table.dataTable.select tbody tr,
 table.dataTable thead th:first-child {
   cursor: pointer;
