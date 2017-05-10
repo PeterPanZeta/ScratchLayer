@@ -200,11 +200,67 @@ function SubmitSniff(form,e){
             		}
             	}
             	else{
-                	AddPacketSniff(data.response.message);
+                	$.notify( data.response.message, "success");
+            		ReciveDataSniff(true);
             	}
         	}
         });
-    	return false;
+    return false;
+}
+
+
+function ReciveDataSniff(run){
+
+	if(run){
+		$.ajax({
+		 		type: 'POST',
+	            url: '/ScratchLayer/ajax/',
+	            data: "mode=Sniff&sendDataSniff=True",
+	        	dataType: 'json',
+	            success: function (data) {
+		           	if(data.response.error){
+	            		for (var itemin in data.response.message){
+	                		$.notify( data.response.message[itemin], "error");
+	            		}
+	            	}
+	            	else{
+						pausecomp(5000);
+		                AddPacketSniff(data.response.message);
+	                	ReciveDataSniff(data.response.run)
+	            	}
+	        	}
+	        });
+	}
+    return false;
+}
+
+function pausecomp(millis)
+{
+    var date = new Date();
+    var curDate = null;
+    do { curDate = new Date(); }
+    while(curDate-date < millis);
+}
+
+function StopSniff(ele,e){
+	e.preventDefault();
+	$.ajax({
+	 		type: 'POST',
+            url: '/ScratchLayer/ajax/',
+            data: "mode=Sniff&stopfilter=True",
+        	dataType: 'json',
+            success: function (data) {
+	           	if(data.response.error){
+            		for (var itemin in data.response.message){
+                		$.notify( data.response.message[itemin], "error");
+            		}
+            	}
+            	else{
+                		$.notify( data.response.message, "success");
+            	}
+        	}
+        });
+    return false;
 }
 
 function AddPacketSniff(elements) {

@@ -18,15 +18,17 @@ def index(request):
 		print "reload"
 		request.session['Initial'] = True
 		user = random.choice('abcdefghijkmnopqrst')+random.choice('abcdefghijkmnopqrst')+str(random.randint(1, 200))+str(random.randint(200,300))
-		request.session['Sniff'] = {"stopfilter":False,"Packt":3}
+		request.session['User'] = user
+		request.session['SniffStart'] =  False
+		request.session['stopfilter'] =  False
+		request.session['Packets'] =  {}
 		print "UserNew: "+request.session.get('User')
-		print request.session.get('Sniff')
+		print request.session.get('Packets')
 	else:
 		print "No reload"
-		#request.session['Sniff']['d'] = 4
-		#request.session['Sniff']=request.session['Sniff']
 		print "User: "+request.session.get('User')
-		print request.session['Sniff']
+		print request.session['Packets']
+	
 	context = {
 			'interfaces': interfaces(),
 		}

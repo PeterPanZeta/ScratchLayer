@@ -1,6 +1,11 @@
 
 from scapy.all import *
 from time import gmtime, strftime
+import random
+import threading  
+
+lock = threading.Lock()  
+
 
 def PPrin(request):
 
@@ -109,163 +114,200 @@ def PPrin(request):
 					'message':{"Vacio":"El paquete esta Vacio"}
 				}
 
+def sendDataSniff(request):
+	lock.acquire()
+	Data = request.session.get('Packets')
+	request.session['Packets'] = {}
+	#request.session['Packets'] = request.session['Packets']
+	lock.release() 
+	if(request.session['stopfilter']):
+
+		request.session['stopfilter']=False
+
+		return {
+			'error': False,
+			'run':False,
+			'message':Data
+		}
+
+	else:
+		print "Retorno Datos"
+		print Data
+		return {
+			'error': False,
+			'run':True,
+			'message':Data
+		}
+
 def Sniff(request):
-	print "LLEGO "+" "+str(request.POST.get("count",None))+" "+str(request.POST.get("interfaz",None))
 
-	filte = ""
-	count = ""	
-
-	if(request.POST.get("filter",None)==""):
-		filte=None
+	if(request.POST.get("sendDataSniff",None)):
+		print "cojoDatos"
+		return sendDataSniff(request)
+	elif(request.POST.get("stopfilter",None)):
+		print "Paro"
+		request.session['stopfilter']=True
+		return {
+				'error':False,
+				'message': "Parando el modo Sniff"
+				}
 	else:
-		filte=request.POST.get("filter",None)
+		filte = ""
+		count = ""	
+		iface = str(request.POST.get("interfaz",None))
 
-	if(request.POST.get("count",None)==""):
-		count=None
+		if(request.POST.get("filter",None)==""):
+			filte=None
+		else:
+			filte=str(request.POST.get("filter",None))
+
+		if(request.POST.get("count",None)==""):
+			count=None
+		else:
+			count=int(request.POST.get("count",None))
+		
+		print "Peticion User("+request.session.get('User')+"): "+ str(filte)+" "+str(count)+" "+str(iface)
+
+		sniff(filter=filte,count=count,iface=iface,stop_filter=lambda x:stopfilter(x,request,iface))
+
+		return {
+				'error':False,
+				'message': "Iniciado el modo Sniff"
+				}
+
+def stopfilter(x,request,interface):
+	packetSerialize = serializeDataSniff(x,interface)
+	print packetSerialize["id"]
+	
+	lock.acquire()
+	request.session['Packets'][packetSerialize["id"]]=packetSerialize
+	request.session['Packets'] = request.session['Packets']
+	lock.release()
+	
+	if(request.session['stopfilter']):
+		return True
 	else:
-		count=request.POST.get("count",None)
+		return False
 
-	return {
-			'error':False,
-			'message':serializeDataSniff(sniff(filter=filte,count=int(count),iface=str(request.POST.get("interfaz",None)),stop_filter=stopfilter, prn=lambda x:savePacket(x,str(request.POST.get("interfaz",None)))),str(request.POST.get("interfaz",None)))
-			}
-
-def stopfilter(x):
-
-	return False;
-
-def savePacket(x,interface):
-	print serializeDataSniff(x,interface)
-
-
-def serializeDataSniff(elements,interface):
-
-	Data={}
+def serializeDataSniff(elemt,interface):
 
 	time=gmtime()
-	print time
+	layers = ""
+	layerDescrip = ""
 
-	count=1
+	packet = {}
 
-	for elemt in elements:
+	if(Ether in elemt):
+		elemtEther = elemt.getlayer(Ether)
+		packet["Ethernet"]={
+			'dst':elemtEther.dst,
+			'src':elemtEther.src,
+			'type':elemtEther.type
+		}
+		layers="Ethernet"
+		layerDescrip="Ethernet " #(src="+elemtEther.src+" dst="+elemtEther.dst+")"
 
-		layers = ""
-		layerDescrip = ""
-
-		packet = {}
-		if(Ether in elemt):
-			elemtEther = elemt.getlayer(Ether)
-			packet["Ethernet"]={
-				'dst':elemtEther.dst,
-				'src':elemtEther.src,
-				'type':elemtEther.type
-			}
-			layers="Ethernet"
-			layerDescrip="Ethernet " #(src="+elemtEther.src+" dst="+elemtEther.dst+")"
-
-		if(ARP in elemt):
-			elemtARP = elemt.getlayer(ARP)
-			packet["ARP"]={
-				'hwtype':elemtARP.hwtype,
-				'ptype':elemtARP.ptype,
-				'hwlen':elemtARP.hwlen,
-				'plen':elemtARP.plen,
-				'op':elemtARP.op,
-				'hwsrc':elemtARP.hwsrc,
-				'psrc':elemtARP.psrc,
-				'hwdst':elemtARP.hwdst,
-				'pdst':elemtARP.pdst
-			}
-			layers=layers+"/ARP"
-			layerDescrip=layerDescrip+"/ ARP OP:"+str(elemtARP.op)+" "+elemtARP.pdst+" says "+elemtARP.psrc
+	if(ARP in elemt):
+		elemtARP = elemt.getlayer(ARP)
+		packet["ARP"]={
+			'hwtype':elemtARP.hwtype,
+			'ptype':elemtARP.ptype,
+			'hwlen':elemtARP.hwlen,
+			'plen':elemtARP.plen,
+			'op':elemtARP.op,
+			'hwsrc':elemtARP.hwsrc,
+			'psrc':elemtARP.psrc,
+			'hwdst':elemtARP.hwdst,
+			'pdst':elemtARP.pdst
+		}
+		layers=layers+"/ARP"
+		layerDescrip=layerDescrip+"/ ARP OP:"+str(elemtARP.op)+" "+elemtARP.pdst+" says "+elemtARP.psrc
 		
+	else:
+		if(IP in elemt):
+			elemtIP = elemt.getlayer(IP)
+			packet["IP"]={
+				'version':elemtIP.version,
+				'ihl':elemtIP.ihl,
+				'tos':elemtIP.tos,
+				'len':elemtIP.len,
+				'id':elemtIP.id,
+				'flags':elemtIP.flags,
+				'frag':elemtIP.frag,
+				'ttl':elemtIP.ttl,
+				'proto':elemtIP.proto,
+				'chksum':elemtIP.chksum,
+				'src':elemtIP.src,
+				'dst':elemtIP.dst,
+				'options':elemtIP.options
+			}
+			layers=layers+"/IP"
+			layerDescrip=layerDescrip+"/ IP "
+
+		if(ICMP in elemt):
+			elemtICMP = elemt.getlayer(ICMP)
+			packet["ICMP"]={
+				'type':elemtICMP.type,
+				'code':elemtICMP.code,
+				'chksum':elemtICMP.chksum,
+				'id':elemtICMP.id,
+				'seq':elemtICMP.seq,
+				'ts_ori':elemtICMP.ts_ori,
+				'ts_rx':elemtICMP.ts_rx,
+				'ts_tx':elemtICMP.ts_tx,
+				'addr_mask':elemtICMP.addr_mask
+			}
+
+			layers=layers+"/ICMP"
+			layerDescrip=layerDescrip+"/ ICMP "+elemtIP.src+" > "+elemtIP.dst+" Type:"+str(elemtICMP.type)+" Code:"+str(elemtICMP.code)
+
 		else:
-			if(IP in elemt):
-				elemtIP = elemt.getlayer(IP)
-				packet["IP"]={
-					'version':elemtIP.version,
-					'ihl':elemtIP.ihl,
-					'tos':elemtIP.tos,
-					'len':elemtIP.len,
-					'id':elemtIP.id,
-					'flags':elemtIP.flags,
-					'frag':elemtIP.frag,
-					'ttl':elemtIP.ttl,
-					'proto':elemtIP.proto,
-					'chksum':elemtIP.chksum,
-					'src':elemtIP.src,
-					'dst':elemtIP.dst,
-					'options':elemtIP.options
+			if(UDP in elemt):
+				elemtUDP = elemt.getlayer(UDP)
+				packet["UDP"]={
+					'sport':elemtUDP.sport,
+					'dport':elemtUDP.dport,
+					'len':elemtUDP.len,
+					'chksum':elemtUDP.chksum
 				}
-				layers=layers+"/IP"
-				layerDescrip=layerDescrip+"/ IP "
+				layers=layers+"/UDP"
+				layerDescrip=layerDescrip+"/UDP "+elemtIP.src+":"+str(elemtUDP.sport)+" > "+elemtIP.dst+":"+str(elemtUDP.dport)
 
-			if(ICMP in elemt):
-				elemtICMP = elemt.getlayer(ICMP)
-				packet["ICMP"]={
-					'type':elemtICMP.type,
-					'code':elemtICMP.code,
-					'chksum':elemtICMP.chksum,
-					'id':elemtICMP.id,
-					'seq':elemtICMP.seq,
-					'ts_ori':elemtICMP.ts_ori,
-					'ts_rx':elemtICMP.ts_rx,
-					'ts_tx':elemtICMP.ts_tx,
-					'addr_mask':elemtICMP.addr_mask
-				}
-
-				layers=layers+"/ICMP"
-				layerDescrip=layerDescrip+"/ ICMP "+elemtIP.src+" > "+elemtIP.dst+" Type:"+str(elemtICMP.type)+" Code:"+str(elemtICMP.code)
-
-			else:
-				if(UDP in elemt):
-					elemtUDP = elemt.getlayer(UDP)
-					packet["UDP"]={
-						'sport':elemtUDP.sport,
-						'dport':elemtUDP.dport,
-						'len':elemtUDP.len,
-						'chksum':elemtUDP.chksum
+				if(RIP in elemt):
+					elemtRIP = elemt.getlayer(RIP)
+					packet["RIP"]={
+						'cmd':elemtRIP.cmd,
+						'version':elemtRIP.version,
+						'null':elemtRIP.null
 					}
-					layers=layers+"/UDP"
-					layerDescrip=layerDescrip+"/UDP "+elemtIP.src+":"+str(elemtUDP.sport)+" > "+elemtIP.dst+":"+str(elemtUDP.dport)
+					layers=layers+"/RIP"
+					layerDescrip=layerDescrip+"/ RIP "
+			else:
+				if(TCP in elemt):
+					elemtTCP = elemt.getlayer(TCP)
+					packet["TCP"]={
+						'sport':elemtTCP.sport,
+						'dport':elemtTCP.dport,
+						'seq':elemtTCP.seq,
+						'ack':elemtTCP.ack,
+						'dataofs':elemtTCP.dataofs,
+						'reserved':elemtTCP.reserved,
+						'flags':elemtTCP.flags,
+						'window':elemtTCP.window,
+						'chksum':elemtTCP.chksum,
+						'urgptr':elemtTCP.urgptr,
+						'options':elemtTCP.options
+					}
+					layers=layers+"/TCP"
+					layerDescrip=layerDescrip+"/ TCP "+elemtIP.src+":"+str(elemtTCP.sport)+" > "+elemtIP.dst+":"+str(elemtTCP.dport)
+					
+	packet["iface"]=interface
+	packet["layers"]=layers
+	packet["layerDescrip"]=layerDescrip
+	ide="Packet/"+str(time.tm_hour)+str(time.tm_min)+str(time.tm_sec+random.randint(1, 200))
+	packet["id"]=ide
 
-					if(RIP in elemt):
-						elemtRIP = elemt.getlayer(RIP)
-						packet["RIP"]={
-							'cmd':elemtRIP.cmd,
-							'version':elemtRIP.version,
-							'null':elemtRIP.null
-						}
-						layers=layers+"/RIP"
-						layerDescrip=layerDescrip+"/ RIP "
-				else:
-					if(TCP in elemt):
-						elemtTCP = elemt.getlayer(TCP)
-						packet["TCP"]={
-							'sport':elemtTCP.sport,
-							'dport':elemtTCP.dport,
-							'seq':elemtTCP.seq,
-							'ack':elemtTCP.ack,
-							'dataofs':elemtTCP.dataofs,
-							'reserved':elemtTCP.reserved,
-							'flags':elemtTCP.flags,
-							'window':elemtTCP.window,
-							'chksum':elemtTCP.chksum,
-							'urgptr':elemtTCP.urgptr,
-							'options':elemtTCP.options
-						}
-						layers=layers+"/TCP"
-						layerDescrip=layerDescrip+"/ TCP "+elemtIP.src+":"+str(elemtTCP.sport)+" > "+elemtIP.dst+":"+str(elemtTCP.dport)
-						
-		packet["iface"]=interface
-		packet["layers"]=layers
-		packet["layerDescrip"]=layerDescrip
-		ide="Packet/"+str(time.tm_hour)+str(time.tm_min)+str(time.tm_sec+count)
-		Data[ide]=packet
-		
-		count=count+1
-
-	return Data
+	return packet
 
 
 def parseIP(ip):
@@ -308,11 +350,6 @@ def parseMac(mac):
 		return False
 
 def main(request):
-	print "User: "+request.session.get('User')
-
-	#request.session['Sniff']['z'] = 9
-	#request.session['Sniff']=request.session['Sniff']
-
 	if(request.POST.get("mode",None) != None):
 		if(request.POST.get("mode",None)=="PPrin"):
 			return PPrin(request)
