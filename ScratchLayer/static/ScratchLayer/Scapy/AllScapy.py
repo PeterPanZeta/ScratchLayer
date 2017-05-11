@@ -1,11 +1,11 @@
 
 from scapy.all import *
+from django.contrib.sessions.backends.db import SessionStore
 from time import gmtime, strftime
 import random
-import threading  
+import threading 
 
 lock = threading.Lock()  
-
 
 def PPrin(request):
 
@@ -139,21 +139,18 @@ def sendDataSniff(request):
 			'message':Data
 		}
 
-def Sniff(request):
+class ThreadSniff (threading.Thread):
+    
+    def __init__(self, request):
+        threading.Thread.__init__(self)
+      	self.request = request
 
-	if(request.POST.get("sendDataSniff",None)):
-		print "cojoDatos"
-		return sendDataSniff(request)
-	elif(request.POST.get("stopfilter",None)):
-		print "Paro"
-		request.session['stopfilter']=True
-		return {
-				'error':False,
-				'message': "Parando el modo Sniff"
-				}
-	else:
-		filte = ""
-		count = ""	
+    def run(self):
+
+   		filte = ""
+		count = ""
+		request = self.request
+
 		iface = str(request.POST.get("interfaz",None))
 
 		if(request.POST.get("filter",None)==""):
@@ -165,12 +162,32 @@ def Sniff(request):
 			count=None
 		else:
 			count=int(request.POST.get("count",None))
-		
+
 		print "Peticion User("+request.session.get('User')+"): "+ str(filte)+" "+str(count)+" "+str(iface)
 
 		sniff(filter=filte,count=count,iface=iface,stop_filter=lambda x:stopfilter(x,request,iface))
 
+		print "Thread a terminado de Sniffar"
+	
+
+def Sniff(request):
+
+	if(request.POST.get("sendDataSniff",None)):
+		print "CojoDatos"
+		return sendDataSniff(request)
+	elif(request.POST.get("stopfilter",None)):
+		print "Paro"
+		request.session['stopfilter']=True
 		return {
+				'error':False,
+				'message': "Parando el modo Sniff"
+				}
+	else:
+		#ThreadSniffer(request)
+		threadSniff = ThreadSniff(request)
+		threadSniff.start()
+
+    	return {
 				'error':False,
 				'message': "Iniciado el modo Sniff"
 				}
@@ -178,10 +195,10 @@ def Sniff(request):
 def stopfilter(x,request,interface):
 	packetSerialize = serializeDataSniff(x,interface)
 	print packetSerialize["id"]
-	
 	lock.acquire()
-	request.session['Packets'][packetSerialize["id"]]=packetSerialize
-	request.session['Packets'] = request.session['Packets']
+	s = SessionStore(session_key=request.session.session_key)
+	s['Packets'][packetSerialize["id"]]=packetSerialize
+	s.save()
 	lock.release()
 	
 	if(request.session['stopfilter']):
