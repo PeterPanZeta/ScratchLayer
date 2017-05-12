@@ -3,6 +3,8 @@ var parentinations = {};
 var onmouseover = undefined;
 var sniffElements = {};
 var rows_selected = [];
+var sinterval;
+var tableSniff;
 //console.log(parentinations["panelPrincipal"]);
 
 $(document).ready(function() {
@@ -201,48 +203,41 @@ function SubmitSniff(form,e){
             	}
             	else{
                 	$.notify( data.response.message, "success");
-            		ReciveDataSniff(true);
+                	ReciveDataSniff();
             	}
         	}
         });
+	    
+
     return false;
 }
 
 
-function ReciveDataSniff(run){
-
-	if(run){
+function ReciveDataSniff(){
+	sinterval = setInterval(function(){
+		//console.log("Voy a por datos");
 		$.ajax({
-		 		type: 'POST',
-	            url: '/ScratchLayer/ajax/',
-	            data: "mode=Sniff&sendDataSniff=True",
-	        	dataType: 'json',
-	            success: function (data) {
-		           	if(data.response.error){
-	            		for (var itemin in data.response.message){
-	                		$.notify( data.response.message[itemin], "error");
-	            		}
-	            	}
-	            	else{
-						pausecomp(5000);
-		                AddPacketSniff(data.response.message);
-	                	ReciveDataSniff(data.response.run)
-	            	}
-	        	}
-	        });
-	}
-    return false;
+	 		type: 'POST',
+            url: '/ScratchLayer/ajax/',
+            data: "mode=Sniff&sendDataSniff=True",
+        	dataType: 'json',
+            success: function (data) {
+	           	if(data.response.error){
+            		for (var itemin in data.response.message){
+                		$.notify( data.response.message[itemin], "error");
+            		}
+            	}
+            	else{
+	                AddPacketSniff(data.response.message);
+	                tableSniff.page('last').draw('page');
+            	}
+        	}
+        });	
+	},1000);
+    //return false;
 }
 
-function pausecomp(millis)
-{
-    var date = new Date();
-    var curDate = null;
-    do { curDate = new Date(); }
-    while(curDate-date < millis);
-}
-
-function StopSniff(ele,e){
+function stopSniff(ele,e){
 	e.preventDefault();
 	$.ajax({
 	 		type: 'POST',
@@ -260,6 +255,7 @@ function StopSniff(ele,e){
             	}
         	}
         });
+  	clearInterval(sinterval);
     return false;
 }
 
@@ -267,7 +263,7 @@ function AddPacketSniff(elements) {
 
 	for (var packet in elements){
 		sniffElements[packet]=elements[packet];
-		tableSniff.row.add( [packet,"("+elements[packet].iface+") "+"Packet:"+packet.split("/")[1]+"[ "+elements[packet].layerDescrip+" ]",""] ).draw();
+		tableSniff.row.add( [packet,"("+elements[packet].iface+") "+"Packet:"+packet.split("/")[1]+" [ "+elements[packet].layerDescrip+" ]",""] ).draw();
 	}
 }
 

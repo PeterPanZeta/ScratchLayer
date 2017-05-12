@@ -115,14 +115,17 @@ def PPrin(request):
 				}
 
 def sendDataSniff(request):
-	lock.acquire()
-	Data = request.session.get('Packets')
-	request.session['Packets'] = {}
-	#request.session['Packets'] = request.session['Packets']
-	lock.release() 
-	if(request.session['stopfilter']):
 
-		request.session['stopfilter']=False
+	lock.acquire()
+	s = SessionStore(session_key=request.session.session_key)
+	Data = s['Packets']
+	s['Packets'] = {}
+	s.save()
+	lock.release()
+
+	if(request.session['stopfilter']):
+		#print "Retorno Datos y paro"
+		#request.session['stopfilter']=False
 
 		return {
 			'error': False,
@@ -131,8 +134,8 @@ def sendDataSniff(request):
 		}
 
 	else:
-		print "Retorno Datos"
-		print Data
+		#print "Retorno Datos"
+		#print Data
 		return {
 			'error': False,
 			'run':True,
@@ -171,19 +174,27 @@ class ThreadSniff (threading.Thread):
 	
 
 def Sniff(request):
-
 	if(request.POST.get("sendDataSniff",None)):
-		print "CojoDatos"
 		return sendDataSniff(request)
 	elif(request.POST.get("stopfilter",None)):
 		print "Paro"
-		request.session['stopfilter']=True
+		lock.acquire()
+		s = SessionStore(session_key=request.session.session_key)
+		s['stopfilter']=True
+		s.save()
+		lock.release()
 		return {
 				'error':False,
 				'message': "Parando el modo Sniff"
 				}
 	else:
-		#ThreadSniffer(request)
+
+		lock.acquire()
+		s = SessionStore(session_key=request.session.session_key)
+		s['stopfilter']=False
+		s.save()
+		lock.release()
+
 		threadSniff = ThreadSniff(request)
 		threadSniff.start()
 
@@ -194,14 +205,18 @@ def Sniff(request):
 
 def stopfilter(x,request,interface):
 	packetSerialize = serializeDataSniff(x,interface)
-	print packetSerialize["id"]
+	#print packetSerialize["id"]
 	lock.acquire()
 	s = SessionStore(session_key=request.session.session_key)
-	s['Packets'][packetSerialize["id"]]=packetSerialize
+	stop = s['stopfilter']
+	if(stop):
+		s['Packets']={}
+	else:
+		s['Packets'][packetSerialize["id"]]=packetSerialize
 	s.save()
 	lock.release()
 	
-	if(request.session['stopfilter']):
+	if(stop):
 		return True
 	else:
 		return False
