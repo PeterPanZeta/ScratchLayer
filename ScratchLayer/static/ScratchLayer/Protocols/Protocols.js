@@ -631,12 +631,30 @@ function RIP() {
 
 }
 
+function DATA() {
+
+	Protocol.call(this,"DATA",true);
+
+	DATA.prototype.newPV=function() {
+
+		this.PV = document.createElement("div");
+		this.PV.id = "DATAnew"+contElement;
+		contElement=contElement+1;
+		this.id=this.PV.id;
+
+		var header = createHeader(this.type,this.id);
+		this.PV.classList.add("DATANew");
+		this.PV.appendChild(header);
+		this.PV.innerHTML=this.PV.innerHTML+"<div class='collapse in' id='"+this.id+"collap'><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><textarea rows='3' class='form-control' name='DATA' style='resize:none;'></textarea></div></div></div>"
+	};
+}
+
 
 function createElement(idSrt,parent) {
 	var newElement;
 	
-	//console.log(idSrt);
-	//console.log(parent);
+	console.log(idSrt);
+	console.log(parent);
 	switch(idSrt.split("/")[0]) {
 		case "Packet":
 			
@@ -670,6 +688,9 @@ function createElement(idSrt,parent) {
     		break;
     	case "RIP":
     		newElement = new RIP();
+    		break;
+    	case "DATA":
+    		newElement = new DATA();
     		break;
 	}
 	newElement.newPV();
@@ -736,6 +757,8 @@ TCP.prototype = new ProtocolDrop();
 UDP.prototype = new ProtocolDrop();
 
 ICMP.prototype = new Protocol();
+
+DATA.prototype = new Protocol();
 
 RIP.prototype = new ProtocolDrop();
 

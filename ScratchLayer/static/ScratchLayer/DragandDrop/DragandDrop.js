@@ -27,6 +27,7 @@ $(document).ready(function() {
     	//responsive: true,
     	bSort: false,
     	width: '1%',
+    	"pagingType": "full_numbers",
         className: 'dt-body-center',
         'select': {
          'style': 'multi'
@@ -188,6 +189,9 @@ function SubmitSniff(form,e){
 	e.preventDefault();
 
 	console.log( $( form ).serialize());
+	document.getElementById("buttonSubmitSniff").disabled = true;
+	document.getElementById("buttonStopSniff").disabled = false;
+
 	//var load = document.getElementById("load"+form.id.split("Form")[1])
 	//load.style.visibility="initial";
 	$.ajax({
@@ -228,7 +232,13 @@ function ReciveDataSniff(){
             		}
             	}
             	else{
-	                AddPacketSniff(data.response.message);
+            		if(data.response.stop){
+            			$.notify( data.response.message, "success");
+            			document.getElementById("buttonSubmitSniff").disabled = false;
+            			document.getElementById("buttonStopSniff").disabled = true;
+            			clearInterval(sinterval);
+            		}
+	                AddPacketSniff(data.response.data);
 	                tableSniff.page('last').draw('page');
             	}
         	}
@@ -255,7 +265,7 @@ function stopSniff(ele,e){
             	}
         	}
         });
-  	clearInterval(sinterval);
+  	//clearInterval(sinterval);
     return false;
 }
 
@@ -359,9 +369,11 @@ function loadData(form, dataLoad, layer) {
     		form.checkUDP.value = dataLoad.chksum;
     		break;
     	case "RIP":
-    		form.cmdRIP.value = elemtRIP.cmd;
-			form.verUDP.value = elemtRIP.version;
+    		form.cmdRIP.value = dataLoad.cmd;
+			form.verUDP.value = dataLoad.version;
     		break;
+    	case "DATA":
+    		form.DATA.value = dataLoad.load
 	}
 }
 

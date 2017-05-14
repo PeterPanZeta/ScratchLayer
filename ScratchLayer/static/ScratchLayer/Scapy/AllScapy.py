@@ -120,17 +120,19 @@ def sendDataSniff(request):
 	s = SessionStore(session_key=request.session.session_key)
 	Data = s['Packets']
 	s['Packets'] = {}
+	stop = s['stopfilter']
 	s.save()
 	lock.release()
 
-	if(request.session['stopfilter']):
+	if(stop):
 		#print "Retorno Datos y paro"
 		#request.session['stopfilter']=False
 
 		return {
 			'error': False,
-			'run':False,
-			'message':Data
+			'stop':True,
+			'message':"Sniff finalizado",
+			'data':Data
 		}
 
 	else:
@@ -138,8 +140,9 @@ def sendDataSniff(request):
 		#print Data
 		return {
 			'error': False,
-			'run':True,
-			'message':Data
+			'stop':False,
+			'message':'',
+			'data':Data
 		}
 
 class ThreadSniff (threading.Thread):
@@ -169,6 +172,12 @@ class ThreadSniff (threading.Thread):
 		print "Peticion User("+request.session.get('User')+"): "+ str(filte)+" "+str(count)+" "+str(iface)
 
 		sniff(filter=filte,count=count,iface=iface,stop_filter=lambda x:stopfilter(x,request,iface))
+
+		lock.acquire()
+		s = SessionStore(session_key=request.session.session_key)
+		s['stopfilter']=True
+		s.save()
+		lock.release()
 
 		print "Thread a terminado de Sniffar"
 	
@@ -204,22 +213,36 @@ def Sniff(request):
 				}
 
 def stopfilter(x,request,interface):
-	packetSerialize = serializeDataSniff(x,interface)
-	#print packetSerialize["id"]
-	lock.acquire()
-	s = SessionStore(session_key=request.session.session_key)
-	stop = s['stopfilter']
-	if(stop):
-		s['Packets']={}
-	else:
-		s['Packets'][packetSerialize["id"]]=packetSerialize
-	s.save()
-	lock.release()
-	
-	if(stop):
-		return True
-	else:
-		return False
+	try:
+		lock.acquire()
+		packetSerialize = serializeDataSniff(x,interface)
+		print packetSerialize["id"]
+		if("DATA" in packetSerialize):print packetSerialize["DATA"]
+		s = SessionStore(session_key=request.session.session_key)
+		stop = s['stopfilter']
+		if(stop):
+			s['Packets']={}
+		else:
+			s['Packets'][packetSerialize["id"]]=packetSerialize
+		s.save()
+		lock.release()
+		
+		if(stop):
+			return True
+		else:
+			return False
+	except Exception as inst:
+
+		print(type(inst))
+		print(inst.args)
+		print(inst)
+		lock.release()
+		lock.acquire()
+		s = SessionStore(session_key=request.session.session_key)
+		s['stopfilter']=True
+		s.save()
+		lock.release()
+
 
 def serializeDataSniff(elemt,interface):
 
@@ -228,6 +251,15 @@ def serializeDataSniff(elemt,interface):
 	layerDescrip = ""
 
 	packet = {}
+
+	elemtEther=None
+	elemtIP=None
+	elemtARP=None
+	elemtICMP=None
+	elemtTCP=None
+	elemtUDP=None
+	elemtRIP=None
+	elemtRaw=None
 
 	if(Ether in elemt):
 		elemtEther = elemt.getlayer(Ether)
@@ -332,7 +364,15 @@ def serializeDataSniff(elemt,interface):
 					}
 					layers=layers+"/TCP"
 					layerDescrip=layerDescrip+"/ TCP "+elemtIP.src+":"+str(elemtTCP.sport)+" > "+elemtIP.dst+":"+str(elemtTCP.dport)
-					
+			
+			if(Raw in elemt):
+				elemtRaw = elemt.getlayer(Raw)
+				packet["DATA"]={
+					'load':hexstr(elemtRaw.load)
+				}
+				layers=layers+"/DATA"
+				layerDescrip=layerDescrip+" / Raw"
+
 	packet["iface"]=interface
 	packet["layers"]=layers
 	packet["layerDescrip"]=layerDescrip
