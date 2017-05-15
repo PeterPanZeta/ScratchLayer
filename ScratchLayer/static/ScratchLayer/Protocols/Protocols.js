@@ -406,6 +406,15 @@ function Packet(idPack){
 		form.setAttribute("onsubmit","SubmitPrin(this,event)");
 		form.style.height="100%";
 		form.style.width="100%";
+    	
+    	var select = document.createElement("select");
+
+		for each (var item in iface) {
+  			var option = document.createElement("option");
+  			option.value= item;
+  			option.text= item;
+  			select.add(option);
+		}
 
 		form.innerHTML=" <input type='hidden' name='pk' value="+this.id+"><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div> <div class='form-group col-xs-12'><input class='col-xs-5 col-xs-offset-1' type='text' placeholder='NºPaquetes' name='npack'></input><input class='col-xs-3 col-xs-offset-3' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div></div>";
 		
@@ -645,7 +654,7 @@ function DATA() {
 		var header = createHeader(this.type,this.id);
 		this.PV.classList.add("DATANew");
 		this.PV.appendChild(header);
-		this.PV.innerHTML=this.PV.innerHTML+"<div class='collapse in' id='"+this.id+"collap'><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><textarea rows='3' class='form-control' name='DATA' style='resize:none;'></textarea></div></div></div>"
+		this.PV.innerHTML=this.PV.innerHTML+"<div class='collapse in' id='"+this.id+"collap'><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><textarea class='col-xs-12' rows='4' name='dat' style='resize:none;'></textarea></div></div></div>"
 	};
 }
 
@@ -653,14 +662,14 @@ function DATA() {
 function createElement(idSrt,parent) {
 	var newElement;
 	
-	console.log(idSrt);
-	console.log(parent);
+	//console.log(idSrt);
+	//console.log(parent);
 	switch(idSrt.split("/")[0]) {
 		case "Packet":
 			
 			if(idSrt.split("/")[1]!=undefined){
-				console.log(idSrt);
-				console.log(idSrt.split("/")[1]);
+				//console.log(idSrt);
+				//console.log(idSrt.split("/")[1]);
 				newElement = new Packet(idSrt.split("/")[1]);
 			}
 			else{

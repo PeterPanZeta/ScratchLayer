@@ -115,6 +115,10 @@ $(document).ready(function() {
     document.getElementById("Snffer").style.display="none";
 });
 
+function clearTable () {
+	console.log("Paso");
+	tableSniff.clear(); tableSniff.draw();}
+
 function updateDataTableSelectAllCtrl(tableSniff){
    
    var $tableSniff             = tableSniff.table().node();
@@ -188,7 +192,7 @@ function SubmitPrin(form,e){
 function SubmitSniff(form,e){
 	e.preventDefault();
 
-	console.log( $( form ).serialize());
+	//console.log( $( form ).serialize());
 	document.getElementById("buttonSubmitSniff").disabled = true;
 	document.getElementById("buttonStopSniff").disabled = false;
 
@@ -373,7 +377,8 @@ function loadData(form, dataLoad, layer) {
 			form.verUDP.value = dataLoad.version;
     		break;
     	case "DATA":
-    		form.DATA.value = dataLoad.load
+    		//console.log("DATA: "+dataLoad.load)
+    		form.dat.value = dataLoad.load;
 	}
 }
 

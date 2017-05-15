@@ -18,14 +18,14 @@ def PPrin(request):
 		print "KILL"
 		while(True):
 			None
-
+	print request.POST.get("DATA",None)
 	if(request.POST.get("pk",None) != None):
 
 		if(request.POST.get("Ethernet",None) != None):
 			
 			EtherDf=Ether()
 
-			if(request.POST.get("dstEther",None) != None and request.POST.get("dstEther",None)!= ""):
+			if(request.POST.get("dstEther","")!= ""):
 				print request.POST.get("dstEther",None)
 				if not parseMac(request.POST.get("dstEther",None)):
 					error = True
@@ -33,7 +33,7 @@ def PPrin(request):
 				else:
 					EtherDf.dst=request.POST.get("dstEther",None)
 
-			if(request.POST.get("srcEther",None) != None and request.POST.get("srcEther",None)!= ""):
+			if(request.POST.get("srcEther","")!= ""):
 				print request.POST.get("srcEther",None)
 				if not parseMac(request.POST.get("srcEther",None)):
 					error = True
@@ -41,14 +41,14 @@ def PPrin(request):
 				else:
 					EtherDf.src=request.POST.get("srcEther",None)
 
-			if(request.POST.get("typeEther",None) != None and request.POST.get("typeEther",None)!= ""):
+			if(request.POST.get("typeEther","")!= ""):
 				EtherDf.type=request.POST.get("typeEther",None)
 
 			if not error:
 				packetDf = EtherDf
 		
 		if (not error):		
-			if(request.POST.get("ARP",None) != None):
+			if(request.POST.get("ARP","") != ""):
 				ARPDf= ARP()
 				if not error:
 					if packetDf == None:
@@ -155,23 +155,30 @@ class ThreadSniff (threading.Thread):
 
    		filte = ""
 		count = ""
+		timeout = ""
 		request = self.request
 
 		iface = str(request.POST.get("interfaz",None))
 
-		if(request.POST.get("filter",None)==""):
-			filte=None
+		if(request.POST.get("filter","")==""):
+			filte = None
 		else:
 			filte=str(request.POST.get("filter",None))
 
-		if(request.POST.get("count",None)==""):
-			count=None
+		if(request.POST.get("count","")==""):
+			count = None
 		else:
 			count=int(request.POST.get("count",None))
 
+		if(request.POST.get("timeout","")==""):
+			timeout = None
+		else:
+			timeout=int(request.POST.get("timeout",""))
+
+
 		print "Peticion User("+request.session.get('User')+"): "+ str(filte)+" "+str(count)+" "+str(iface)
 
-		sniff(filter=filte,count=count,iface=iface,stop_filter=lambda x:stopfilter(x,request,iface))
+		sniff(filter=filte,count=count,iface=iface,timeout=timeout,stop_filter=lambda x:stopfilter(x,request,iface))
 
 		lock.acquire()
 		s = SessionStore(session_key=request.session.session_key)
@@ -216,8 +223,8 @@ def stopfilter(x,request,interface):
 	try:
 		lock.acquire()
 		packetSerialize = serializeDataSniff(x,interface)
-		print packetSerialize["id"]
-		if("DATA" in packetSerialize):print packetSerialize["DATA"]
+		#print packetSerialize["id"]
+		#if("DATA" in packetSerialize):print packetSerialize["DATA"]
 		s = SessionStore(session_key=request.session.session_key)
 		stop = s['stopfilter']
 		if(stop):
@@ -226,7 +233,7 @@ def stopfilter(x,request,interface):
 			s['Packets'][packetSerialize["id"]]=packetSerialize
 		s.save()
 		lock.release()
-		
+
 		if(stop):
 			return True
 		else:
@@ -303,75 +310,76 @@ def serializeDataSniff(elemt,interface):
 				'chksum':elemtIP.chksum,
 				'src':elemtIP.src,
 				'dst':elemtIP.dst,
-				'options':elemtIP.options
+				'options':""
 			}
+			#print elemtIP.options
 			layers=layers+"/IP"
 			layerDescrip=layerDescrip+"/ IP "
 
-		if(ICMP in elemt):
-			elemtICMP = elemt.getlayer(ICMP)
-			packet["ICMP"]={
-				'type':elemtICMP.type,
-				'code':elemtICMP.code,
-				'chksum':elemtICMP.chksum,
-				'id':elemtICMP.id,
-				'seq':elemtICMP.seq,
-				'ts_ori':elemtICMP.ts_ori,
-				'ts_rx':elemtICMP.ts_rx,
-				'ts_tx':elemtICMP.ts_tx,
-				'addr_mask':elemtICMP.addr_mask
-			}
-
-			layers=layers+"/ICMP"
-			layerDescrip=layerDescrip+"/ ICMP "+elemtIP.src+" > "+elemtIP.dst+" Type:"+str(elemtICMP.type)+" Code:"+str(elemtICMP.code)
-
-		else:
-			if(UDP in elemt):
-				elemtUDP = elemt.getlayer(UDP)
-				packet["UDP"]={
-					'sport':elemtUDP.sport,
-					'dport':elemtUDP.dport,
-					'len':elemtUDP.len,
-					'chksum':elemtUDP.chksum
+			if(ICMP in elemt):
+				elemtICMP = elemt.getlayer(ICMP)
+				packet["ICMP"]={
+					'type':elemtICMP.type,
+					'code':elemtICMP.code,
+					'chksum':elemtICMP.chksum,
+					'id':elemtICMP.id,
+					'seq':elemtICMP.seq,
+					'ts_ori':elemtICMP.ts_ori,
+					'ts_rx':elemtICMP.ts_rx,
+					'ts_tx':elemtICMP.ts_tx,
+					'addr_mask':elemtICMP.addr_mask
 				}
-				layers=layers+"/UDP"
-				layerDescrip=layerDescrip+"/UDP "+elemtIP.src+":"+str(elemtUDP.sport)+" > "+elemtIP.dst+":"+str(elemtUDP.dport)
 
-				if(RIP in elemt):
-					elemtRIP = elemt.getlayer(RIP)
-					packet["RIP"]={
-						'cmd':elemtRIP.cmd,
-						'version':elemtRIP.version,
-						'null':elemtRIP.null
-					}
-					layers=layers+"/RIP"
-					layerDescrip=layerDescrip+"/ RIP "
+				layers=layers+"/ICMP"
+				layerDescrip=layerDescrip+"/ ICMP "+elemtIP.src+" > "+elemtIP.dst+" Type:"+str(elemtICMP.type)+" Code:"+str(elemtICMP.code)
+
 			else:
-				if(TCP in elemt):
-					elemtTCP = elemt.getlayer(TCP)
-					packet["TCP"]={
-						'sport':elemtTCP.sport,
-						'dport':elemtTCP.dport,
-						'seq':elemtTCP.seq,
-						'ack':elemtTCP.ack,
-						'dataofs':elemtTCP.dataofs,
-						'reserved':elemtTCP.reserved,
-						'flags':elemtTCP.flags,
-						'window':elemtTCP.window,
-						'chksum':elemtTCP.chksum,
-						'urgptr':elemtTCP.urgptr,
-						'options':elemtTCP.options
+				if(UDP in elemt):
+					elemtUDP = elemt.getlayer(UDP)
+					packet["UDP"]={
+						'sport':elemtUDP.sport,
+						'dport':elemtUDP.dport,
+						'len':elemtUDP.len,
+						'chksum':elemtUDP.chksum
 					}
-					layers=layers+"/TCP"
-					layerDescrip=layerDescrip+"/ TCP "+elemtIP.src+":"+str(elemtTCP.sport)+" > "+elemtIP.dst+":"+str(elemtTCP.dport)
-			
-			if(Raw in elemt):
-				elemtRaw = elemt.getlayer(Raw)
-				packet["DATA"]={
-					'load':hexstr(elemtRaw.load)
-				}
-				layers=layers+"/DATA"
-				layerDescrip=layerDescrip+" / Raw"
+					layers=layers+"/UDP"
+					layerDescrip=layerDescrip+"/UDP "+elemtIP.src+":"+str(elemtUDP.sport)+" > "+elemtIP.dst+":"+str(elemtUDP.dport)
+
+					if(RIP in elemt):
+						elemtRIP = elemt.getlayer(RIP)
+						packet["RIP"]={
+							'cmd':elemtRIP.cmd,
+							'version':elemtRIP.version,
+							'null':elemtRIP.null
+						}
+						layers=layers+"/RIP"
+						layerDescrip=layerDescrip+"/ RIP "
+				else:
+					if(TCP in elemt):
+						elemtTCP = elemt.getlayer(TCP)
+						packet["TCP"]={
+							'sport':elemtTCP.sport,
+							'dport':elemtTCP.dport,
+							'seq':elemtTCP.seq,
+							'ack':elemtTCP.ack,
+							'dataofs':elemtTCP.dataofs,
+							'reserved':elemtTCP.reserved,
+							'flags':elemtTCP.flags,
+							'window':elemtTCP.window,
+							'chksum':elemtTCP.chksum,
+							'urgptr':elemtTCP.urgptr,
+							'options':elemtTCP.options
+						}
+						layers=layers+"/TCP"
+						layerDescrip=layerDescrip+"/ TCP "+elemtIP.src+":"+str(elemtTCP.sport)+" > "+elemtIP.dst+":"+str(elemtTCP.dport)
+				
+				if(Raw in elemt):
+					elemtRaw = elemt.getlayer(Raw)
+					packet["DATA"]={
+						'load':hexstr(elemtRaw.load)
+					}
+					layers=layers+"/DATA"
+					layerDescrip=layerDescrip+" / Raw"
 
 	packet["iface"]=interface
 	packet["layers"]=layers
@@ -407,7 +415,7 @@ def parseIHLIP(IHL):
 
 def parseMac(mac):
 
-	hexa = ["1","2","3","4","5","6","7","8","9","a","A","b","B","c","C","d","D","e","E","f","F"]
+	hexa = ["0","1","2","3","4","5","6","7","8","9","a","A","b","B","c","C","d","D","e","E","f","F"]
 	contador=0
 	parses = mac.split(":")
 

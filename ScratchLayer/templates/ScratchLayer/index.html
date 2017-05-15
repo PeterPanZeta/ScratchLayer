@@ -3,6 +3,13 @@
 <html>
 <head>
 <title>ScratchLayer</title>
+<script type="text/javascript">
+  var iface = {}
+  {% for inter in interfaces %} 
+      iface["{{inter}}"]="{{inter}}"; 
+  {% endfor %}
+  console.log(iface);
+</script>
 </head>
 <body>
 
@@ -69,7 +76,7 @@
           <form id="formSniff" method="post" onsubmit="SubmitSniff(this,event)">
             <div class='form-group col-xs-12'>
               <label class='col-xs-12' for='Filter'>Filter: </label>
-              <textarea rows="2" class="form-control" name="filter" style="resize:vertical;"></textarea>
+              <textarea rows="2" class="form-control" name="filter" style="resize:none;"></textarea>
             </div>
             <div class='form-group col-xs-12'>
               <label class='col-xs-6' for='count'>Count: </label>                            
@@ -100,7 +107,7 @@
         <div class="panel panel-default">
           <div class="panel-heading col-xs-12"></div>
           <div id="Sniffer" class="panel-body Sniff">
-            <div class="col-xs-12">  
+            <div class="col-xs-12" style="padding-top: 8px;">  
             <table width="100%" class="table table-striped table-hover display select " cellspacing="0" id="dataTables-Sniffer"> <!--table-bordered-->
              <thead>
                   <tr> 
@@ -112,7 +119,7 @@
                     <tr> 
                       <th></th>
                       <th style="text-align: right;">
-                        <button  onclick='createElementsSniff()'>Transfer to PP</button>
+                        <button onclick="clearTable()" >Clear</button><button  onclick='createElementsSniff()'>Transfer to PP</button>
                       </th>
                   </tr>
                 </tfoot>
