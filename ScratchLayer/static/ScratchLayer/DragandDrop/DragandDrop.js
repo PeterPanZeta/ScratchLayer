@@ -166,7 +166,7 @@ function SubmitPrin(form,e){
 	$.ajax({
 	 		type: 'POST',
             url: '/ScratchLayer/ajax/',
-            data: "mode=PPrin&"+$( form ).serialize()+"&interfaz="+document.getElementById("interfaces1").value,
+            data: "mode=PPrin&"+$( form ).serialize(),
         	dataType: 'json',
             success: function (data) {
 				load.style.visibility="hidden";
@@ -181,6 +181,7 @@ function SubmitPrin(form,e){
             		for (var itemin in data.response.message){
                 		$.notify( data.response.message[itemin], "success");
             		}
+            		console.log(data.response.data);
             	}
          	 	
         	}

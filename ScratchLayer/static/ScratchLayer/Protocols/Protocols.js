@@ -409,14 +409,17 @@ function Packet(idPack){
     	
     	var select = document.createElement("select");
 
-		for each (var item in iface) {
+		for(var item in iface) {
   			var option = document.createElement("option");
   			option.value= item;
   			option.text= item;
   			select.add(option);
 		}
 
-		form.innerHTML=" <input type='hidden' name='pk' value="+this.id+"><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div> <div class='form-group col-xs-12'><input class='col-xs-5 col-xs-offset-1' type='text' placeholder='NºPaquetes' name='npack'></input><input class='col-xs-3 col-xs-offset-3' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div></div>";
+		select.setAttribute("class","col-xs-6 col-xs-offset-1");
+		select.setAttribute("name","interfaz");
+
+		form.innerHTML=" <input type='hidden' name='pk' value="+this.id+"><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><label class='col-xs-4'>Respuesta</label><input class='col-xs-1 col-xs-offset-1' type='checkbox' name='recur' value='True'><input class='col-xs-5 col-xs-offset-2' type='text' placeholder='NºPaquetes' name='npack'></input></div><div class='form-group col-xs-12'>"+select.outerHTML+"<input class='col-xs-3 col-xs-offset-2' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div></div>";
 		
 		this.drop = document.createElement("div");
 		this.drop.id="Drop"+this.id;
