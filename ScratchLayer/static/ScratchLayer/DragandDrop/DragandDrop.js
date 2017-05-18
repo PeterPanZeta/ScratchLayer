@@ -117,6 +117,8 @@ $(document).ready(function() {
 
 function clearTable () {
 	console.log("Paso");
+	sniffElements = {};
+	rows_selected = [];
 	tableSniff.clear(); tableSniff.draw();}
 
 function updateDataTableSelectAllCtrl(tableSniff){
@@ -181,7 +183,15 @@ function SubmitPrin(form,e){
             		for (var itemin in data.response.message){
                 		$.notify( data.response.message[itemin], "success");
             		}
-            		console.log(data.response.data);
+            		if(data.response.data != "undefined"){
+            			console.log(form);
+            			console.log("ID:"+form.id.split("Form")[1]);
+            			Element = findObj(form.id.split("Form")[1]);
+            			Element.upResp();
+            			data.response.data.id="Packet/R"+form.id.split("new")[1]+"."+Element.getResp();
+            			console.log(data.response.data);
+            			traspast(data.response.data);
+            		}
             	}
          	 	
         	}
@@ -194,7 +204,10 @@ function SubmitSniff(form,e){
 	e.preventDefault();
 
 	//console.log( $( form ).serialize());
+
 	document.getElementById("buttonSubmitSniff").disabled = true;
+	document.getElementById("clearTableButton").disabled = true;
+	document.getElementById("createElementsSniffButton").disabled = true;
 	document.getElementById("buttonStopSniff").disabled = false;
 
 	//var load = document.getElementById("load"+form.id.split("Form")[1])
@@ -240,6 +253,8 @@ function ReciveDataSniff(){
             		if(data.response.stop){
             			$.notify( data.response.message, "success");
             			document.getElementById("buttonSubmitSniff").disabled = false;
+            			document.getElementById("clearTableButton").disabled = false;
+						document.getElementById("createElementsSniffButton").disabled = false;
             			document.getElementById("buttonStopSniff").disabled = true;
             			clearInterval(sinterval);
             		}
@@ -285,16 +300,15 @@ function AddPacketSniff(elements) {
 function createElementsSniff(argument) {
 	viewPanel(document.getElementById("pprin"));
   	$.each(rows_selected, function(index, rowId){
-    	traspast(rowId) 
+  		//console.log(rowId);
+    	traspast(sniffElements[rowId]); 
   	});
 }
 
-function traspast(packetName) {
-	
-	var dataPacket = sniffElements[packetName];
+function traspast(dataPacket) {
 	var child;
 
-	var packet = createElement(packetName,findObj("panelPrincipal"));
+	var packet = createElement(dataPacket["id"],findObj("panelPrincipal"));
 	var parent = packet;
 
 	layers=dataPacket.layers.split("/");

@@ -274,8 +274,14 @@ def PPrin(request):
 		else:
 			if (packetDf!= None and request.POST.get("interfaz","") != ""):
 				if(request.POST.get("recur","") != "" and request.POST.get("recur","")):
+					ls(packetDf)
 					print "Interfaz: "+str(request.POST.get("interfaz",None))
-					Data = serializeDataSniff(srp1(packetDf,iface=str(request.POST.get("interfaz",None)),verbose=0),str(request.POST.get("interfaz",None))) #,iface=request.POST.get("interfaz",None)
+					if Ether in packetDf:
+						print "Envio srp"
+						Data = serializeDataSniff(srp1(packetDf,iface=str(request.POST.get("interfaz",None)),verbose=0),str(request.POST.get("interfaz",None))) #,iface=request.POST.get("interfaz",None)
+					else:
+						print "Envio sr"
+						Data = serializeDataSniff(sr1(packetDf,iface=str(request.POST.get("interfaz",None)),verbose=0),str(request.POST.get("interfaz",None))) #,iface=request.POST.get("interfaz",None)
 					print "El paquete ha sido enviado"
 					return {
 						'error':False,
@@ -283,6 +289,9 @@ def PPrin(request):
 						'data':Data
 					}
 				else:
+					if not Ether in packetDf:
+						packetDf=Ether()/packetDf
+
 					ls(packetDf)
 					print "Interfaz: "+str(request.POST.get("interfaz",None))
 					sendp(packetDf,iface=str(request.POST.get("interfaz",None))) #,iface=request.POST.get("interfaz",None)
@@ -290,7 +299,7 @@ def PPrin(request):
 					return {
 						'error':False,
 						'message':{"Correcto":"El paquete ha sido enviado"},
-						'data':None
+						'data':"undefined"
 					}
 			else:
 				print "El paquete esta vacio"
@@ -464,6 +473,7 @@ def serializeDataSniff(elemt,interface):
 		layerDescrip="Ethernet " #(src="+elemtEther.src+" dst="+elemtEther.dst+")"
 
 	if(ARP in elemt):
+		#print "Creo ARP"
 		elemtARP = elemt.getlayer(ARP)
 		packet["ARP"]={
 			'hwtype':elemtARP.hwtype,
@@ -476,11 +486,13 @@ def serializeDataSniff(elemt,interface):
 			'hwdst':elemtARP.hwdst,
 			'pdst':elemtARP.pdst
 		}
+		
 		layers=layers+"/ARP"
 		layerDescrip=layerDescrip+"/ ARP OP:"+str(elemtARP.op)+" "+elemtARP.pdst+" says "+elemtARP.psrc
 		
 	else:
 		if(IP in elemt):
+			#print "Creo IP"
 			elemtIP = elemt.getlayer(IP)
 			packet["IP"]={
 				'version':elemtIP.version,
@@ -498,10 +510,16 @@ def serializeDataSniff(elemt,interface):
 				'options':""
 			}
 			#print elemtIP.options
-			layers=layers+"/IP"
-			layerDescrip=layerDescrip+"/ IP "
+			
+			if(layers==""):
+				layers="IP"
+				layerDescrip=" IP "
+			else:
+				layers=layers+"/IP"
+				layerDescrip=layerDescrip+"/ IP "
 
 			if(ICMP in elemt):
+				#print "Creo ICMP"
 				elemtICMP = elemt.getlayer(ICMP)
 				packet["ICMP"]={
 					'type':elemtICMP.type,
@@ -520,6 +538,7 @@ def serializeDataSniff(elemt,interface):
 
 			else:
 				if(UDP in elemt):
+					#print "Creo UDP"
 					elemtUDP = elemt.getlayer(UDP)
 					packet["UDP"]={
 						'sport':elemtUDP.sport,
@@ -541,6 +560,7 @@ def serializeDataSniff(elemt,interface):
 						layerDescrip=layerDescrip+"/ RIP "
 				else:
 					if(TCP in elemt):
+						#print "Creo TCP"
 						elemtTCP = elemt.getlayer(TCP)
 						packet["TCP"]={
 							'sport':elemtTCP.sport,

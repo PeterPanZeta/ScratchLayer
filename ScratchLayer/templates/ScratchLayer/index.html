@@ -21,7 +21,7 @@
        <div class="panel panel-default">
           <div class="panel-heading"></div>
           <div id="elements1" class="panel-body">
-            <div class="row col-lg-1 col-xs-12" >
+             <div class="row col-lg-1 col-xs-12" >
 
               <div class="col-xs-1">
                 <img id="Packet" class="icon" draggable="true"  src="{% static 'ScratchLayer/images/package.png' %}">
@@ -115,7 +115,7 @@
                     <tr> 
                       <th></th>
                       <th style="text-align: right;">
-                        <button onclick="clearTable()" >Clear</button><button  onclick='createElementsSniff()'>Transfer to PP</button>
+                        <button id="clearTableButton" onclick="clearTable()" >Clear</button><button id="createElementsSniffButton"  onclick='createElementsSniff()'>Transfer to PP</button>
                       </th>
                   </tr>
                 </tfoot>

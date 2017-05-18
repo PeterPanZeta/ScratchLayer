@@ -96,6 +96,7 @@ function Protocol(type) {
 
 	this.type=type;
 	this.id="";
+	this.Rest=0;
 	this.PV;
 	this.dropable=false;
 	this.Parent;
@@ -134,6 +135,14 @@ function Protocol(type) {
 			return false;
 		}
 	};
+
+	Protocol.prototype.getResp=function() {
+		return this.Rest;
+	};
+
+	Protocol.prototype.upResp=function() {
+		this.Rest=this.Rest+1;
+	}
 
 	Protocol.prototype.isCollap=function() {
 		return this.collap;
@@ -373,8 +382,10 @@ function Packet(idPack){
 
 	ProtocolDrop.call(this,"Packet",true);
 	this.idPack=idPack;
+	this.Modal;
 
 	Packet.prototype.newPV=function() {
+
 		var form = document.createElement("form");
 
 		this.dropin={"Ethernet":"Ethernet","IP":"IP","ARP":"ARP"};
@@ -387,6 +398,12 @@ function Packet(idPack){
 
 		this.PV.classList.add("PacketNew");
 
+		this.Modal = document.createElement("div");
+		this.Modal.setAttribute("class","modal fade");
+		this.Modal.setAttribute("role","dialog");
+		this.Modal.id="modal"+this.id;
+		this.Modal.innerHTML="<div class='modal-dialog'><div class='modal-content'><div class='modal-header'><button type='button' class='close' data-dismiss='modal'>&times;</button><h4 class='modal-title'>Modal Header</h4></div><div class='modal-body'><p>Some text in the modal.</p></div><div class='modal-footer'><button type='button' class='btn btn-default' data-dismiss='modal'>Close</button></div></div></div>"
+			
 		var header = document.createElement("header");
 		header.id="header"+this.id;
 		header.classList.add("col-xs-12");
@@ -394,7 +411,7 @@ function Packet(idPack){
 		header.setAttribute("onmouseover", "topEleme(this.parentNode)");
 		header.setAttribute("draggable","true");
 			
-		header.innerHTML="<div class='col-xs-3'>Packet:"+idPack+"</div><img id='load"+this.id+"' class='col-xs-1 col-xs-offset-4 load'><a type='button' id='"+this.id+"buttonMinimax' onclick='minimax(this)' class='col-xs-1 mini'><a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'><a class='col-xs-1 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a>"
+		header.innerHTML="<div class='col-xs-3'>Packet:"+this.idPack+"</div><button type='button' class='btn btn-info btn-lg' data-toggle='modal' data-target='"+this.Modal.id+"'>Open Modal</button><img id='load"+this.id+"' class='col-xs-1 col-xs-offset-4 load'><a type='button' id='"+this.id+"buttonMinimax' onclick='minimax(this)' class='col-xs-1 mini'><a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'><a class='col-xs-1 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a>"
 
 		this.PV.appendChild(header);
 		this.PV.innerHTML=this.PV.innerHTML+"</div class='col-xs-12' id='formula'><div>"
@@ -416,10 +433,10 @@ function Packet(idPack){
   			select.add(option);
 		}
 
-		select.setAttribute("class","col-xs-6 col-xs-offset-1");
+		select.setAttribute("class","col-xs-4 col-xs-offset-1");
 		select.setAttribute("name","interfaz");
 
-		form.innerHTML=" <input type='hidden' name='pk' value="+this.id+"><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><label class='col-xs-4'>Respuesta</label><input class='col-xs-1 col-xs-offset-1' type='checkbox' name='recur' value='True'><input class='col-xs-5 col-xs-offset-2' type='text' placeholder='NºPaquetes' name='npack'></input></div><div class='form-group col-xs-12'>"+select.outerHTML+"<input class='col-xs-3 col-xs-offset-2' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div></div>";
+		form.innerHTML=" <input type='hidden' name='pk' value="+this.id+"><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><label class='col-xs-4'>Respuesta</label><input class='col-xs-1 col-xs-offset-1' type='checkbox' name='recur' value='True'><input class='col-xs-4 col-xs-offset-3' type='text' placeholder='NºPaquetes' name='npack'></input></div><div class='form-group col-xs-12'>"+select.outerHTML+"<input class='col-xs-4 col-xs-offset-3' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div></div>";
 		
 		this.drop = document.createElement("div");
 		this.drop.id="Drop"+this.id;
@@ -429,8 +446,8 @@ function Packet(idPack){
 		this.drop.addEventListener('drop',function(e){drop(e,false)}, false);
 		this.idDrop=this.drop.id;
 		form.appendChild(this.drop);
-
 		this.PV.lastChild.appendChild(form);
+		this.PV.appendChild(this.Modal);
 	};
 
 	Packet.prototype.collapse=function(){
@@ -664,8 +681,8 @@ function DATA() {
 
 function createElement(idSrt,parent) {
 	var newElement;
-	
-	//console.log(idSrt);
+	console.log("Creo Capa")
+	console.log(idSrt);
 	//console.log(parent);
 	switch(idSrt.split("/")[0]) {
 		case "Packet":
