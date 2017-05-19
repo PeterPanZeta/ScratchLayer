@@ -402,7 +402,7 @@ function Packet(idPack){
 		this.Modal.setAttribute("class","modal fade");
 		this.Modal.setAttribute("role","dialog");
 		this.Modal.id="modal"+this.id;
-		this.Modal.innerHTML="<div class='modal-dialog'><div class='modal-content'><div class='modal-header'><button type='button' class='close' data-dismiss='modal'>&times;</button><h4 class='modal-title'>Modal Header</h4></div><div class='modal-body'><p>Some text in the modal.</p></div><div class='modal-footer'><button type='button' class='btn btn-default' data-dismiss='modal'>Close</button></div></div></div>"
+		this.Modal.innerHTML="<div class='modal-dialog'><div class='modal-content'><div class='modal-header'><button type='button' class='close' data-dismiss='modal'>&times;</button><h4 class='modal-title'>Modal Header</h4></div><div class='modal-body'><object data='/static/ScratchLayer/tmp/"+this.id+".pdf' type='application/pdf' width='100%' height='100%'><a href='/static/ScratchLayer/tmp/"+this.id+".pdf'>test.pdf</a></object></div><div class='modal-footer'><button type='button' class='btn btn-default' data-dismiss='modal'>Close</button></div></div></div>"
 			
 		var header = document.createElement("header");
 		header.id="header"+this.id;
@@ -411,8 +411,8 @@ function Packet(idPack){
 		header.setAttribute("onmouseover", "topEleme(this.parentNode)");
 		header.setAttribute("draggable","true");
 			
-		header.innerHTML="<div class='col-xs-3'>Packet:"+this.idPack+"</div><button type='button' class='btn btn-info btn-lg' data-toggle='modal' data-target='"+this.Modal.id+"'>Open Modal</button><img id='load"+this.id+"' class='col-xs-1 col-xs-offset-4 load'><a type='button' id='"+this.id+"buttonMinimax' onclick='minimax(this)' class='col-xs-1 mini'><a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'><a class='col-xs-1 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a>"
-
+		header.innerHTML="<div class='col-xs-3'>Packet:"+this.idPack+"</div><button type='button' class='btn btn-info btn-lg' onclick='loadModal(\""+this.Modal.id+"\",\""+"Form"+this.id+"\",event);'>Open Modal</button><img id='load"+this.id+"' class='col-xs-1 col-xs-offset-4 load'><a type='button' id='"+this.id+"buttonMinimax' onclick='minimax(this)' class='col-xs-1 mini'><a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'><a class='col-xs-1 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a>"
+		header.appendChild(this.Modal);
 		this.PV.appendChild(header);
 		this.PV.innerHTML=this.PV.innerHTML+"</div class='col-xs-12' id='formula'><div>"
 
@@ -447,7 +447,7 @@ function Packet(idPack){
 		this.idDrop=this.drop.id;
 		form.appendChild(this.drop);
 		this.PV.lastChild.appendChild(form);
-		this.PV.appendChild(this.Modal);
+		
 	};
 
 	Packet.prototype.collapse=function(){
@@ -681,8 +681,8 @@ function DATA() {
 
 function createElement(idSrt,parent) {
 	var newElement;
-	console.log("Creo Capa")
-	console.log(idSrt);
+	//console.log("Creo Capa")
+	//console.log(idSrt);
 	//console.log(parent);
 	switch(idSrt.split("/")[0]) {
 		case "Packet":

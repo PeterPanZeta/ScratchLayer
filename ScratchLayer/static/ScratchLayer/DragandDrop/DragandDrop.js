@@ -115,6 +115,32 @@ $(document).ready(function() {
     document.getElementById("Snffer").style.display="none";
 });
 
+function loadModal(elemHTMLid, bodyModalid,form,e) {
+
+	console.log($('#'+form ).serialize());
+	e.preventDefault();
+	$.ajax({
+	 		type: 'POST',
+            url: '/ScratchLayer/ajax/',
+            data: "mode=PPrin&pdfdump=True&"+$('#'+form ).serialize(),
+        	dataType: 'json',
+            success: function (data) {
+	           	if(data.response.error){
+            		for (var itemin in data.response.message){
+                		$.notify( data.response.message[itemin], "error");
+            		}
+            	}
+            	else{
+
+            			$('#'+elemHTMLid).modal('show')
+                		//$.notify( data.response.message, "success");
+            	}
+        	}
+        });
+  	//clearInterval(sinterval);
+    return false;
+}
+
 function clearTable () {
 	console.log("Paso");
 	sniffElements = {};
@@ -163,6 +189,7 @@ function enter(e) {
 
 function SubmitPrin(form,e){
 	e.preventDefault();
+	//console.log($( form ).serialize());
 	var load = document.getElementById("load"+form.id.split("Form")[1])
 	load.style.visibility="initial";
 	$.ajax({
@@ -203,7 +230,7 @@ function SubmitPrin(form,e){
 function SubmitSniff(form,e){
 	e.preventDefault();
 
-	//console.log( $( form ).serialize());
+	console.log( $( form ).serialize());
 
 	document.getElementById("buttonSubmitSniff").disabled = true;
 	document.getElementById("clearTableButton").disabled = true;

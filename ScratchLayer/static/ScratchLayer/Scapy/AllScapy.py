@@ -1,9 +1,10 @@
 
 from scapy.all import *
 from django.contrib.sessions.backends.db import SessionStore
-from time import gmtime, strftime
+#from time import gmtime, strftime
 import random
-import threading 
+import threading
+import os 
 
 lock = threading.Lock()  
 
@@ -18,7 +19,7 @@ def PPrin(request):
 		print "KILL"
 		while(True):
 			None
-	print request.POST.get("DATA",None)
+	#print request.POST.get("DATA",None)
 	if(request.POST.get("pk",None) != None):
 
 		if(request.POST.get("Ethernet",None) != None):
@@ -272,7 +273,20 @@ def PPrin(request):
 					'message': messageError
 			}
 		else:
-			if (packetDf!= None and request.POST.get("interfaz","") != ""):
+			if(packetDf!= None and request.POST.get("pdfdump","") != ""):
+				print os.getcwd()
+				if not ("tmp" in os.listdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/")):
+					os.mkdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp")
+
+				packetDf.pdfdump(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.POST.get("pk",""));
+
+				return {
+					'error':False,
+					'message':{"Correcto":"El paquete ha sido enviado"},
+					'id':request.POST.get("pk","")
+				}
+				
+			elif (packetDf!= None and request.POST.get("interfaz","") != ""):
 				if(request.POST.get("recur","") != "" and request.POST.get("recur","")):
 					ls(packetDf)
 					print "Interfaz: "+str(request.POST.get("interfaz",None))
@@ -447,7 +461,7 @@ def stopfilter(x,request,interface):
 
 def serializeDataSniff(elemt,interface):
 
-	time=gmtime()
+	#time=gmtime()
 	layers = ""
 	layerDescrip = ""
 
@@ -589,7 +603,7 @@ def serializeDataSniff(elemt,interface):
 	packet["iface"]=interface
 	packet["layers"]=layers
 	packet["layerDescrip"]=layerDescrip
-	ide="Packet/"+str(time.tm_hour)+str(time.tm_min)+str(time.tm_sec+random.randint(1, 200))
+	ide="Packet/"+str(random.randint(1, 9))+str(random.randint(1, 9))+str(random.randint(1, 9))+str(random.randint(1, 9))+str(random.randint(1, 9))   #str(time.tm_hour)+str(time.tm_min)+str(time.tm_sec+random.randint(1, 200))
 	packet["id"]=ide
 
 	return packet
