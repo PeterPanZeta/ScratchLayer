@@ -120,6 +120,14 @@ table.dataTable thead th:first-child {
   background-size: 30px 20px
 }
 
+.clonar{
+  width: 20px;
+  height: 20px;
+  cursor:pointer;
+  background-image: url("/static/ScratchLayer/images/clonar.png");
+  background-size: 30px 20px
+}
+
 .drop{
   float: left;
   border: 2px solid #666666;

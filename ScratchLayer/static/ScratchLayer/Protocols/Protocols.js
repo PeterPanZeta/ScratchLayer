@@ -37,6 +37,10 @@ function PanelPrincipal(PanelPrincipalHTML) {
 		return this.PV;
 	};
 
+	PanelPrincipal.prototype.setPV = function(PV) {
+		this.PV = PV;
+	}
+
 	PanelPrincipal.prototype.dropInElemt=function(elemet) {
 		return true;
 	};
@@ -204,6 +208,10 @@ function Protocol(type) {
 
 	Protocol.prototype.getPV=function() {
 		return this.PV;
+	};
+
+	Protocol.prototype.setPV=function(PV) {
+		this.PV = PV;
 	};
 
 	Protocol.prototype.collapse=function(){
@@ -402,7 +410,7 @@ function Packet(idPack){
 		this.Modal.setAttribute("class","modal fade");
 		this.Modal.setAttribute("role","dialog");
 		this.Modal.id="modal"+this.id;
-		this.Modal.innerHTML="<div class='modal-dialog'><div class='modal-content'><div class='modal-header'><button type='button' class='close' data-dismiss='modal'>&times;</button><h4 class='modal-title'>Modal Header</h4></div><div class='modal-body'><object data='/static/ScratchLayer/tmp/"+this.id+".pdf' type='application/pdf' width='100%' height='100%'><a href='/static/ScratchLayer/tmp/"+this.id+".pdf'>test.pdf</a></object></div><div class='modal-footer'><button type='button' class='btn btn-default' data-dismiss='modal'>Close</button></div></div></div>"
+		this.Modal.innerHTML="<div class='modal-dialog modal-lg'><div class='modal-content'><div class='modal-header'><button type='button' class='close' data-dismiss='modal'>&times;</button><h4 class='modal-title'>Graphical "+this.id+"</h4></div><div id='modalBody"+this.id+"' class='modal-body'></div><div class='modal-footer'><a id='buttonDown"+this.id+"' type='button' class='btn btn-default' href='' download=''>Download</a><button type='button' class='btn btn-default' data-dismiss='modal'>Close</button></div></div></div>"
 			
 		var header = document.createElement("header");
 		header.id="header"+this.id;
@@ -411,7 +419,7 @@ function Packet(idPack){
 		header.setAttribute("onmouseover", "topEleme(this.parentNode)");
 		header.setAttribute("draggable","true");
 			
-		header.innerHTML="<div class='col-xs-3'>Packet:"+this.idPack+"</div><button type='button' class='btn btn-info btn-lg' onclick='loadModal(\""+this.Modal.id+"\",\""+"Form"+this.id+"\",event);'>Open Modal</button><img id='load"+this.id+"' class='col-xs-1 col-xs-offset-4 load'><a type='button' id='"+this.id+"buttonMinimax' onclick='minimax(this)' class='col-xs-1 mini'><a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'><a class='col-xs-1 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a>"
+		header.innerHTML="<div class='col-xs-3'>Packet:"+this.idPack+"</div><img id='load"+this.id+"' class='col-xs-1 col-xs-offset-4 load'><a type='button' id='"+this.id+"buttonMinimax' onclick='minimax(this)' class='col-xs-1 mini'><a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'><a class='col-xs-1 remove' type='button' id='remove' class='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a>"
 		header.appendChild(this.Modal);
 		this.PV.appendChild(header);
 		this.PV.innerHTML=this.PV.innerHTML+"</div class='col-xs-12' id='formula'><div>"
@@ -436,7 +444,7 @@ function Packet(idPack){
 		select.setAttribute("class","col-xs-4 col-xs-offset-1");
 		select.setAttribute("name","interfaz");
 
-		form.innerHTML=" <input type='hidden' name='pk' value="+this.id+"><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><label class='col-xs-4'>Respuesta</label><input class='col-xs-1 col-xs-offset-1' type='checkbox' name='recur' value='True'><input class='col-xs-4 col-xs-offset-3' type='text' placeholder='NºPaquetes' name='npack'></input></div><div class='form-group col-xs-12'>"+select.outerHTML+"<input class='col-xs-4 col-xs-offset-3' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div></div>";
+		form.innerHTML=" <input type='hidden' name='pk' value="+this.id+"><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><label class='col-xs-4'>Respuesta</label><input class='col-xs-1 col-xs-offset-1' type='checkbox' name='recur' value='True'><input class='col-xs-4 col-xs-offset-3' type='text' placeholder='NºPaquetes' name='npack'></input></div><div class='form-group col-xs-12'>"+select.outerHTML+"<button type='button' class='col-xs-2 col-xs-offset-1' onclick='loadModal(\""+this.Modal.id+"\",\""+this.id+"\",event);'>Graf</button><input class='col-xs-3 col-xs-offset-1' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div></div>";
 		
 		this.drop = document.createElement("div");
 		this.drop.id="Drop"+this.id;
@@ -762,7 +770,7 @@ function createHeader(label, id) {
 	header.setAttribute("onmouseover", "topEleme(this.parentNode)");
 	header.setAttribute("draggable","true");
 		
-	header.innerHTML="<div class='col-xs-3'>"+label+"</div> <input type='hidden' name='"+label+"' value='True'><a type='button' id='"+id+"buttonCollap' data-toggle='collapse' data-target='#"+id+"collap' onclick='collapseElement(this)' class='col-xs-1 col-xs-offset-5 collap'><a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'><input type='hidden' name='Ether' value='True'><a class='col-xs-1 remove' type='button' id='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a>";
+	header.innerHTML="<div class='col-xs-3'>"+label+"</div> <input type='hidden' name='"+label+"' value='True'><a type='button' id='"+id+"buttonCollap' data-toggle='collapse' data-target='#"+id+"collap' onclick='collapseElement(this)' class='col-xs-1 col-xs-offset-4 collap'><a type='button' id='clonar' onclick='clonar(\""+id+"\")' class='col-xs-1 clonar'><a type='button' id='chincheta' onclick='chincheta(this)' class='col-xs-1 chincheta'><input type='hidden' name='Ether' value='True'><a class='col-xs-1 remove' type='button' id='remove' onclick='removeElement(this.parentNode.parentNode)' align-text='center'></a>";
 	return header;
 }
 

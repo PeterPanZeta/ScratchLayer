@@ -70,8 +70,8 @@ $(document).ready(function() {
 
       // If checkbox is checked and row ID is not in list of selected row IDs
       if(this.checked && index === -1){
-      	console.log("Pongo: "+rowId);
-         rows_selected.push(rowId);
+      	//console.log("Pongo: "+rowId);
+        rows_selected.push(rowId);
 
       // Otherwise, if checkbox is not checked and row ID is in list of selected row IDs
       } else if (!this.checked && index !== -1){
@@ -115,14 +115,14 @@ $(document).ready(function() {
     document.getElementById("Snffer").style.display="none";
 });
 
-function loadModal(elemHTMLid, bodyModalid,form,e) {
+function loadModal(elemHTMLid,elementid,e) {
 
-	console.log($('#'+form ).serialize());
+	//console.log($('#Form'+elementid).serialize());
 	e.preventDefault();
 	$.ajax({
 	 		type: 'POST',
             url: '/ScratchLayer/ajax/',
-            data: "mode=PPrin&pdfdump=True&"+$('#'+form ).serialize(),
+            data: "mode=PPrin&pdfdump=True&"+$('#Form'+elementid).serialize(),
         	dataType: 'json',
             success: function (data) {
 	           	if(data.response.error){
@@ -130,8 +130,18 @@ function loadModal(elemHTMLid, bodyModalid,form,e) {
                 		$.notify( data.response.message[itemin], "error");
             		}
             	}
-            	else{
-
+            	else{           			
+            			var modalPDF = document.createElement("object");
+            			modalPDF.setAttribute("type","application/pdf");
+            			modalPDF.setAttribute("width","100%");
+            			modalPDF.setAttribute("height","100%");
+            			modalPDF.setAttribute("data","/static/ScratchLayer/tmp/"+elementid+".pdf");
+            			modalPDF.innerHTML="<a href='/static/ScratchLayer/tmp/"+elementid+".pdf'>"+elementid+".pdf</a>"
+            			var modalBody = document.getElementById("modalBody"+elementid);
+            			var buttonDown = document.getElementById("buttonDown"+elementid);
+            			buttonDown.setAttribute("href","/static/ScratchLayer/tmp/"+elementid+".pdf");
+            			buttonDown.setAttribute("download",elementid+".pdf");
+            			modalBody.innerHTML=modalPDF.outerHTML;
             			$('#'+elemHTMLid).modal('show')
                 		//$.notify( data.response.message, "success");
             	}
@@ -347,6 +357,86 @@ function traspast(dataPacket) {
 	var form = document.getElementById("Form"+packet.getId());
 	for (var i=0; i<layers.length; i++) loadData(form,dataPacket[layers[i]],layers[i]);
 	minimax(document.getElementById(packet.getId()+"buttonMinimax"));
+}
+
+function clonar(elementid) {
+	var element = findObj(elementid);
+	var clonElemt = createElement(element.getType(), panelPrincipal);
+	clonValues(element.getId(),clonElemt.getId(),element.getType());
+}
+
+function clonValues(Elemtid, clonElemtid, Type) {
+
+		switch(Type) {
+
+    	case "Ethernet":
+    		$("input[name*='srcEther']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='srcEther']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='dstEther']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='dstEther']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='typeEther']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='typeEther']","#"+Elemtid+"collapElement")[0].value;
+    		break; 
+    	case "ARP":
+    		$("input[name*='hwtyARP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='hwtyARP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='ptyARP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='ptyARP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='hwlenARP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='hwlenARP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='plenARP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='plenARP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='opARP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='opARP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='hwsrcARP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='hwsrcARP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='psrcARP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='psrcARP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='hwdstARP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='hwdstARP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='pdstARP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='pdstARP']","#"+Elemtid+"collapElement")[0].value;
+    		break;
+    	case "IP":
+    		$("input[name*='VERIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='VERIP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='HLENIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='HLENIP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='SERVIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='SERVIP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='LOGIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='LOGIP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='IdenIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='IdenIP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='FlagsIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='FlagsIP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='OffFraIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='OffFraIP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='TTLIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='TTLIP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='ProIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='ProIP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='CheckIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='CheckIP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='srcIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='srcIP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='dstIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='dstIP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='OpcionesIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='OpcionesIP']","#"+Elemtid+"collapElement")[0].value;
+    		break;
+    	case "ICMP":
+    	    $("input[name*='typeICMP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='typeICMP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='codeICMP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='codeICMP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='checkICMP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='checkICMP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='idenICMP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='idenICMP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='nseqICMP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='nseqICMP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='tsoriICMP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='tsoriICMP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='tsrxICMP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='tsrxICMP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='tstxICMP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='tstxICMP']","#"+Elemtid+"collapElement")[0].value;
+    		$("input[name*='addrmaskICMP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='addrmaskICMP']","#"+Elemtid+"collapElement")[0].value;
+     		break;
+    	case "TCP":
+    	    $("input[name*='srcportTCP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='srcportTCP']","#"+Elemtid+"collapElement")[0].value;
+    	    $("input[name*='dstportTCP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='dstportTCP']","#"+Elemtid+"collapElement")[0].value;
+    	    $("input[name*='sequennTCP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='sequennTCP']","#"+Elemtid+"collapElement")[0].value;
+    	    $("input[name*='ackTCP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='ackTCP']","#"+Elemtid+"collapElement")[0].value;
+    	    $("input[name*='offsetTCP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='offsetTCP']","#"+Elemtid+"collapElement")[0].value;
+    	    $("input[name*='reserdTCP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='reserdTCP']","#"+Elemtid+"collapElement")[0].value;
+    	    $("input[name*='flagTCP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='flagTCP']","#"+Elemtid+"collapElement")[0].value;
+    	    $("input[name*='windTCP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='windTCP']","#"+Elemtid+"collapElement")[0].value;
+    	    $("input[name*='checkTCP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='checkTCP']","#"+Elemtid+"collapElement")[0].value;
+    	    $("input[name*='urgpoTCP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='urgpoTCP']","#"+Elemtid+"collapElement")[0].value;
+    	    $("input[name*='OpTCP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='OpTCP']","#"+Elemtid+"collapElement")[0].value;
+    		break;
+    	case "UDP":
+    	    $("input[name*='sportUDP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='sportUDP']","#"+Elemtid+"collapElement")[0].value;
+    	    $("input[name*='dportUDP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='dportUDP']","#"+Elemtid+"collapElement")[0].value;
+    	    $("input[name*='lenUDP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='lenUDP']","#"+Elemtid+"collapElement")[0].value;
+    	    $("input[name*='checkUDP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='checkUDP']","#"+Elemtid+"collapElement")[0].value;
+    		break;
+    	case "RIP":
+    	    $("input[name*='cmdRIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='cmdRIP']","#"+Elemtid+"collapElement")[0].value;
+    	    $("input[name*='verUDP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='verUDP']","#"+Elemtid+"collapElement")[0].value;
+    		break;
+    	case "DATA":
+    	    $("input[name*='dat']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='dat']","#"+Elemtid+"collapElement")[0].value;
+	}
 }
 
 function loadData(form, dataLoad, layer) {
