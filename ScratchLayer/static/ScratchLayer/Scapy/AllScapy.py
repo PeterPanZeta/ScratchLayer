@@ -15,10 +15,6 @@ def PPrin(request):
 	error=False
 	messageError={}
 
-	if(request.POST.get("npack",None)=="6969"):
-		print "KILL"
-		while(True):
-			None
 	#print request.POST.get("DATA",None)
 	if(request.POST.get("pk",None) != None):
 
@@ -328,7 +324,7 @@ def sendDataSniff(request):
 	s = SessionStore(session_key=request.session.session_key)
 	Data = s['Packets']
 	s['Packets'] = {}
-	stop = s['stopfilter']
+	stop = s['stopSendData']
 	s.save()
 	lock.release()
 
@@ -340,6 +336,7 @@ def sendDataSniff(request):
 			'error': False,
 			'stop':True,
 			'message':"Sniff finalizado",
+			'idpcap': request.session['User']+".pcap",
 			'data':Data
 		}
 
@@ -350,6 +347,7 @@ def sendDataSniff(request):
 			'error': False,
 			'stop':False,
 			'message':'',
+			'idpcap': '',
 			'data':Data
 		}
 
@@ -383,21 +381,30 @@ class ThreadSniff (threading.Thread):
 		else:
 			timeout=int(request.POST.get("timeout",""))
 
-
 		print "Peticion User("+request.session.get('User')+"): "+ str(filte)+" "+str(count)+" "+str(iface)
 
-		sniff(filter=filte,count=count,iface=iface,timeout=timeout,stop_filter=lambda x:stopfilter(x,request,iface))
+		sniffInstan = sniff(filter=filte,count=count,iface=iface,timeout=timeout,stop_filter=lambda x:stopfilter(x,request,iface))
 
+		if not ("tmp" in os.listdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/")):
+			os.mkdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp")
+
+		if (request.session['User']+".pcap" in os.listdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/")):
+			fileSniff = rdpcap(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap")
+			sniffInstan+=fileSniff
+			wrpcap(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap", sniffInstan)
+		else:
+			wrpcap(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap", sniffInstan)
+	
 		lock.acquire()
 		s = SessionStore(session_key=request.session.session_key)
-		s['stopfilter']=True
+		s['stopSendData']=True
 		s.save()
 		lock.release()
 
 		print "Thread a terminado de Sniffar"
 	
-
 def Sniff(request):
+
 	if(request.POST.get("sendDataSniff",None)):
 		return sendDataSniff(request)
 	elif(request.POST.get("stopfilter",None)):
@@ -411,11 +418,18 @@ def Sniff(request):
 				'error':False,
 				'message': "Parando el modo Sniff"
 				}
+	elif(request.POST.get("ClearData",None)):
+		os.remove("/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap")
+		return {
+				'error':False,
+				'message': "Informacion borrada"
+				}
 	else:
 
 		lock.acquire()
 		s = SessionStore(session_key=request.session.session_key)
 		s['stopfilter']=False
+		s['stopSendData']=False
 		s.save()
 		lock.release()
 

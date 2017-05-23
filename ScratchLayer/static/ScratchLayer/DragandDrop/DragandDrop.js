@@ -293,6 +293,10 @@ function ReciveDataSniff(){
             			document.getElementById("clearTableButton").disabled = false;
 						document.getElementById("createElementsSniffButton").disabled = false;
             			document.getElementById("buttonStopSniff").disabled = true;
+            			var buttonDown = document.getElementById("buttonDownSniff");
+            			buttonDown.setAttribute("href","/static/ScratchLayer/tmp/"+data.response.idpcap+".pcap");
+            			buttonDown.setAttribute("download",data.response.idpcap+".pcap");
+            			buttonDown.setAttribute("disabled","false");
             			clearInterval(sinterval);
             		}
 	                AddPacketSniff(data.response.data);
@@ -373,7 +377,8 @@ function clonValues(Elemtid, clonElemtid, Type) {
     		$("input[name*='srcEther']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='srcEther']","#"+Elemtid+"collapElement")[0].value;
     		$("input[name*='dstEther']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='dstEther']","#"+Elemtid+"collapElement")[0].value;
     		$("input[name*='typeEther']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='typeEther']","#"+Elemtid+"collapElement")[0].value;
-    		break; 
+    		break;
+
     	case "ARP":
     		$("input[name*='hwtyARP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='hwtyARP']","#"+Elemtid+"collapElement")[0].value;
     		$("input[name*='ptyARP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='ptyARP']","#"+Elemtid+"collapElement")[0].value;
@@ -385,6 +390,7 @@ function clonValues(Elemtid, clonElemtid, Type) {
     		$("input[name*='hwdstARP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='hwdstARP']","#"+Elemtid+"collapElement")[0].value;
     		$("input[name*='pdstARP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='pdstARP']","#"+Elemtid+"collapElement")[0].value;
     		break;
+
     	case "IP":
     		$("input[name*='VERIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='VERIP']","#"+Elemtid+"collapElement")[0].value;
     		$("input[name*='HLENIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='HLENIP']","#"+Elemtid+"collapElement")[0].value;
@@ -400,6 +406,7 @@ function clonValues(Elemtid, clonElemtid, Type) {
     		$("input[name*='dstIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='dstIP']","#"+Elemtid+"collapElement")[0].value;
     		$("input[name*='OpcionesIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='OpcionesIP']","#"+Elemtid+"collapElement")[0].value;
     		break;
+
     	case "ICMP":
     	    $("input[name*='typeICMP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='typeICMP']","#"+Elemtid+"collapElement")[0].value;
     		$("input[name*='codeICMP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='codeICMP']","#"+Elemtid+"collapElement")[0].value;
@@ -411,6 +418,7 @@ function clonValues(Elemtid, clonElemtid, Type) {
     		$("input[name*='tstxICMP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='tstxICMP']","#"+Elemtid+"collapElement")[0].value;
     		$("input[name*='addrmaskICMP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='addrmaskICMP']","#"+Elemtid+"collapElement")[0].value;
      		break;
+
     	case "TCP":
     	    $("input[name*='srcportTCP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='srcportTCP']","#"+Elemtid+"collapElement")[0].value;
     	    $("input[name*='dstportTCP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='dstportTCP']","#"+Elemtid+"collapElement")[0].value;
@@ -424,18 +432,22 @@ function clonValues(Elemtid, clonElemtid, Type) {
     	    $("input[name*='urgpoTCP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='urgpoTCP']","#"+Elemtid+"collapElement")[0].value;
     	    $("input[name*='OpTCP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='OpTCP']","#"+Elemtid+"collapElement")[0].value;
     		break;
+
     	case "UDP":
     	    $("input[name*='sportUDP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='sportUDP']","#"+Elemtid+"collapElement")[0].value;
     	    $("input[name*='dportUDP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='dportUDP']","#"+Elemtid+"collapElement")[0].value;
     	    $("input[name*='lenUDP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='lenUDP']","#"+Elemtid+"collapElement")[0].value;
     	    $("input[name*='checkUDP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='checkUDP']","#"+Elemtid+"collapElement")[0].value;
     		break;
+
     	case "RIP":
     	    $("input[name*='cmdRIP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='cmdRIP']","#"+Elemtid+"collapElement")[0].value;
     	    $("input[name*='verUDP']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='verUDP']","#"+Elemtid+"collapElement")[0].value;
     		break;
+
     	case "DATA":
-    	    $("input[name*='dat']","#"+clonElemtid+"collapElement")[0].value = $("input[name*='dat']","#"+Elemtid+"collapElement")[0].value;
+    	    $("textarea[name*='dat']","#"+clonElemtid+"collapElement")[0].value = $("textarea[name*='dat']","#"+Elemtid+"collapElement")[0].value;
+			break;
 	}
 }
 
