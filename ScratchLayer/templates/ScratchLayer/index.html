@@ -121,6 +121,15 @@
                 </tfoot>
                 <tbody></tbody>
             </table>
+              <div class="col-xs-12">
+                <form id="formSniffpcap" method="post" onsubmit="SubmitSniffpcap(this,event)" action="" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <div class='form-group col-xs-12'>
+                    <input type="file" name="docfile" class="col-xs-6">
+                    <input type="submit" class="col-xs-1  col-xs-offset-5" value="Submit">
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>

@@ -419,7 +419,7 @@ def Sniff(request):
 				'message': "Parando el modo Sniff"
 				}
 	elif(request.POST.get("ClearData",None)):
-		os.remove("/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap")
+		os.remove(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap")
 		return {
 				'error':False,
 				'message': "Informacion borrada"
@@ -471,6 +471,7 @@ def stopfilter(x,request,interface):
 		s['stopfilter']=True
 		s.save()
 		lock.release()
+		return True
 
 
 def serializeDataSniff(elemt,interface):
@@ -661,6 +662,36 @@ def parseMac(mac):
 		return True
 	else:
 		return False
+
+def loadpcap(filename):
+	try:
+		datapcap = rdpcap(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+filename)
+		
+		dataSeria = {}
+
+		for x in datapcap:
+			packetpcap = serializeDataSniff(x,"File: "+filename)
+			dataSeria[packetpcap["id"]]=packetpcap
+
+		return {
+			'error': False,
+			'message':"Sniff finalizado",
+			'idpcap': filename,
+			'data':dataSeria
+		}
+
+	except Exception as inst:
+
+		print(type(inst))
+		print(inst.args)
+		print(inst)
+
+		return {
+			'error': True,
+			'message':"Error al transformar el archivo pcap",
+			'idpcap': filename,
+			'data':dataSeria
+		}
 
 def main(request):
 	if(request.POST.get("mode","") != ""):

@@ -9,16 +9,18 @@ from django.http import Http404
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
 from netifaces import interfaces
+
+from django.core.files.storage import FileSystemStorage
+
+import os
 
 def index(request):
 
 	if not request.session.get('Initial', False):
 		print "reload"
 		request.session['Initial'] = True
-		user = random.choice('abcdefghijkmnopqrst')+random.choice('abcdefghijkmnopqrst')+str(random.randint(1, 200))+str(random.randint(200,300))
-		request.session['User'] = user
+		request.session['User'] = random.choice('abcdefghijkmnopqrst')+random.choice('abcdefghijkmnopqrst')+str(random.randint(1, 200))+str(random.randint(200,300))
 		request.session['SniffStart'] =  False
 		request.session['stopfilter'] =  False
 		request.session['Packets'] =  {}
@@ -34,7 +36,6 @@ def index(request):
 		}
 
 	return render(request,'ScratchLayer/index.html', context)
-    #return HttpResponse("Hello, world. You're at the polls index.")
 
 def prueba(request):
 	return render(request,'ScratchLayer/prueba.html')
@@ -43,8 +44,25 @@ def prueba(request):
 def ajax(request): 
 	print request.POST
 	data= {
-		'id': request.POST.get("pk",None),
+		'id': request.POST.get("pk",""),
 		'response': sp.main(request)
+	}
+	
+	return JsonResponse(data)
+
+@csrf_exempt
+def uppcap(request):
+	
+	if not ("tmp" in os.listdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/")):
+		os.mkdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp")
+	
+	mypcap = request.FILES['docfile']
+	fs = FileSystemStorage()
+	filename = fs.save(mypcap.name,mypcap)
+
+	data= {
+		'id':"",
+		'response': sp.loadpcap(filename)
 	}
 	
 	return JsonResponse(data)

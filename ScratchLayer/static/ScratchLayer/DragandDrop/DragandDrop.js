@@ -237,6 +237,33 @@ function SubmitPrin(form,e){
     	return false;
 }
 
+function SubmitSniffpcap(form,e) {
+	e.preventDefault();
+	var formData = new FormData(document.getElementById(form.id));
+	$.ajax({
+	 		type: 'POST',
+            url: '/ScratchLayer/uppcap/',
+            dataType: "json",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+
+	           if(data.response.error){
+            		for (var itemin in data.response.message){
+                		$.notify( data.response.message[itemin], "error");
+            		}
+            	}
+            	else{
+            		AddPacketSniff(data.response.data);
+	            	tableSniff.page('last').draw('page');
+            	}
+        	}
+        });
+	return false;
+}
+
 function SubmitSniff(form,e){
 	e.preventDefault();
 
@@ -294,10 +321,10 @@ function ReciveDataSniff(){
 						document.getElementById("createElementsSniffButton").disabled = false;
             			document.getElementById("buttonStopSniff").disabled = true;
             			var buttonDown = document.getElementById("buttonDownSniff");
-            			buttonDown.setAttribute("href","/static/ScratchLayer/tmp/"+data.response.idpcap+".pcap");
-            			buttonDown.setAttribute("download",data.response.idpcap+".pcap");
-            			buttonDown.setAttribute("disabled","false");
-            			clearInterval(sinterval);
+            			buttonDown.setAttribute("href","/static/ScratchLayer/tmp/"+data.response.idpcap);
+            			buttonDown.setAttribute("download",data.response.idpcap);
+            			buttonDown.disabled = false;
+            			clearInterval(sinterval);	
             		}
 	                AddPacketSniff(data.response.data);
 	                tableSniff.page('last').draw('page');
