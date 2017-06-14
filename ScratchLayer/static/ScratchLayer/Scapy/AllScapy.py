@@ -7,6 +7,7 @@ import threading
 import os 
 
 lock = threading.Lock()  
+lockFile = threading.Lock()  
 
 def PPrin(request):
 
@@ -358,51 +359,67 @@ class ThreadSniff (threading.Thread):
       	self.request = request
 
     def run(self):
+		try:
+			filte = ""
+			count = ""
+			timeout = ""
+			request = self.request
 
-   		filte = ""
-		count = ""
-		timeout = ""
-		request = self.request
+			iface = str(request.POST.get("interfaz",None))
 
-		iface = str(request.POST.get("interfaz",None))
+			if(request.POST.get("filter","")==""):
+				filte = None
+			else:
+				filte=str(request.POST.get("filter",None))
 
-		if(request.POST.get("filter","")==""):
-			filte = None
-		else:
-			filte=str(request.POST.get("filter",None))
+			if(request.POST.get("count","")==""):
+				count = None
+			else:
+				count=int(request.POST.get("count",None))
 
-		if(request.POST.get("count","")==""):
-			count = None
-		else:
-			count=int(request.POST.get("count",None))
+			if(request.POST.get("timeout","")==""):
+				timeout = None
+			else:
+				timeout=int(request.POST.get("timeout",""))
 
-		if(request.POST.get("timeout","")==""):
-			timeout = None
-		else:
-			timeout=int(request.POST.get("timeout",""))
+			print "Peticion User("+request.session.get('User')+"): "+ str(filte)+" "+str(count)+" "+str(iface)
 
-		print "Peticion User("+request.session.get('User')+"): "+ str(filte)+" "+str(count)+" "+str(iface)
+			sniffInstan = sniff(filter=filte,count=count,iface=iface,timeout=timeout,stop_filter=lambda x:stopfilter(x,request,iface))
 
-		sniffInstan = sniff(filter=filte,count=count,iface=iface,timeout=timeout,stop_filter=lambda x:stopfilter(x,request,iface))
+			if len(sniffInstan)>0 : sniffInstan.pop(len(sniffInstan)-1)
 
-		if not ("tmp" in os.listdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/")):
-			os.mkdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp")
+			if not ("tmp" in os.listdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/")):
+				os.mkdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp")
 
-		if (request.session['User']+".pcap" in os.listdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/")):
-			fileSniff = rdpcap(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap")
-			sniffInstan+=fileSniff
-			wrpcap(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap", sniffInstan)
-		else:
-			wrpcap(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap", sniffInstan)
-	
-		lock.acquire()
-		s = SessionStore(session_key=request.session.session_key)
-		s['stopSendData']=True
-		s.save()
-		lock.release()
+			lockFile.acquire()
+			if (request.session['User']+".pcap" in os.listdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/")):
+				fileSniff = rdpcap(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap")
+				fileSniff+= sniffInstan
+				wrpcap(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap", fileSniff)
+			else:
+				wrpcap(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap", sniffInstan)
+			lockFile.release()
 
-		print "Thread a terminado de Sniffar"
-	
+			lock.acquire()
+			s = SessionStore(session_key=request.session.session_key)
+			s['stopSendData']=True
+			s.save()
+			lock.release()
+
+			print "Thread a terminado de Sniffar"
+
+		except Exception as inst:
+			print(type(inst))
+			print(inst.args)
+			print(inst)
+			#lock.release()
+			lock.acquire()
+			s = SessionStore(session_key=request.session.session_key)
+			s['stopSendData']=True
+			s.save()
+			lock.release()
+			return True
+
 def Sniff(request):
 
 	if(request.POST.get("sendDataSniff",None)):
@@ -419,11 +436,20 @@ def Sniff(request):
 				'message': "Parando el modo Sniff"
 				}
 	elif(request.POST.get("ClearData",None)):
-		os.remove(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap")
-		return {
+
+		if (request.session['User']+".pcap" in os.listdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/")):
+			os.remove(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap")
+			return {
 				'error':False,
 				'message': "Informacion borrada"
 				}
+		else:
+			return {
+					'error':True,
+					'message': "No se ha encontrado la informacion a borrar"
+					}
+
+		
 	else:
 
 		lock.acquire()
@@ -445,8 +471,6 @@ def stopfilter(x,request,interface):
 	try:
 		lock.acquire()
 		packetSerialize = serializeDataSniff(x,interface)
-		#print packetSerialize["id"]
-		#if("DATA" in packetSerialize):print packetSerialize["DATA"]
 		s = SessionStore(session_key=request.session.session_key)
 		stop = s['stopfilter']
 		if(stop):
@@ -469,6 +493,7 @@ def stopfilter(x,request,interface):
 		lock.acquire()
 		s = SessionStore(session_key=request.session.session_key)
 		s['stopfilter']=True
+		s['stopSendData']=True
 		s.save()
 		lock.release()
 		return True
@@ -663,7 +688,7 @@ def parseMac(mac):
 	else:
 		return False
 
-def loadpcap(filename):
+def loadpcap(filename, request):
 	try:
 		datapcap = rdpcap(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+filename)
 		
@@ -673,10 +698,21 @@ def loadpcap(filename):
 			packetpcap = serializeDataSniff(x,"File: "+filename)
 			dataSeria[packetpcap["id"]]=packetpcap
 
+		lockFile.acquire()
+		if (request.session['User']+".pcap" in os.listdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/")):
+			fileSniff = rdpcap(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap")
+			fileSniff+=datapcap
+			wrpcap(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap", fileSniff)
+		else:
+			wrpcap(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+request.session['User']+".pcap", datapcap)
+		lockFile.release()
+
+		os.remove(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/"+filename)
+
 		return {
 			'error': False,
 			'message':"Sniff finalizado",
-			'idpcap': filename,
+			'idpcap': filename.split("_")[0],
 			'data':dataSeria
 		}
 

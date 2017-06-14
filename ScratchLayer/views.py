@@ -62,7 +62,7 @@ def uppcap(request):
 
 	data= {
 		'id':"",
-		'response': sp.loadpcap(filename)
+		'response': sp.loadpcap(filename,request)
 	}
 	
 	return JsonResponse(data)

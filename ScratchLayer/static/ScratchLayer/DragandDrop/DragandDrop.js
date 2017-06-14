@@ -72,11 +72,15 @@ $(document).ready(function() {
       if(this.checked && index === -1){
       	//console.log("Pongo: "+rowId);
         rows_selected.push(rowId);
+        document.getElementById("createElementsSniffButton").disabled = false;
+        console.log(rows_selected.length);
 
       // Otherwise, if checkbox is not checked and row ID is in list of selected row IDs
       } else if (!this.checked && index !== -1){
       	console.log("quito: "+index);
-         rows_selected.splice(index, 1);
+        rows_selected.splice(index, 1);
+        if(rows_selected.length==0)document.getElementById("createElementsSniffButton").disabled = true;
+        console.log(rows_selected.length);
       }
 
       if(this.checked){
@@ -152,10 +156,30 @@ function loadModal(elemHTMLid,elementid,e) {
 }
 
 function clearTable () {
-	console.log("Paso");
-	sniffElements = {};
-	rows_selected = [];
-	tableSniff.clear(); tableSniff.draw();}
+	 if (confirm('¿Estas seguro que deseas limpiar la informacion?')){
+       	$.ajax({
+	 		type: 'POST',
+            url: '/ScratchLayer/ajax/',
+            data: "mode=Sniff&ClearData=True&",
+        	dataType: 'json',
+            success: function (data) {
+	           if(data.response.error){
+                	$.notify( data.response.message, "error");
+            	}
+            	else{
+            		sniffElements = {};
+					rows_selected = [];
+					tableSniff.clear(); tableSniff.draw();
+					document.getElementById("buttonDownSniff").href='javascript: void(0)';
+					document.getElementById("clearTableButton").disabled = true;
+					//document.getElementById("createElementsSniffButton").disabled = true;
+					document.getElementById("buttonDownSniff").setAttribute("disabled" ,"true");
+            	}
+        	}
+        });
+    }
+
+}
 
 function updateDataTableSelectAllCtrl(tableSniff){
    
@@ -258,6 +282,9 @@ function SubmitSniffpcap(form,e) {
             	else{
             		AddPacketSniff(data.response.data);
 	            	tableSniff.page('last').draw('page');
+	            	document.getElementById("clearTableButton").disabled = false;
+					//document.getElementById("createElementsSniffButton").disabled = false;
+					$("#buttonDownSniff").removeAttr("disabled");
             	}
         	}
         });
@@ -272,6 +299,7 @@ function SubmitSniff(form,e){
 	document.getElementById("buttonSubmitSniff").disabled = true;
 	document.getElementById("clearTableButton").disabled = true;
 	document.getElementById("createElementsSniffButton").disabled = true;
+	document.getElementById("buttonDownSniff").setAttribute("disabled" ,"true");
 	document.getElementById("buttonStopSniff").disabled = false;
 
 	//var load = document.getElementById("load"+form.id.split("Form")[1])
@@ -318,11 +346,12 @@ function ReciveDataSniff(){
             			$.notify( data.response.message, "success");
             			document.getElementById("buttonSubmitSniff").disabled = false;
             			document.getElementById("clearTableButton").disabled = false;
-						document.getElementById("createElementsSniffButton").disabled = false;
+						//document.getElementById("createElementsSniffButton").disabled = false;
             			document.getElementById("buttonStopSniff").disabled = true;
             			var buttonDown = document.getElementById("buttonDownSniff");
             			buttonDown.setAttribute("href","/static/ScratchLayer/tmp/"+data.response.idpcap);
             			buttonDown.setAttribute("download",data.response.idpcap);
+            			$("#buttonDownSniff").removeAttr("disabled");
             			buttonDown.disabled = false;
             			clearInterval(sinterval);	
             		}
@@ -597,73 +626,77 @@ function drop(e,move=true){
     var destHTML = e.target;
     var	desti = findObj(destHTML.id);
 
-    if(desti.dropInElemt(src.id)){
-	    
-	    var patt = new RegExp("new");
+    if(desti!=undefined){
+  	    if(desti.dropInElemt(src.id)){
+		    
+		    var patt = new RegExp("new");
 
-	    if (!patt.test(src.id)){
-	    	element = createElement(src.id,desti);
-	    } else{
-	    	src=src.parentNode;
+		    if (!patt.test(src.id)){
+		    	element = createElement(src.id,desti);
+		    } else{
+		    	src=src.parentNode;
 
-	     	if(destHTML.id!=src.parentNode.id){
-	    		element = TransferElement(destHTML,src.parentNode,src);
-	    	}
-	    	else{
-	    		element = findObj(src.id);
-	    	}
+		     	if(destHTML.id!=src.parentNode.id){
+		    		element = TransferElement(destHTML,src.parentNode,src);
+		    	}
+		    	else{
+		    		element = findObj(src.id);
+		    	}
 
-	    }
-
-	    if(destHTML.id=="panelPrincipal"){
-
-	    	//console.log("libre movimiento");
-
-	    	tamContX = $('#'+destHTML.id).width();
-		    tamContY = $('#'+destHTML.id).height();
-
-		    tamElemX = $('#'+element.id).width();
-		    tamElemY = $('#'+element.id).height();
-
-		    posXCont = $('#'+destHTML.id).position().left;
-		    posYCont = $('#'+destHTML.id).position().top;
-
-		    // Posicion absoluta del raton
-		    x = e.layerX;
-		    y = e.layerY;
-
-		    // Si parte del elemento que se quiere mover se queda fuera se cambia las coordenadas para que no sea asi
-		    if (posXCont + tamContX <= x + tamElemX){
-		        x = posXCont + tamContX - tamElemX;
 		    }
-		    /*
-		    if (posYCont + tamContY <= y + tamElemY){
-		        y = posYCont + tamContY - tamElemY;
-		    }*/
-		    /*console.log("Parent: "+destHTML.id);
-		    console.log("x: "+x+" tamElemX: "+tamElemX);
-		    console.log("y: "+y+" tamElemY: "+tamElemY);
-			*/
-		    panelPrincipal.setModSize(undefined, tamElemY, tamElemX,y,x);
 
-		    element.getPV().style.position = "absolute";
-		    element.getPV().style.left = x + "px";
-		    element.getPV().style.top = y + "px";
-		}
-		else{
-			element.getPV().style.position = "relative";
-			element.getPV().style.left = 0 + "px";
-		    element.getPV().style.top = 0 + "px";
+		    if(destHTML.id=="panelPrincipal"){
 
-		}
-	}else{
+		    	//console.log("libre movimiento");
 
-		var patt = new RegExp("new");
+		    	tamContX = $('#'+destHTML.id).width();
+			    tamContY = $('#'+destHTML.id).height();
 
-	    if (!patt.test(src.id)){
-			$.notify(src.id+" no puede introducirse dentro de "+destHTML.id.split("new")[0].split("Drop")[1], "error");
-	    }else{
-			$.notify(src.id.split("header")[1].split("new")[0]+" no puede introducirse dentro de "+destHTML.id.split("new")[0].split("Drop")[1], "error");
+			    tamElemX = $('#'+element.id).width();
+			    tamElemY = $('#'+element.id).height();
+
+			    posXCont = $('#'+destHTML.id).position().left;
+			    posYCont = $('#'+destHTML.id).position().top;
+
+			    // Posicion absoluta del raton
+			    x = e.layerX;
+			    y = e.layerY;
+
+			    // Si parte del elemento que se quiere mover se queda fuera se cambia las coordenadas para que no sea asi
+			    if (posXCont + tamContX <= x + tamElemX){
+			        x = posXCont + tamContX - tamElemX;
+			    }
+			    /*
+			    if (posYCont + tamContY <= y + tamElemY){
+			        y = posYCont + tamContY - tamElemY;
+			    }*/
+			    /*console.log("Parent: "+destHTML.id);
+			    console.log("x: "+x+" tamElemX: "+tamElemX);
+			    console.log("y: "+y+" tamElemY: "+tamElemY);
+				*/
+			    panelPrincipal.setModSize(undefined, tamElemY, tamElemX,y,x);
+			    element.getPV().style.position = "absolute";
+			    element.getPV().style.left = x + "px";
+			    element.getPV().style.top = y + "px";
+			}
+			else{
+				element.getPV().style.position = "relative";
+				element.getPV().style.left = 0 + "px";
+			    element.getPV().style.top = 0 + "px";
+
+			}
+		}else{
+			var patt = new RegExp("new");
+			if(destHTML.id  = src.id){
+				console.log("PITO");
+			}
+			else{
+			    if (!patt.test(src.id)){
+					$.notify(src.id+" no puede introducirse dentro de "+destHTML.id.split("new")[0].split("Drop")[1], "error");
+			    }else{
+					$.notify(src.id.split("header")[1].split("new")[0]+" no puede introducirse dentro de "+destHTML.id.split("new")[0].split("Drop")[1], "error");
+				}
+			}
 		}
 	}
     return false;

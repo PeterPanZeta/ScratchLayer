@@ -25,29 +25,41 @@
               <div class="col-xs-1">
                 <img id="Packet" class="icon" draggable="true"  src="{% static 'ScratchLayer/images/package.png' %}">
               </div>
-              <div class="col-xs-1">
-                <img id="Ethernet" class="icon" draggable="true"  src="{% static 'ScratchLayer/images/ethernet.png' %}">
+              <a class="col-xs-1 colapA" type="button" data-toggle="collapse" data-target="#enlace">Enlace</a>
+              <div id="enlace" class="collapse in">
+                <div class="col-xs-1">
+                  <img id="Ethernet" class="icon" draggable="true"  src="{% static 'ScratchLayer/images/ethernet.png' %}">
+                </div>
               </div>
-              <div class="col-xs-1">
-                <img id="ARP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/ARP.png' %}">
+              <a class="col-xs-1 colapA" type="button" data-toggle="collapse" data-target="#red">Red</a>
+              <div id="red" class="collapse in">
+                <div class="col-xs-1">
+                  <img id="ARP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/ARP.png' %}">
+                </div>
+                <div class="col-xs-1">
+                  <img id="IP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/IP.png' %}">
+                </div>
               </div>
-              <div class="col-xs-1">
-                <img id="IP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/IP.png' %}">
+              <a class="col-xs-1 colapA" type="button" data-toggle="collapse" data-target="#trasporte">Transp</a>
+              <div id="trasporte" class="collapse in">
+                <div class="col-xs-1">
+                  <img id="ICMP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/ICMP.png' %}">
+                </div>
+                <div class="col-xs-1">
+                  <img id="TCP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/TCP.png' %}">
+                </div>
+                <div class="col-xs-1">
+                  <img id="UDP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/UDP.png' %}">
+                </div>
               </div>
-              <div class="col-xs-1">
-                <img id="ICMP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/ICMP.png' %}">
-              </div>
-              <div class="col-xs-1">
-                <img id="TCP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/TCP.png' %}">
-              </div>
-              <div class="col-xs-1">
-                <img id="UDP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/UDP.png' %}">
-              </div>
-              <div class="col-xs-1">
-                <img id="RIP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/RIP.png' %}">
-              </div>
-              <div class="col-xs-1">
-                <img id="DATA" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/DATA.png' %}">
+              <a class="col-xs-1 colapA" type="button" data-toggle="collapse" data-target="#aplicacion">App</a>
+              <div id="aplicacion" class="collapse in">
+                <div class="col-xs-1">
+                  <img id="RIP" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/RIP.png' %}">
+                </div>
+                <div class="col-xs-1">
+                  <img id="DATA" class="icon"  draggable="true" src="{% static 'ScratchLayer/images/DATA.png' %}">
+                </div>
               </div>
             </div>
           </div>
@@ -114,8 +126,8 @@
                     <tr> 
                       <th></th>
                       <th style="text-align: right;">
-                        <a id='buttonDownSniff' type='button' class='btn btn-default' href='' download='' disabled="true">Download</a>
-                        <button class='btn btn-default' id="clearTableButton" onclick="clearTable()" >Clear</button><button class='btn btn-default' id="createElementsSniffButton"  onclick='createElementsSniff()'>Transfer to PP</button>
+                        <a id='buttonDownSniff' type='button' class='btn btn-default' href='javascript: void(0)' download='' disabled="true">Download</a>
+                        <button class='btn btn-default' id="clearTableButton" onclick="clearTable()"  disabled="true"  >Clear</button><button class='btn btn-default' disabled="true" id="createElementsSniffButton"  onclick='createElementsSniff()'>Transfer to PP</button>
                       </th>
                   </tr>
                 </tfoot>

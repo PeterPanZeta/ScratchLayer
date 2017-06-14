@@ -145,3 +145,13 @@ table.dataTable thead th:first-child {
   overflow:hidden;
   background-image: url("/static/ScratchLayer/images/data.png");
 } 
+
+.colapA{
+ text-decoration:none;
+ cursor:pointer;
+ color:black;     
+}
+.colapA:hover{
+ text-decoration:none;
+ color:black;     
+}
