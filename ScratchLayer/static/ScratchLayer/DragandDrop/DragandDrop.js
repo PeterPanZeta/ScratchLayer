@@ -654,7 +654,7 @@ function drop(e,move=true){
 		    } else{
 		    	src=src.parentNode;
 		    	if (patt2.test(src.parentNode.id))document.getElementById(src.parentNode.id.split("Drop")[1]+"Graf").disabled = true;
-			    else if(patt.test(destHTML.id))document.getElementById(destHTML.id.split("Drop")[1]+"Graf").disabled = false;
+			    else if(patt2.test(destHTML.id))document.getElementById(destHTML.id.split("Drop")[1]+"Graf").disabled = false;
 		     	
 		     	if(destHTML.id!=src.parentNode.id){
 		    		element = TransferElement(destHTML,src.parentNode,src);
