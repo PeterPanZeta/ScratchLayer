@@ -320,34 +320,45 @@ def PPrin(request):
 				}
 
 def sendDataSniff(request):
-
 	lock.acquire()
+	error = False
+	message = ""
+	idpcap = ""
 	s = SessionStore(session_key=request.session.session_key)
 	Data = s['Packets']
 	s['Packets'] = {}
 	stop = s['stopSendData']
+	if s['error']:
+		error  = True
+		message = s['meserror']
 	s.save()
 	lock.release()
 
 	if(stop):
 		#print "Retorno Datos y paro"
 		#request.session['stopfilter']=False
+		if not error: message = "Sniff finalizado"
+		if (request.session['User']+".pcap" in os.listdir(os.getcwd()+"/ScratchLayer/static/ScratchLayer/tmp/")):
+			idpcap = request.session['User']+".pcap"
+		else:
+			idpcap = ""
 
 		return {
-			'error': False,
+			'error': error,
 			'stop':True,
-			'message':"Sniff finalizado",
-			'idpcap': request.session['User']+".pcap",
+			'message':message,
+			'idpcap': idpcap,
 			'data':Data
 		}
 
 	else:
 		#print "Retorno Datos"
 		#print Data
+		if not error: message = ""
 		return {
-			'error': False,
+			'error': error,
 			'stop':False,
-			'message':'',
+			'message':message,
 			'idpcap': '',
 			'data':Data
 		}
@@ -409,13 +420,15 @@ class ThreadSniff (threading.Thread):
 			print "Thread a terminado de Sniffar"
 
 		except Exception as inst:
-			print(type(inst))
-			print(inst.args)
-			print(inst)
+			#print(type(inst))
+			#print(inst.args)
+			print(inst[0])
 			#lock.release()
 			lock.acquire()
 			s = SessionStore(session_key=request.session.session_key)
 			s['stopSendData']=True
+			s['error'] = True
+			s['meserror'] = inst[0]
 			s.save()
 			lock.release()
 			return True
@@ -456,6 +469,8 @@ def Sniff(request):
 		s = SessionStore(session_key=request.session.session_key)
 		s['stopfilter']=False
 		s['stopSendData']=False
+		s['error'] = False
+		s['meserror'] = ""
 		s.save()
 		lock.release()
 

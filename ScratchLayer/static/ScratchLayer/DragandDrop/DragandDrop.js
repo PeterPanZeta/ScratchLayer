@@ -337,9 +337,26 @@ function ReciveDataSniff(){
         	dataType: 'json',
             success: function (data) {
 	           	if(data.response.error){
-            		for (var itemin in data.response.message){
-                		$.notify( data.response.message[itemin], "error");
-            		}
+                	$.notify( data.response.message, "error");
+                	if(data.response.stop){
+                		document.getElementById("buttonSubmitSniff").disabled = false;
+            			document.getElementById("buttonStopSniff").disabled = true;
+            			if(! tableSniff.data().count() ){
+            				document.getElementById("buttonDownSniff").setAttribute("disabled","true");
+            				document.getElementById("clearTableButton").disabled = true;
+            			}else {
+            				document.getElementById("clearTableButton").disabled = false;
+            				if(data.response.idpcap!=""){
+	            				var buttonDown = document.getElementById("buttonDownSniff");
+		            			buttonDown.setAttribute("href","/static/ScratchLayer/tmp/"+data.response.idpcap);
+		            			buttonDown.setAttribute("download",data.response.idpcap);
+		            			$("#buttonDownSniff").removeAttr("disabled");
+	            			}
+            			}
+
+            			
+                		clearInterval(sinterval);	
+                	}
             	}
             	else{
             		if(data.response.stop){
@@ -352,7 +369,6 @@ function ReciveDataSniff(){
             			buttonDown.setAttribute("href","/static/ScratchLayer/tmp/"+data.response.idpcap);
             			buttonDown.setAttribute("download",data.response.idpcap);
             			$("#buttonDownSniff").removeAttr("disabled");
-            			buttonDown.disabled = false;
             			clearInterval(sinterval);	
             		}
 	                AddPacketSniff(data.response.data);
@@ -630,12 +646,16 @@ function drop(e,move=true){
   	    if(desti.dropInElemt(src.id)){
 		    
 		    var patt = new RegExp("new");
+			var patt2 = new RegExp("Packetnew");
 
 		    if (!patt.test(src.id)){
+		    	if(patt2.test(destHTML.id))document.getElementById(destHTML.id.split("Drop")[1]+"Graf").disabled = false;
 		    	element = createElement(src.id,desti);
 		    } else{
 		    	src=src.parentNode;
-
+		    	if (patt2.test(src.parentNode.id))document.getElementById(src.parentNode.id.split("Drop")[1]+"Graf").disabled = true;
+			    else if(patt.test(destHTML.id))document.getElementById(destHTML.id.split("Drop")[1]+"Graf").disabled = false;
+		     	
 		     	if(destHTML.id!=src.parentNode.id){
 		    		element = TransferElement(destHTML,src.parentNode,src);
 		    	}
@@ -687,15 +707,10 @@ function drop(e,move=true){
 			}
 		}else{
 			var patt = new RegExp("new");
-			if(destHTML.id  = src.id){
-				console.log("PITO");
-			}
-			else{
-			    if (!patt.test(src.id)){
-					$.notify(src.id+" no puede introducirse dentro de "+destHTML.id.split("new")[0].split("Drop")[1], "error");
-			    }else{
-					$.notify(src.id.split("header")[1].split("new")[0]+" no puede introducirse dentro de "+destHTML.id.split("new")[0].split("Drop")[1], "error");
-				}
+		    if (!patt.test(src.id)){
+				$.notify(src.id+" no puede introducirse dentro de "+destHTML.id.split("new")[0].split("Drop")[1], "error");
+		    }else{
+				$.notify(src.id.split("header")[1].split("new")[0]+" no puede introducirse dentro de "+destHTML.id.split("new")[0].split("Drop")[1], "error");
 			}
 		}
 	}

@@ -20,6 +20,8 @@ def index(request):
 	if not request.session.get('Initial', False):
 		print "reload"
 		request.session['Initial'] = True
+		request.session['error'] = False
+		request.session['meserror'] = ""
 		request.session['User'] = random.choice('abcdefghijkmnopqrst')+random.choice('abcdefghijkmnopqrst')+str(random.randint(1, 200))+str(random.randint(200,300))
 		request.session['SniffStart'] =  False
 		request.session['stopfilter'] =  False

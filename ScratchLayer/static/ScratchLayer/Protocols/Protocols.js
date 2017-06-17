@@ -444,7 +444,7 @@ function Packet(idPack){
 		select.setAttribute("class","col-xs-4 col-xs-offset-1");
 		select.setAttribute("name","interfaz");
 
-		form.innerHTML=" <input type='hidden' name='pk' value="+this.id+"><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><label class='col-xs-4'>Respuesta</label><input class='col-xs-1 col-xs-offset-1' type='checkbox' name='recur' value='True'><input class='col-xs-4 col-xs-offset-3' type='text' placeholder='NºPaquetes' name='npack'></input></div><div class='form-group col-xs-12'>"+select.outerHTML+"<button type='button' class='col-xs-2 col-xs-offset-1' onclick='loadModal(\""+this.Modal.id+"\",\""+this.id+"\",event);'>Graf</button><input class='col-xs-3 col-xs-offset-1' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div></div>";
+		form.innerHTML=" <input type='hidden' name='pk' value="+this.id+"><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><label class='col-xs-4'>Respuesta</label><input class='col-xs-1 col-xs-offset-1' type='checkbox' name='recur' value='True'><input class='col-xs-4 col-xs-offset-3' type='text' placeholder='NºPaquetes' name='npack'></input></div><div class='form-group col-xs-12'>"+select.outerHTML+"<button type='button' class='col-xs-2 col-xs-offset-1' id='"+this.id+"Graf' onclick='loadModal(\""+this.Modal.id+"\",\""+this.id+"\",event);' disabled='true'>Graf</button><input class='col-xs-3 col-xs-offset-1' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div></div>";
 		
 		this.drop = document.createElement("div");
 		this.drop.id="Drop"+this.id;
@@ -493,6 +493,11 @@ function Packet(idPack){
 	Packet.prototype.addChild = function(Child){
 		this.Children[Child.getId()] = Child;
 		this.PV.lastChild.lastChild.lastChild.appendChild(Child.getPV());
+	};
+
+	Packet.prototype.removeChild = function(Child){
+			delete this.Children[Child.getId()];
+			document.getElementById(this.id+"Graf").disabled = true;
 	};
 }
 
