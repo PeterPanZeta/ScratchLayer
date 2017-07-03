@@ -24,8 +24,8 @@ $(document).ready(function() {
 	parentination2.addEventListener('drop',function(e){drop(e)}, false);
 
 	tableSniff = $('#dataTables-Sniffer').DataTable({
-    	//responsive: true,
-    	bSort: false,
+    	"order": [[ 1, "desc" ]],
+    	bSort: true,
     	width: '1%',
     	"pagingType": "full_numbers",
         className: 'dt-body-center',
@@ -41,7 +41,7 @@ $(document).ready(function() {
          'className': 'dt-body-center',
          'render': function (data, type, full, meta){
              return '<input type="checkbox">';
-         }},{targets: 1 }],
+         }},{'targets': 1, 'order':'asc'}],
 
          'rowCallback': function(row, data, dataIndex){
          // Get row ID
@@ -156,7 +156,7 @@ function loadModal(elemHTMLid,elementid,e) {
 }
 
 function clearTable () {
-	 if (confirm('¿Estas seguro que deseas limpiar la informacion?')){
+	 if (confirm('¿Estas seguro de que deseas limpiar la informacion?')){
        	$.ajax({
 	 		type: 'POST',
             url: '/ScratchLayer/ajax/',
@@ -223,13 +223,16 @@ function enter(e) {
 
 function SubmitPrin(form,e){
 	e.preventDefault();
+	var idSR = form.id.split("Form")[1];
 	//console.log($( form ).serialize());
-	var load = document.getElementById("load"+form.id.split("Form")[1])
+	var load = document.getElementById("load"+idSR)
 	load.style.visibility="initial";
+	var Data = "mode=PPrin&"+$( form ).serialize()
+	document.getElementById(idSR+"fieldset").setAttribute("disabled" ,"true");
 	$.ajax({
 	 		type: 'POST',
             url: '/ScratchLayer/ajax/',
-            data: "mode=PPrin&"+$( form ).serialize(),
+            data: Data,
         	dataType: 'json',
             success: function (data) {
 				load.style.visibility="hidden";
@@ -239,26 +242,30 @@ function SubmitPrin(form,e){
                 		$.notify( data.response.message[itemin], "error");
             		}
 
-            	}
-            	else{
+            	}else if (data.response.warn){
+					for (var itemin in data.response.message){
+                		$.notify( data.response.message[itemin], "warn");
+            		}            	
+            	}else{
             		for (var itemin in data.response.message){
                 		$.notify( data.response.message[itemin], "success");
             		}
             		if(data.response.data != "undefined"){
-            			console.log(form);
+            			console.log(data.response.data);
             			console.log("ID:"+form.id.split("Form")[1]);
             			Element = findObj(form.id.split("Form")[1]);
-            			Element.upResp();
-            			data.response.data.id="Packet/R"+form.id.split("new")[1]+"."+Element.getResp();
-            			console.log(data.response.data);
-            			traspast(data.response.data);
+            			for(var i in data.response.data) {
+            				Element.upResp();
+            				data.response.data[i].id="Packet/R"+form.id.split("new")[1]+"."+Element.getResp();
+            				traspast(data.response.data[i]);
+            			}
+            			
             		}
             	}
-         	 	
+         	 	$("#"+idSR+"fieldset").removeAttr("disabled");
         	}
         });
-
-    	return false;
+    return false;
 }
 
 function SubmitSniffpcap(form,e) {
@@ -406,7 +413,7 @@ function AddPacketSniff(elements) {
 
 	for (var packet in elements){
 		sniffElements[packet]=elements[packet];
-		tableSniff.row.add( [packet,"("+elements[packet].iface+") "+"Packet:"+packet.split("/")[1]+" [ "+elements[packet].layerDescrip+" ]",""] ).draw();
+		tableSniff.row.add( [packet,elements[packet].time,"("+elements[packet].iface+") "+"Packet:"+packet.split("/")[1]+" [ "+elements[packet].layerDescrip+" ]",""] ).draw();
 	}
 }
 
@@ -418,7 +425,8 @@ function createElementsSniff(argument) {
   	});
 }
 
-function traspast(dataPacket) {
+function traspast
+(dataPacket) {
 	var child;
 
 	var packet = createElement(dataPacket["id"],findObj("panelPrincipal"));
@@ -646,16 +654,12 @@ function drop(e,move=true){
   	    if(desti.dropInElemt(src.id)){
 		    
 		    var patt = new RegExp("new");
-			var patt2 = new RegExp("Packetnew");
 
 		    if (!patt.test(src.id)){
-		    	if(patt2.test(destHTML.id))document.getElementById(destHTML.id.split("Drop")[1]+"Graf").disabled = false;
 		    	element = createElement(src.id,desti);
 		    } else{
 		    	src=src.parentNode;
-		    	if (patt2.test(src.parentNode.id))document.getElementById(src.parentNode.id.split("Drop")[1]+"Graf").disabled = true;
-			    else if(patt2.test(destHTML.id))document.getElementById(destHTML.id.split("Drop")[1]+"Graf").disabled = false;
-		     	
+
 		     	if(destHTML.id!=src.parentNode.id){
 		    		element = TransferElement(destHTML,src.parentNode,src);
 		    	}
@@ -776,11 +780,11 @@ function removeElement(elemHTML) {
 
 	//var parent = findObj(elemHTML.parentNode.parentNode.parentNode.id);
 	var child = findObj(elemHTML.id);
+	var parent = child.getParent();
 	//console.log(parent);
-	elemHTML.parentNode.removeChild(child.getPV());
-
 	child.remove();
-
+	elemHTML.parentNode.removeChild(elemHTML);
+	parent.setSizeOrig();
 	return false;
 
 }

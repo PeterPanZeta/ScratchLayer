@@ -55,6 +55,7 @@ function PanelPrincipal(PanelPrincipalHTML) {
 
 	PanelPrincipal.prototype.removeChild = function(Child){
 			//this.PV.removeChild(Child.getPV());
+			//this.setSizeOrig();
 			delete this.Children[Child.getId()];
 	};
 	
@@ -201,9 +202,10 @@ function Protocol(type) {
 	};
 
 	Protocol.prototype.remove=function(){
-		/*if(this.Parent.getId()!="panelPrincipal")*/this.Parent.setSizeOrig();
+		/*if(this.Parent.getId()!="panelPrincipal")*/
 		this.Parent.removeChild(this);
 		delete this;
+		this.Parent.setSizeOrig();
 	};
 
 	Protocol.prototype.getPV=function() {
@@ -283,7 +285,7 @@ function ProtocolDrop(type) {
 	};
 
 	ProtocolDrop.prototype.removeChild = function(Child){
-			delete this.Children[Child.getId()];
+		delete this.Children[Child.getId()];
 	};
 
 	ProtocolDrop.prototype.setModSize = function(elementHTML){
@@ -332,7 +334,7 @@ function ProtocolDrop(type) {
 		this.iniDropWH();
 
 		/*if(this.Parent.getId()!="panelPrincipal"){*/
-			this.Parent.setModSize(this.PV);
+		this.Parent.setModSize(this.PV);
 		/*}*/
 
 	};
@@ -374,7 +376,7 @@ function ProtocolDrop(type) {
 
 	ProtocolDrop.prototype.remove=function(){
 		this.Parent.removeChild(this);
-		/*if(this.Parent.getId()!="panelPrincipal")*/this.Parent.setSizeOrig();
+		/*if(this.Parent.getId()!="panelPrincipal")*///this.Parent.setSizeOrig();
 		for(child in this.Children){
 			elemet=this.Children[child];
 			elemet.remove();
@@ -444,7 +446,7 @@ function Packet(idPack){
 		select.setAttribute("class","col-xs-4 col-xs-offset-1");
 		select.setAttribute("name","interfaz");
 
-		form.innerHTML=" <input type='hidden' name='pk' value="+this.id+"><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><label class='col-xs-4'>Respuesta</label><input class='col-xs-1 col-xs-offset-1' type='checkbox' name='recur' value='True'><input class='col-xs-4 col-xs-offset-3' type='text' placeholder='NºPaquetes' name='npack'></input></div><div class='form-group col-xs-12'>"+select.outerHTML+"<button type='button' class='col-xs-2 col-xs-offset-1' id='"+this.id+"Graf' onclick='loadModal(\""+this.Modal.id+"\",\""+this.id+"\",event);' disabled='true'>Graf</button><input class='col-xs-3 col-xs-offset-1' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div></div>";
+		form.innerHTML="<fieldset id='"+this.id+"fieldset' > <input type='hidden' name='pk' value="+this.id+"><div class='col-xs-12' id='"+this.id+"collapElement'><div class='form-group col-xs-12'></div><div class='form-group col-xs-12'><label class='col-xs-4'>Respuesta</label><input class='col-xs-1 col-xs-offset-1' type='checkbox' name='recur' value='True'><label class='col-xs-3 col-xs-offset-1'>NºPaquetes</label><input class='col-xs-2 col-xs-offset-1' type='text' name='npack'></input></div><div class='form-group col-xs-12'>"+select.outerHTML+"<button type='button' class='col-xs-2 col-xs-offset-1' id='"+this.id+"Graf' onclick='loadModal(\""+this.Modal.id+"\",\""+this.id+"\",event);' disabled='true'>Graf</button><input class='col-xs-3 col-xs-offset-1' type='submit' id='buttonSubmit"+this.id+"' value='Send'></input></div></div></fieldset>";
 		
 		this.drop = document.createElement("div");
 		this.drop.id="Drop"+this.id;
@@ -493,11 +495,13 @@ function Packet(idPack){
 	Packet.prototype.addChild = function(Child){
 		this.Children[Child.getId()] = Child;
 		this.PV.lastChild.lastChild.lastChild.appendChild(Child.getPV());
+		document.getElementById(this.id+"Graf").disabled = false;
 	};
 
 	Packet.prototype.removeChild = function(Child){
-			delete this.Children[Child.getId()];
-			document.getElementById(this.id+"Graf").disabled = true;
+		delete this.Children[Child.getId()];
+		document.getElementById(this.id+"Graf").disabled = true;
+		
 	};
 }
 
@@ -507,7 +511,7 @@ function Ethernet() {
 
 	Ethernet.prototype.newPV=function() {
 
-		this.dropin={"IP":"IP","ARP":"ARP"};
+		this.dropin={"IP":"IP","ARP":"ARP","DATA":"DATA"};
 		this.PV = document.createElement("div");
 		this.PV.id = "Ethernetnew"+contElement;
 		contElement=contElement+1;
@@ -553,7 +557,7 @@ function IP() {
 
 	IP.prototype.newPV=function() {
 
-		this.dropin={"ICMP":"ICMP","TCP":"TCP","UDP":"UDP"};
+		this.dropin={"ICMP":"ICMP","TCP":"TCP","UDP":"UDP","DATA":"DATA"};
 
 		this.PV = document.createElement("div");
 		this.PV.id = "IPnew"+contElement;
@@ -652,7 +656,7 @@ function RIP() {
 
 	RIP.prototype.newPV=function() {
 
-		this.dropin={"DATARIP":"DATARIP"};
+		this.dropin={"DATARIP":"DATARIP","DATA":"DATA"};
 
 		this.PV = document.createElement("div");
 		this.PV.id = "RIPnew"+contElement;

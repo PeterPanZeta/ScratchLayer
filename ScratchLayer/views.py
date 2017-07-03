@@ -26,6 +26,7 @@ def index(request):
 		request.session['SniffStart'] =  False
 		request.session['stopfilter'] =  False
 		request.session['Packets'] =  {}
+		request.session['timeSniff'] = 0
 		print "UserNew: "+request.session.get('User')
 		print request.session.get('Packets')
 	else:
