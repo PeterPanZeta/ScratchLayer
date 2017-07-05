@@ -134,7 +134,19 @@ def PPrin(request):
 							IPDf.chksum=int(request.POST.get("CheckIP",""))
 						
 						if(request.POST.get("OpcionesIP","") != ""):
-							IPDf.options=request.POST.get("OpcionesIP","")
+							
+							IPOptionsDf=IPOption()
+							for options in request.POST.get("OpcionesIP","").split(","):
+								if not (options == ""):
+									option = options.split(":")[0]
+									optionvalue = options.split(":")[1]		
+									if(option == "copy_flag"):IPOptionsDf.copy_flag=int(optionvalue)
+									elif(option == "optclass"):IPOptionsDf.optclass=int(optionvalue)
+									elif(option == "option"):IPOptionsDf.option=int(optionvalue)
+									elif(option == "length"):IPOptionsDf.length=int(optionvalue)
+									elif(option == "value"):IPOptionsDf.value=int(optionvalue)
+					
+							IPDf.options=IPOptionsDf
 
 						if(request.POST.get("dstIP",None) != None and request.POST.get("dstIP",None)!= ""):
 							if not parseIP(request.POST.get("dstIP",None)):
@@ -228,7 +240,14 @@ def PPrin(request):
 										TCPDf.urgptr=int(request.POST.get("urgpoTCP",""))
 
 									if(request.POST.get("OpTCP","") != ""):
-										TCPDf.options=request.POST.get("OpTCP","")
+										
+										TCPOptionsDf=[]
+
+										for options in request.POST.get("OpTCP","").split(","):
+											if not (options == ""):
+												TCPOptionsDf=TCPOptionsDf+[{options.split(":")[0],int(options.split(":")[1])}]
+										print TCPOptionsDf
+										TCPDf.options=TCPOptionsDf
 
 									if not error:
 										packetDf = packetDf/TCPDf
@@ -576,6 +595,7 @@ def serializeDataSniff(elemt,interface):
 
 	elemtEther=None
 	elemtIP=None
+	elemtIPOptions=None
 	elemtARP=None
 	elemtICMP=None
 	elemtTCP=None
@@ -628,10 +648,19 @@ def serializeDataSniff(elemt,interface):
 				'chksum':elemtIP.chksum,
 				'src':elemtIP.src,
 				'dst':elemtIP.dst,
-				'options':elemtIP.options
+				'options':{}
 			}
 			#print elemtIP.options
-			
+			if(IPOption in elemtIP):
+				elemtIPOptions = elemtIP.getlayer(IPOption)
+				packet["IP"]['options']={
+				'copy_flag':elemtIPOptions.copy_flag,
+				'optclass':elemtIPOptions.optclass,
+				'option':elemtIPOptions.option,
+				'length':elemtIPOptions.length,
+				'value':elemtIPOptions.value
+			}
+
 			if(layers==""):
 				layers="IP"
 				layerDescrip=" IP "
@@ -694,8 +723,12 @@ def serializeDataSniff(elemt,interface):
 							'window':elemtTCP.window,
 							'chksum':elemtTCP.chksum,
 							'urgptr':elemtTCP.urgptr,
-							'options':elemtTCP.options
+							'options':{}
 						}
+
+						for option in elemtTCP.options:
+							packet["TCP"]['options'][option[0]] = option[1]
+
 						layers=layers+"/TCP"
 						layerDescrip=layerDescrip+"/ TCP "+elemtIP.src+":"+str(elemtTCP.sport)+" > "+elemtIP.dst+":"+str(elemtTCP.dport)
 				

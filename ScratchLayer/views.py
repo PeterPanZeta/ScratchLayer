@@ -45,7 +45,6 @@ def prueba(request):
 
 @csrf_exempt
 def ajax(request): 
-	print request.POST
 	data= {
 		'id': request.POST.get("pk",""),
 		'response': sp.main(request)

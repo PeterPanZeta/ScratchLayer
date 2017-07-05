@@ -564,7 +564,15 @@ function loadData(form, dataLoad, layer) {
     		form.CheckIP.value = dataLoad.chksum;
     		form.srcIP.value = dataLoad.src;
     		form.dstIP.value = dataLoad.dst;
-    		form.OpcionesIP.value = dataLoad.options;
+
+    		var options = ""
+    		for(option in dataLoad.options){
+				optionvalue = dataLoad.options[option];
+				options = options + option + ":" + optionvalue + ","
+    		}
+
+    		form.OpcionesIP.value = options;
+
     		break;
     	case "ICMP":
     		form.typeICMP.value = dataLoad.type;
@@ -588,7 +596,15 @@ function loadData(form, dataLoad, layer) {
     		form.windTCP.value = dataLoad.window;
     		form.checkTCP.value = dataLoad.chksum;
     		form.urgpoTCP.value = dataLoad.urgptr;
-    		form.OpTCP.value = dataLoad.options;			
+    		form.OpTCP.value = dataLoad.options;
+    		
+    		var options = ""
+    		for(option in dataLoad.options){
+				optionvalue = dataLoad.options[option];
+				options = options + option + ":" + optionvalue + ","
+    		}
+
+    		form.OpcionesIP.value = options;			
     		break;
     	case "UDP":
     		form.sportUDP.value = dataLoad.sport;			
