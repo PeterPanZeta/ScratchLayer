@@ -596,7 +596,6 @@ function loadData(form, dataLoad, layer) {
     		form.windTCP.value = dataLoad.window;
     		form.checkTCP.value = dataLoad.chksum;
     		form.urgpoTCP.value = dataLoad.urgptr;
-    		form.OpTCP.value = dataLoad.options;
     		
     		var options = ""
     		for(option in dataLoad.options){
@@ -604,8 +603,9 @@ function loadData(form, dataLoad, layer) {
 				options = options + option + ":" + optionvalue + ","
     		}
 
-    		form.OpcionesIP.value = options;			
+    		form.OpTCP.value = options;			
     		break;
+
     	case "UDP":
     		form.sportUDP.value = dataLoad.sport;			
     		form.dportUDP.value = dataLoad.dport;

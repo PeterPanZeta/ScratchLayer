@@ -148,19 +148,19 @@ def PPrin(request):
 					
 							IPDf.options=IPOptionsDf
 
-						if(request.POST.get("dstIP",None) != None and request.POST.get("dstIP",None)!= ""):
-							if not parseIP(request.POST.get("dstIP",None)):
+						if(request.POST.get("dstIP","")!= ""):
+							'''if not parseIP(request.POST.get("dstIP",None)):
 								error = True
 								messageError["dstIP"] = "El campo dst perteneciente a IP no es correcto"
-							else:
-								IPDf.dst=request.POST.get("dstIP",None)
+							else:'''
+							IPDf.dst=request.POST.get("dstIP",None)
 
-						if(request.POST.get("srcIP",None) != None and request.POST.get("srcIP",None)!= ""):
-							if not parseIP(request.POST.get("srcIP",None)):
+						if(request.POST.get("srcIP","")!= ""):
+							'''if not parseIP(request.POST.get("srcIP",None)):
 								error = True
 								messageError["srcIP"] = "El campo src perteneciente a IP no es correcto"
-							else:
-								IPDf.src=request.POST.get("srcIP",None)
+							else:'''
+							IPDf.src=request.POST.get("srcIP",None)
 
 						if not error:
 
@@ -228,7 +228,7 @@ def PPrin(request):
 										TCPDf.reserved=int(request.POST.get("reserdTCP",""))
 
 									if(request.POST.get("flagTCP","") != ""):
-										TCPDf.flags=int(request.POST.get("flagTCP",""))
+										TCPDf.flags=str(request.POST.get("flagTCP",""))
 
 									if(request.POST.get("windTCP","") != ""):
 										TCPDf.window=int(request.POST.get("windTCP",""))
@@ -285,7 +285,7 @@ def PPrin(request):
 			
 			if(request.POST.get("dat","") != ""):
 				DATADf=Raw()
-				DATADf.load=request.POST.get("dat","")
+				DATADf.load=str(request.POST.get("dat",""))
 				packetDf = packetDf/DATADf
 
 			if(error):
@@ -719,7 +719,7 @@ def serializeDataSniff(elemt,interface):
 							'ack':elemtTCP.ack,
 							'dataofs':elemtTCP.dataofs,
 							'reserved':elemtTCP.reserved,
-							'flags':elemtTCP.flags,
+							'flags':elemtTCP.sprintf('%TCP.flags%'),
 							'window':elemtTCP.window,
 							'chksum':elemtTCP.chksum,
 							'urgptr':elemtTCP.urgptr,
